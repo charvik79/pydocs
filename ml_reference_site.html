@@ -1,0 +1,1412 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;500;600&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --sk-orange:#f7931e;--tf-blue:#ff6f00;--pt-red:#ee4c2c;--r-blue:#276dc3;
+    --dark:#12121c;--mid:#1a1a2e;--panel:#1e1e30;--border:rgba(255,255,255,0.07);
+    --text:#e0e0f0;--muted:#8080a8;--green:#4ade80;--purple:#c084fc;--cyan:#67e8f9;
+    font-family:'DM Sans',sans-serif;
+  }
+  .wrap{display:flex;height:650px;background:var(--dark);color:var(--text);border-radius:12px;overflow:hidden;font-size:14px}
+  .sidebar{width:210px;min-width:210px;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+  .logo-area{padding:14px 14px 10px;border-bottom:1px solid var(--border)}
+  .logo-row{display:flex;align-items:center;gap:8px}
+  .logo-icon{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:11px;color:#fff;flex-shrink:0}
+  .logo-title{font-size:14px;font-weight:600;color:var(--text)}
+  .logo-sub{font-size:10px;color:var(--muted);margin-top:1px}
+  .lib-switcher{display:flex;gap:4px;padding:8px 10px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+  .lib-btn{flex:1;min-width:40px;padding:5px 4px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:10px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;font-family:'DM Sans',sans-serif}
+  .lib-btn.active{color:#fff;border-color:transparent}
+  .lib-btn[data-lib=sklearn].active{background:var(--sk-orange)}
+  .lib-btn[data-lib=tf].active{background:var(--tf-blue)}
+  .lib-btn[data-lib=pt].active{background:var(--pt-red)}
+  .lib-btn[data-lib=r].active{background:var(--r-blue)}
+  .sidebar-search{padding:8px 10px;border-bottom:1px solid var(--border)}
+  .sidebar-search input{width:100%;background:var(--mid);border:1px solid var(--border);border-radius:6px;padding:5px 9px;color:var(--text);font-size:12px;font-family:'DM Sans',sans-serif;outline:none}
+  .sidebar-search input:focus{border-color:rgba(255,255,255,0.2)}
+  .sidebar-search input::placeholder{color:var(--muted)}
+  .sidebar-nav{overflow-y:auto;flex:1;padding:6px 0;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+  .nav-group{margin-bottom:2px}
+  .nav-label{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:6px 14px 3px}
+  .nav-item{display:flex;align-items:center;gap:7px;padding:5px 14px;cursor:pointer;border-left:2px solid transparent;font-size:12px;color:var(--text);transition:background .12s}
+  .nav-item:hover{background:rgba(255,255,255,0.04)}
+  .nav-item.active{border-left-color:currentColor;background:rgba(255,255,255,0.06)}
+  .nav-item.active[data-lib=sklearn]{color:var(--sk-orange)}
+  .nav-item.active[data-lib=tf]{color:var(--tf-blue)}
+  .nav-item.active[data-lib=pt]{color:var(--pt-red)}
+  .nav-item.active[data-lib=r]{color:var(--r-blue)}
+  .nav-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;background:currentColor;opacity:.6}
+  .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+  .topbar{background:var(--mid);border-bottom:1px solid var(--border);padding:10px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+  .topbar-left .title{font-size:15px;font-weight:600}
+  .topbar-left .crumb{font-size:11px;color:var(--muted);margin-top:2px}
+  .top-badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid;background:rgba(255,255,255,0.05)}
+  .content{flex:1;overflow-y:auto;padding:16px 20px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+  .page{display:none}.page.active{display:block}
+  .hero{border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:18px;position:relative;overflow:hidden}
+  .hero-title{font-size:20px;font-weight:600;margin-bottom:6px}
+  .hero-sub{font-size:12px;color:var(--muted);line-height:1.6;max-width:440px}
+  .stat-row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+  .stat{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:7px;padding:7px 12px;font-size:11px}
+  .stat strong{font-size:16px;font-weight:600;display:block}
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:16px}
+  .topic-card{background:var(--mid);border:1px solid var(--border);border-radius:9px;padding:12px;cursor:pointer;transition:all .18s;text-align:center}
+  .topic-card:hover{transform:translateY(-2px);border-color:rgba(255,255,255,0.2)}
+  .topic-icon{font-size:20px;margin-bottom:5px}
+  .topic-title{font-size:12px;font-weight:500}
+  .topic-count{font-size:10px;color:var(--muted);margin-top:2px}
+  .fcard{background:var(--mid);border:1px solid var(--border);border-radius:9px;margin-bottom:16px;overflow:hidden;transition:border-color .18s}
+  .fcard:hover{border-color:rgba(255,255,255,0.15)}
+  .fcard-head{padding:12px 16px 10px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+  .fname{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600}
+  .ftag{font-size:10px;color:var(--muted);margin-top:2px}
+  .fbadge{font-size:9px;padding:3px 7px;border-radius:4px;font-weight:600;flex-shrink:0;border:1px solid;margin-top:2px}
+  .fdesc{padding:0 16px 10px;font-size:12px;color:var(--text);line-height:1.6}
+  .code-block{background:#0d0d1a;border-top:1px solid var(--border);position:relative}
+  .ctabs{display:flex;padding:0 14px;border-bottom:1px solid var(--border)}
+  .ctab{font-size:11px;padding:6px 10px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .12s}
+  .ctab.active{color:var(--cyan);border-bottom-color:var(--cyan)}
+  .cpanel{display:none}.cpanel.active{display:block}
+  pre{font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.7;padding:12px 16px;overflow-x:auto;white-space:pre}
+  .kw{color:#ff79c6}.fn{color:var(--cyan)}.st{color:#f1fa8c}.nu{color:#ffb86c}.cm{color:#555577;font-style:italic}.op{color:var(--muted)}.out{color:var(--green)}.bi{color:var(--purple)}.cl{color:#8be9fd}.at{color:#50fa7b}
+  .callout{border-left:2px solid;padding:8px 12px;border-radius:0 7px 7px 0;font-size:12px;line-height:1.6;margin-bottom:14px}
+  .callout-tip{border-color:var(--green);background:rgba(74,222,128,.06)}
+  .callout-note{border-color:var(--cyan);background:rgba(103,232,249,.06)}
+  .callout-warn{border-color:#fbbf24;background:rgba(251,191,36,.06)}
+  .clabel{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
+  .callout-tip .clabel{color:var(--green)}.callout-note .clabel{color:var(--cyan)}.callout-warn .clabel{color:#fbbf24}
+  .sh{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin:16px 0 8px;display:flex;align-items:center;gap:8px;color:var(--muted)}
+  .sh::after{content:'';flex:1;height:1px;background:var(--border)}
+  .compare-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
+  .compare-card{border:1px solid var(--border);border-radius:9px;padding:12px;background:var(--panel)}
+  .compare-card h4{font-size:13px;font-weight:600;margin-bottom:8px}
+  .compare-card ul{list-style:none;font-size:11px;color:var(--muted);line-height:1.8}
+  .compare-card ul li::before{content:'→ ';color:var(--cyan)}
+  .pill{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;border:1px solid;margin:2px 2px 2px 0}
+  .quiz-card{background:var(--mid);border:1px solid var(--border);border-radius:9px;padding:16px;margin-bottom:12px}
+  .quiz-q{font-size:13px;font-weight:500;margin-bottom:12px;line-height:1.5}
+  .quiz-opts{display:flex;flex-direction:column;gap:6px}
+  .qopt{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:6px;padding:8px 12px;cursor:pointer;font-size:12px;font-family:'JetBrains Mono',monospace;transition:all .12s}
+  .qopt:hover{border-color:rgba(255,255,255,0.2);background:rgba(255,255,255,0.06)}
+  .qopt.correct{border-color:var(--green);background:rgba(74,222,128,.1);color:var(--green)}
+  .qopt.wrong{border-color:#f87171;background:rgba(248,113,113,.1);color:#f87171}
+  .qexp{margin-top:10px;font-size:11px;color:var(--muted);padding:8px;background:rgba(255,255,255,0.03);border-radius:5px;display:none;line-height:1.6}
+  .pbar-wrap{background:rgba(255,255,255,0.06);border-radius:20px;height:5px;margin-bottom:16px;overflow:hidden}
+  .pbar{height:100%;border-radius:20px;background:var(--cyan);transition:width .4s ease}
+  .cheat-tbl{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:16px}
+  .cheat-tbl th{background:var(--panel);color:var(--muted);padding:7px 10px;text-align:left;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)}
+  .cheat-tbl td{padding:7px 10px;border-bottom:1px solid rgba(255,255,255,0.03);vertical-align:top}
+  .cheat-tbl tr:hover td{background:rgba(255,255,255,0.02)}
+  .cheat-tbl td:first-child{font-family:'JetBrains Mono',monospace;color:var(--cyan)}
+  .cheat-tbl td:nth-child(2){color:var(--muted)}
+  .cheat-tbl td:nth-child(3){font-family:'JetBrains Mono',monospace;color:#f1fa8c;font-size:10px}
+  .pg-bar{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+  .pg-bar select{background:var(--mid);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:4px 8px;font-size:12px;font-family:'DM Sans',sans-serif;outline:none;cursor:pointer}
+  .editor-wrap{background:#0d0d1a;border:1px solid var(--border);border-radius:9px;overflow:hidden;margin-bottom:14px}
+  .editor-bar{background:var(--panel);padding:7px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+  .editor-dots{display:flex;gap:4px}
+  .editor-dot{width:9px;height:9px;border-radius:50%}
+  .run-btn{background:var(--green);color:#0d0d1a;border:none;border-radius:5px;padding:3px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .12s}
+  .run-btn:hover{opacity:.85}
+  textarea.ced{width:100%;background:#0d0d1a;color:var(--text);border:none;outline:none;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.7;padding:12px 16px;resize:vertical;min-height:130px}
+  .eout{border-top:1px solid var(--border);padding:10px 16px;font-family:'JetBrains Mono',monospace;font-size:11px;min-height:40px;white-space:pre-wrap}
+  .outlabel{font-size:9px;color:var(--muted);font-family:'DM Sans',sans-serif;margin-bottom:3px;text-transform:uppercase;letter-spacing:.06em}
+</style>
+
+<div class="wrap">
+  <div class="sidebar">
+    <div class="logo-area">
+      <div class="logo-row">
+        <div class="logo-icon" style="background:var(--sk-orange)" id="logoIcon">SK</div>
+        <div>
+          <div class="logo-title" id="logoTitle">ML Reference</div>
+          <div class="logo-sub" id="logoSub">Scikit-learn · TF · PyTorch · R</div>
+        </div>
+      </div>
+    </div>
+    <div class="lib-switcher">
+      <button class="lib-btn active" data-lib="sklearn" onclick="switchLib('sklearn',this)">sklearn</button>
+      <button class="lib-btn" data-lib="tf" onclick="switchLib('tf',this)">TF</button>
+      <button class="lib-btn" data-lib="pt" onclick="switchLib('pt',this)">PyTorch</button>
+      <button class="lib-btn" data-lib="r" onclick="switchLib('r',this)">R</button>
+    </div>
+    <div class="sidebar-search"><input type="text" placeholder="Search topics..." oninput="filterNav(this.value)"/></div>
+    <div class="sidebar-nav" id="sidebarNav"></div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="title" id="topTitle">Scikit-learn</div>
+        <div class="crumb" id="topCrumb">ML Reference → Overview</div>
+      </div>
+      <div class="top-badge" id="topBadge" style="color:var(--sk-orange);border-color:var(--sk-orange)">sklearn</div>
+    </div>
+    <div class="content" id="mainContent"></div>
+  </div>
+</div>
+
+<script>
+const LIBS = {
+  sklearn: {
+    label:'Scikit-learn', short:'sklearn', color:'#f7931e', icon:'SK',
+    pages: [
+      { id:'home', label:'Overview', group:'Start here' },
+      { id:'cheat', label:'Cheat Sheet', group:'Start here' },
+      { id:'quiz', label:'Quiz', group:'Start here' },
+      { id:'linear', label:'Linear Regression', group:'Supervised' },
+      { id:'logistic', label:'Logistic Regression', group:'Supervised' },
+      { id:'trees', label:'Decision Trees / RF', group:'Supervised' },
+      { id:'svm', label:'SVM', group:'Supervised' },
+      { id:'knn', label:'K-Nearest Neighbors', group:'Supervised' },
+      { id:'kmeans', label:'K-Means Clustering', group:'Unsupervised' },
+      { id:'pipeline', label:'Pipeline & Preprocessing', group:'Workflow' },
+      { id:'metrics', label:'Model Evaluation', group:'Workflow' },
+    ]
+  },
+  tf: {
+    label:'TensorFlow / Keras', short:'TF', color:'#ff6f00', icon:'TF',
+    pages: [
+      { id:'home', label:'Overview', group:'Start here' },
+      { id:'cheat', label:'Cheat Sheet', group:'Start here' },
+      { id:'quiz', label:'Quiz', group:'Start here' },
+      { id:'tensors', label:'Tensors & Variables', group:'Basics' },
+      { id:'keras', label:'Keras Sequential API', group:'Models' },
+      { id:'functional', label:'Functional API', group:'Models' },
+      { id:'training', label:'Training Loop', group:'Training' },
+      { id:'callbacks', label:'Callbacks', group:'Training' },
+      { id:'cnn', label:'CNN for Images', group:'Applications' },
+      { id:'save', label:'Saving & Loading', group:'Workflow' },
+    ]
+  },
+  pt: {
+    label:'PyTorch', short:'PyTorch', color:'#ee4c2c', icon:'PT',
+    pages: [
+      { id:'home', label:'Overview', group:'Start here' },
+      { id:'cheat', label:'Cheat Sheet', group:'Start here' },
+      { id:'quiz', label:'Quiz', group:'Start here' },
+      { id:'tensors', label:'Tensors', group:'Basics' },
+      { id:'autograd', label:'Autograd', group:'Basics' },
+      { id:'nn', label:'nn.Module', group:'Models' },
+      { id:'dataloader', label:'DataLoader & Dataset', group:'Data' },
+      { id:'training', label:'Training Loop', group:'Training' },
+      { id:'optim', label:'Optimizers & Schedulers', group:'Training' },
+      { id:'save', label:'Saving & Loading', group:'Workflow' },
+    ]
+  },
+  r: {
+    label:'R Language', short:'R', color:'#276dc3', icon:'R',
+    pages: [
+      { id:'home', label:'Overview', group:'Start here' },
+      { id:'cheat', label:'Cheat Sheet', group:'Start here' },
+      { id:'quiz', label:'Quiz', group:'Start here' },
+      { id:'vectors', label:'Vectors & Data Types', group:'Basics' },
+      { id:'dataframe', label:'Data Frames', group:'Data' },
+      { id:'dplyr', label:'dplyr (tidyverse)', group:'Data' },
+      { id:'ggplot', label:'ggplot2 Visualization', group:'Visualization' },
+      { id:'lm', label:'Linear Models (lm)', group:'Stats' },
+      { id:'tidyr', label:'tidyr & reshape', group:'Data' },
+      { id:'ml', label:'caret / tidymodels ML', group:'ML' },
+    ]
+  }
+};
+
+const CONTENT = {
+  sklearn: {
+    home: `<div class="hero" style="border-color:rgba(247,147,30,.3)">
+      <div class="hero-title" style="color:#f7931e">Scikit-learn Reference</div>
+      <div class="hero-sub">The gold standard ML library for Python. Simple, consistent API for classical machine learning — from linear regression to ensemble methods.</div>
+      <div class="stat-row">
+        <div class="stat"><strong style="color:#f7931e">10+</strong>Algorithms</div>
+        <div class="stat"><strong style="color:#f7931e">1</strong>Consistent API</div>
+        <div class="stat"><strong style="color:#f7931e">fit/predict</strong>Pattern</div>
+      </div>
+    </div>
+    <div class="sh">Topics</div>
+    <div class="grid2">
+      <div class="topic-card" onclick="showPage('linear')"><div class="topic-icon">📈</div><div class="topic-title">Linear Regression</div><div class="topic-count">Continuous output</div></div>
+      <div class="topic-card" onclick="showPage('logistic')"><div class="topic-icon">🔀</div><div class="topic-title">Logistic Regression</div><div class="topic-count">Classification</div></div>
+      <div class="topic-card" onclick="showPage('trees')"><div class="topic-icon">🌲</div><div class="topic-title">Trees & Forests</div><div class="topic-count">Ensemble methods</div></div>
+      <div class="topic-card" onclick="showPage('pipeline')"><div class="topic-icon">🔧</div><div class="topic-title">Pipeline</div><div class="topic-count">Clean workflow</div></div>
+      <div class="topic-card" onclick="showPage('metrics')"><div class="topic-icon">📊</div><div class="topic-title">Evaluation</div><div class="topic-count">Metrics & CV</div></div>
+      <div class="topic-card" onclick="showPage('kmeans')"><div class="topic-icon">🔵</div><div class="topic-title">K-Means</div><div class="topic-count">Unsupervised</div></div>
+    </div>
+    <div class="callout callout-tip"><div class="clabel">Core pattern</div>Every sklearn model follows the same 3 steps: <code style="color:#f7931e">model.fit(X_train, y_train)</code> → <code style="color:#f7931e">model.predict(X_test)</code> → evaluate. Learn this once, use everywhere.</div>`,
+
+    linear: `<div class="callout callout-note"><div class="clabel">Linear Regression</div>Predicts a continuous numeric value. The model finds the best-fit line through your data by minimising mean squared error.</div>
+    <div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#f7931e">LinearRegression()</div><div class="ftag">Fit a line to continuous data</div></div><div class="fbadge" style="color:#f7931e;border-color:#f7931e">supervised</div></div>
+      <div class="fdesc">Fits a linear model <code style="color:#f7931e">y = Xw + b</code>. No hyperparameters to tune for basic use. Great baseline before trying complex models. Use <code style="color:#f7931e">Ridge</code> or <code style="color:#f7931e">Lasso</code> if you need regularization.</div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'sk-lr-c')">Code</div><div class="ctab" onclick="ct(this,'sk-lr-o')">Output</div></div>
+      <div class="cpanel active" id="sk-lr-c"><pre><span class="kw">from</span> sklearn.linear_model <span class="kw">import</span> <span class="cl">LinearRegression</span>
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split
+<span class="kw">from</span> sklearn.metrics <span class="kw">import</span> mean_squared_error
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># Sample data: house size → price</span>
+X = np.array([[500],[750],[1000],[1250],[1500]])
+y = np.array([150000, 200000, 250000, 310000, 370000])
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=<span class="nu">0.2</span>, random_state=<span class="nu">42</span>)
+
+model = <span class="cl">LinearRegression</span>()
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+mse = mean_squared_error(y_test, y_pred)
+
+<span class="bi">print</span>(<span class="kw">f</span><span class="st">"Coefficient: {model.coef_[0]:.2f}"</span>)
+<span class="bi">print</span>(<span class="kw">f</span><span class="st">"Intercept:   {model.intercept_:.2f}"</span>)
+<span class="bi">print</span>(<span class="kw">f</span><span class="st">"MSE:         {mse:.2f}"</span>)</pre></div>
+      <div class="cpanel" id="sk-lr-o"><pre><span class="out">Coefficient: 225.00
+Intercept:   37500.00
+MSE:         25000000.00</span></pre></div></div>
+    </div>
+    <div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#f7931e">Ridge / Lasso</div><div class="ftag">Regularized linear regression</div></div><div class="fbadge" style="color:#f7931e;border-color:#f7931e">regularization</div></div>
+      <div class="fdesc"><code style="color:#f7931e">Ridge</code> adds L2 penalty (shrinks coefficients). <code style="color:#f7931e">Lasso</code> adds L1 penalty (can zero out coefficients — built-in feature selection). Both take an <code style="color:#f7931e">alpha</code> hyperparameter.</div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'sk-ridge-c')">Code</div><div class="ctab" onclick="ct(this,'sk-ridge-o')">Output</div></div>
+      <div class="cpanel active" id="sk-ridge-c"><pre><span class="kw">from</span> sklearn.linear_model <span class="kw">import</span> <span class="cl">Ridge</span>, <span class="cl">Lasso</span>
+
+ridge = <span class="cl">Ridge</span>(alpha=<span class="nu">1.0</span>)
+lasso = <span class="cl">Lasso</span>(alpha=<span class="nu">0.1</span>)
+
+ridge.fit(X_train, y_train)
+lasso.fit(X_train, y_train)
+
+<span class="bi">print</span>(<span class="st">"Ridge coef:"</span>, ridge.coef_)
+<span class="bi">print</span>(<span class="st">"Lasso coef:"</span>, lasso.coef_)
+<span class="bi">print</span>(<span class="st">"Ridge R²:"</span>, ridge.score(X_test, y_test).round(<span class="nu">4</span>))</pre></div>
+      <div class="cpanel" id="sk-ridge-o"><pre><span class="out">Ridge coef: [223.8]
+Lasso coef: [220.1]
+Ridge R²: 0.9823</span></pre></div></div>
+    </div>`,
+
+    logistic: `<div class="callout callout-note"><div class="clabel">Logistic Regression</div>Despite the name, it's a classification algorithm. Outputs probabilities via sigmoid function. Great interpretable baseline for binary and multiclass problems.</div>
+    <div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#f7931e">LogisticRegression()</div><div class="ftag">Binary and multiclass classification</div></div><div class="fbadge" style="color:#f7931e;border-color:#f7931e">classifier</div></div>
+      <div class="fdesc">Estimates probability that a sample belongs to a class. Use <code style="color:#f7931e">predict_proba()</code> for probabilities. Supports L1/L2 regularization via <code style="color:#f7931e">penalty</code> and <code style="color:#f7931e">C</code> parameters (smaller C = stronger regularization).</div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'sk-log-c')">Code</div><div class="ctab" onclick="ct(this,'sk-log-o')">Output</div></div>
+      <div class="cpanel active" id="sk-log-c"><pre><span class="kw">from</span> sklearn.linear_model <span class="kw">import</span> <span class="cl">LogisticRegression</span>
+<span class="kw">from</span> sklearn.datasets <span class="kw">import</span> load_iris
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split
+<span class="kw">from</span> sklearn.metrics <span class="kw">import</span> classification_report
+
+X, y = load_iris(return_X_y=<span class="kw">True</span>)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=<span class="nu">0.3</span>, random_state=<span class="nu">42</span>)
+
+model = <span class="cl">LogisticRegression</span>(max_iter=<span class="nu">200</span>)
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+<span class="bi">print</span>(classification_report(y_test, y_pred))
+
+<span class="cm"># Get probabilities</span>
+probs = model.predict_proba(X_test[:<span class="nu">3</span>])
+<span class="bi">print</span>(<span class="st">"Probs (first 3):"</span>, probs.round(<span class="nu">2</span>))</pre></div>
+      <div class="cpanel" id="sk-log-o"><pre><span class="out">              precision  recall  f1-score  support
+           0       1.00    1.00      1.00       19
+           1       0.96    0.96      0.96       23
+           2       0.96    0.96      0.96       13
+    accuracy                        0.98       45
+
+Probs (first 3):
+[[0.   0.04 0.96]
+ [0.92 0.08 0.  ]
+ [0.   0.02 0.98]]</span></pre></div></div>
+    </div>`,
+
+    trees: `<div class="callout callout-note"><div class="clabel">Decision Trees & Random Forests</div>Trees split data by feature thresholds. Random Forests ensemble many trees (with random subsets) to reduce overfitting dramatically.</div>
+    <div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#f7931e">RandomForestClassifier()</div><div class="ftag">Ensemble of decision trees</div></div><div class="fbadge" style="color:#f7931e;border-color:#f7931e">ensemble</div></div>
+      <div class="fdesc">Builds <code style="color:#f7931e">n_estimators</code> trees on random subsets of data and features, then votes. Key hyperparameters: <code style="color:#f7931e">n_estimators</code>, <code style="color:#f7931e">max_depth</code>, <code style="color:#f7931e">min_samples_split</code>. Use <code style="color:#f7931e">feature_importances_</code> to understand what matters.</div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'sk-rf-c')">Code</div><div class="ctab" onclick="ct(this,'sk-rf-o')">Output</div></div>
+      <div class="cpanel active" id="sk-rf-c"><pre><span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> <span class="cl">RandomForestClassifier</span>
+<span class="kw">from</span> sklearn.datasets <span class="kw">import</span> load_iris
+
+X, y = load_iris(return_X_y=<span class="kw">True</span>)
+X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=<span class="nu">0.2</span>)
+
+rf = <span class="cl">RandomForestClassifier</span>(
+    n_estimators=<span class="nu">100</span>,
+    max_depth=<span class="nu">4</span>,
+    random_state=<span class="nu">42</span>
+)
+rf.fit(X_tr, y_tr)
+
+<span class="bi">print</span>(<span class="st">"Accuracy:"</span>, rf.score(X_te, y_te).round(<span class="nu">4</span>))
+<span class="bi">print</span>(<span class="st">"Feature importances:"</span>)
+<span class="kw">for</span> name, imp <span class="kw">in</span> <span class="bi">zip</span>(
+    [<span class="st">"sepal_len"</span>,<span class="st">"sepal_wid"</span>,<span class="st">"petal_len"</span>,<span class="st">"petal_wid"</span>],
+    rf.feature_importances_
+):
+    <span class="bi">print</span>(<span class="kw">f</span><span class="st">"  {name}: {imp:.3f}"</span>)</pre></div>
+      <div class="cpanel" id="sk-rf-o"><pre><span class="out">Accuracy: 0.9667
+Feature importances:
+  sepal_len: 0.089
+  sepal_wid: 0.024
+  petal_len: 0.441
+  petal_wid: 0.446</span></pre></div></div>
+    </div>`,
+
+    pipeline: `<div class="callout callout-tip"><div class="clabel">Best Practice</div>Always use a Pipeline. It prevents data leakage, makes cross-validation correct, and bundles preprocessing + model into one object.</div>
+    <div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#f7931e">Pipeline()</div><div class="ftag">Chain steps — no data leakage</div></div><div class="fbadge" style="color:#f7931e;border-color:#f7931e">workflow</div></div>
+      <div class="fdesc">Chains multiple steps (e.g. scaler → model) into a single object. Calling <code style="color:#f7931e">fit()</code> on the pipeline fits all steps in sequence. Calling <code style="color:#f7931e">predict()</code> applies all transformations automatically.</div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'sk-pipe-c')">Code</div><div class="ctab" onclick="ct(this,'sk-pipe-o')">Output</div></div>
+      <div class="cpanel active" id="sk-pipe-c"><pre><span class="kw">from</span> sklearn.pipeline <span class="kw">import</span> <span class="cl">Pipeline</span>
+<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> <span class="cl">StandardScaler</span>
+<span class="kw">from</span> sklearn.svm <span class="kw">import</span> <span class="cl">SVC</span>
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> cross_val_score
+
+pipe = <span class="cl">Pipeline</span>([
+    (<span class="st">'scaler'</span>, <span class="cl">StandardScaler</span>()),
+    (<span class="st">'svm'</span>,    <span class="cl">SVC</span>(kernel=<span class="st">'rbf'</span>, C=<span class="nu">1.0</span>))
+])
+
+X, y = load_iris(return_X_y=<span class="kw">True</span>)
+
+<span class="cm"># 5-fold cross-validation in one line</span>
+scores = cross_val_score(pipe, X, y, cv=<span class="nu">5</span>)
+<span class="bi">print</span>(<span class="kw">f</span><span class="st">"CV scores: {scores.round(3)}"</span>)
+<span class="bi">print</span>(<span class="kw">f</span><span class="st">"Mean: {scores.mean():.4f} ± {scores.std():.4f}"</span>)</pre></div>
+      <div class="cpanel" id="sk-pipe-o"><pre><span class="out">CV scores: [0.967 1.    0.933 0.967 1.   ]
+Mean: 0.9733 ± 0.0249</span></pre></div></div>
+    </div>`,
+
+    metrics: `<div class="callout callout-note"><div class="clabel">Model Evaluation</div>Never evaluate on training data. Use train/test split at minimum, cross-validation for reliable estimates.</div>
+    <div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#f7931e">Metrics & Cross-Validation</div><div class="ftag">Measure how good your model really is</div></div><div class="fbadge" style="color:#f7931e;border-color:#f7931e">evaluation</div></div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'sk-met-c')">Code</div><div class="ctab" onclick="ct(this,'sk-met-o')">Output</div></div>
+      <div class="cpanel active" id="sk-met-c"><pre><span class="kw">from</span> sklearn.metrics <span class="kw">import</span> (
+    accuracy_score, precision_score,
+    recall_score, f1_score,
+    confusion_matrix, roc_auc_score
+)
+
+<span class="cm"># Classification metrics</span>
+y_true = [<span class="nu">0</span>,<span class="nu">1</span>,<span class="nu">1</span>,<span class="nu">0</span>,<span class="nu">1</span>,<span class="nu">1</span>,<span class="nu">0</span>,<span class="nu">0</span>]
+y_pred = [<span class="nu">0</span>,<span class="nu">1</span>,<span class="nu">0</span>,<span class="nu">0</span>,<span class="nu">1</span>,<span class="nu">1</span>,<span class="nu">1</span>,<span class="nu">0</span>]
+
+<span class="bi">print</span>(<span class="st">"Accuracy: "</span>,  accuracy_score(y_true, y_pred))
+<span class="bi">print</span>(<span class="st">"Precision:"</span>, precision_score(y_true, y_pred))
+<span class="bi">print</span>(<span class="st">"Recall:   "</span>, recall_score(y_true, y_pred))
+<span class="bi">print</span>(<span class="st">"F1-Score: "</span>, f1_score(y_true, y_pred))
+<span class="bi">print</span>(<span class="st">"Confusion matrix:\n"</span>, confusion_matrix(y_true, y_pred))</pre></div>
+      <div class="cpanel" id="sk-met-o"><pre><span class="out">Accuracy:  0.75
+Precision: 0.75
+Recall:    0.75
+F1-Score:  0.75
+Confusion matrix:
+ [[3 1]
+  [1 3]]</span></pre></div></div>
+    </div>`,
+
+    kmeans: `<div class="callout callout-note"><div class="clabel">K-Means Clustering</div>Unsupervised — no labels needed. Groups data into K clusters by minimising within-cluster variance. Use the elbow method to choose K.</div>
+    <div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#f7931e">KMeans()</div><div class="ftag">Group data into K clusters</div></div><div class="fbadge" style="color:#f7931e;border-color:#f7931e">unsupervised</div></div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'sk-km-c')">Code</div><div class="ctab" onclick="ct(this,'sk-km-o')">Output</div></div>
+      <div class="cpanel active" id="sk-km-c"><pre><span class="kw">from</span> sklearn.cluster <span class="kw">import</span> <span class="cl">KMeans</span>
+<span class="kw">from</span> sklearn.datasets <span class="kw">import</span> make_blobs
+
+X, _ = make_blobs(n_samples=<span class="nu">200</span>, centers=<span class="nu">3</span>, random_state=<span class="nu">42</span>)
+
+kmeans = <span class="cl">KMeans</span>(n_clusters=<span class="nu">3</span>, random_state=<span class="nu">42</span>, n_init=<span class="nu">10</span>)
+kmeans.fit(X)
+
+<span class="bi">print</span>(<span class="st">"Labels (first 10):"</span>, kmeans.labels_[:<span class="nu">10</span>])
+<span class="bi">print</span>(<span class="st">"Centroids:"</span>)
+<span class="kw">for</span> i, c <span class="kw">in</span> <span class="bi">enumerate</span>(kmeans.cluster_centers_):
+    <span class="bi">print</span>(<span class="kw">f</span><span class="st">"  Cluster {i}: [{c[0]:.2f}, {c[1]:.2f}]"</span>)
+<span class="bi">print</span>(<span class="st">"Inertia:"</span>, <span class="bi">round</span>(kmeans.inertia_, <span class="nu">2</span>))</pre></div>
+      <div class="cpanel" id="sk-km-o"><pre><span class="out">Labels (first 10): [0 2 1 1 0 2 1 0 2 1]
+Centroids:
+  Cluster 0: [-7.28, -8.44]
+  Cluster 1: [ 0.99,  4.76]
+  Cluster 2: [ 5.12, -3.21]
+Inertia: 382.41</span></pre></div></div>
+    </div>`,
+
+    svm: `<div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#f7931e">SVC / SVR</div><div class="ftag">Support Vector Machines</div></div><div class="fbadge" style="color:#f7931e;border-color:#f7931e">supervised</div></div>
+      <div class="fdesc">Finds the maximum-margin hyperplane. The kernel trick maps data to higher dimensions — <code style="color:#f7931e">rbf</code> works well in most cases. Key params: <code style="color:#f7931e">C</code> (regularization), <code style="color:#f7931e">gamma</code> (kernel width).</div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'sk-svm-c')">Code</div><div class="ctab" onclick="ct(this,'sk-svm-o')">Output</div></div>
+      <div class="cpanel active" id="sk-svm-c"><pre><span class="kw">from</span> sklearn.svm <span class="kw">import</span> <span class="cl">SVC</span>
+<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> <span class="cl">StandardScaler</span>
+
+X, y = load_iris(return_X_y=<span class="kw">True</span>)
+scaler = <span class="cl">StandardScaler</span>()
+X_scaled = scaler.fit_transform(X)
+
+X_tr, X_te, y_tr, y_te = train_test_split(
+    X_scaled, y, test_size=<span class="nu">0.2</span>, random_state=<span class="nu">42</span>)
+
+svm = <span class="cl">SVC</span>(kernel=<span class="st">'rbf'</span>, C=<span class="nu">1.0</span>, gamma=<span class="st">'scale'</span>)
+svm.fit(X_tr, y_tr)
+<span class="bi">print</span>(<span class="st">"SVM Accuracy:"</span>, svm.score(X_te, y_te))</pre></div>
+      <div class="cpanel" id="sk-svm-o"><pre><span class="out">SVM Accuracy: 0.9667</span></pre></div></div>
+    </div>`,
+
+    knn: `<div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#f7931e">KNeighborsClassifier()</div><div class="ftag">Classify by nearest neighbors</div></div><div class="fbadge" style="color:#f7931e;border-color:#f7931e">instance-based</div></div>
+      <div class="fdesc">No training phase — stores all points and at predict time finds the K nearest neighbors by distance. Simple but slow on large datasets. Always scale features first.</div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'sk-knn-c')">Code</div><div class="ctab" onclick="ct(this,'sk-knn-o')">Output</div></div>
+      <div class="cpanel active" id="sk-knn-c"><pre><span class="kw">from</span> sklearn.neighbors <span class="kw">import</span> <span class="cl">KNeighborsClassifier</span>
+
+knn = <span class="cl">KNeighborsClassifier</span>(n_neighbors=<span class="nu">5</span>, metric=<span class="st">'euclidean'</span>)
+knn.fit(X_tr, y_tr)
+<span class="bi">print</span>(<span class="st">"KNN Accuracy:"</span>, knn.score(X_te, y_te))
+
+<span class="cm"># Find which K is best</span>
+<span class="kw">for</span> k <span class="kw">in</span> [<span class="nu">1</span>, <span class="nu">3</span>, <span class="nu">5</span>, <span class="nu">7</span>, <span class="nu">9</span>]:
+    knn = <span class="cl">KNeighborsClassifier</span>(n_neighbors=k).fit(X_tr, y_tr)
+    <span class="bi">print</span>(<span class="kw">f</span><span class="st">"  k={k}: {knn.score(X_te, y_te):.3f}"</span>)</pre></div>
+      <div class="cpanel" id="sk-knn-o"><pre><span class="out">KNN Accuracy: 0.9333
+  k=1: 0.933
+  k=3: 0.967
+  k=5: 0.933
+  k=7: 0.967
+  k=9: 0.967</span></pre></div></div>
+    </div>`,
+
+    cheat: `<div class="sh">Estimators</div>
+    <table class="cheat-tbl"><tr><th>Class</th><th>Use for</th><th>Key params</th></tr>
+    <tr><td>LinearRegression()</td><td>Continuous predictions</td><td>fit_intercept</td></tr>
+    <tr><td>Ridge(alpha=1.0)</td><td>L2 regularized regression</td><td>alpha</td></tr>
+    <tr><td>Lasso(alpha=0.1)</td><td>L1 + feature selection</td><td>alpha</td></tr>
+    <tr><td>LogisticRegression()</td><td>Classification</td><td>C, penalty, max_iter</td></tr>
+    <tr><td>DecisionTreeClassifier()</td><td>Interpretable tree</td><td>max_depth</td></tr>
+    <tr><td>RandomForestClassifier()</td><td>Ensemble classifier</td><td>n_estimators, max_depth</td></tr>
+    <tr><td>GradientBoostingClassifier()</td><td>Boosted trees</td><td>n_estimators, lr</td></tr>
+    <tr><td>SVC(kernel='rbf')</td><td>Support vector classification</td><td>C, gamma</td></tr>
+    <tr><td>KNeighborsClassifier()</td><td>Instance-based</td><td>n_neighbors</td></tr>
+    <tr><td>KMeans(n_clusters=3)</td><td>Unsupervised clustering</td><td>n_clusters, n_init</td></tr>
+    <tr><td>PCA(n_components=2)</td><td>Dimensionality reduction</td><td>n_components</td></tr>
+    </table>
+    <div class="sh">Workflow functions</div>
+    <table class="cheat-tbl"><tr><th>Function</th><th>What it does</th></tr>
+    <tr><td>train_test_split(X,y)</td><td>Split into train/test</td></tr>
+    <tr><td>cross_val_score(model,X,y)</td><td>K-fold cross validation</td></tr>
+    <tr><td>GridSearchCV(model,params)</td><td>Hyperparameter tuning</td></tr>
+    <tr><td>StandardScaler().fit_transform(X)</td><td>Z-score normalise</td></tr>
+    <tr><td>Pipeline([steps])</td><td>Chain preprocessor + model</td></tr>
+    <tr><td>classification_report(y,ypred)</td><td>Precision/recall/F1</td></tr>
+    <tr><td>confusion_matrix(y,ypred)</td><td>TP/FP/FN/TN matrix</td></tr>
+    <tr><td>mean_squared_error(y,ypred)</td><td>Regression error</td></tr>
+    </table>`,
+
+    quiz: `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div style="font-size:14px;font-weight:600">Scikit-learn Quiz</div><div style="font-size:12px;color:var(--muted)">Score: <span id="qs" style="color:#f7931e;font-weight:600">0</span>/<span id="qt">0</span></div></div>
+    <div class="pbar-wrap"><div class="pbar" id="qp" style="width:0%;background:#f7931e"></div></div>
+    <div id="qc"></div>`
+  },
+
+  tf: {
+    home: `<div class="hero" style="border-color:rgba(255,111,0,.3)">
+      <div class="hero-title" style="color:#ff6f00">TensorFlow / Keras Reference</div>
+      <div class="hero-sub">Google's deep learning framework. Keras is TF's high-level API — write neural networks in minutes. Production-ready with TF Serving and TFLite.</div>
+      <div class="stat-row">
+        <div class="stat"><strong style="color:#ff6f00">Keras</strong>High-level API</div>
+        <div class="stat"><strong style="color:#ff6f00">eager</strong>Default mode</div>
+        <div class="stat"><strong style="color:#ff6f00">@tf.function</strong>Graph mode</div>
+      </div>
+    </div>
+    <div class="sh">Topics</div>
+    <div class="grid2">
+      <div class="topic-card" onclick="showPage('tensors')"><div class="topic-icon">🔢</div><div class="topic-title">Tensors</div><div class="topic-count">Data containers</div></div>
+      <div class="topic-card" onclick="showPage('keras')"><div class="topic-icon">🧱</div><div class="topic-title">Keras Sequential</div><div class="topic-count">Stack layers fast</div></div>
+      <div class="topic-card" onclick="showPage('functional')"><div class="topic-icon">🔀</div><div class="topic-title">Functional API</div><div class="topic-count">Complex graphs</div></div>
+      <div class="topic-card" onclick="showPage('training')"><div class="topic-icon">🏋</div><div class="topic-title">Training</div><div class="topic-count">fit, compile, callbacks</div></div>
+      <div class="topic-card" onclick="showPage('cnn')"><div class="topic-icon">🖼</div><div class="topic-title">CNN</div><div class="topic-count">Image recognition</div></div>
+      <div class="topic-card" onclick="showPage('save')"><div class="topic-icon">💾</div><div class="topic-title">Save & Load</div><div class="topic-count">Deploy models</div></div>
+    </div>
+    <div class="callout callout-tip"><div class="clabel">Core pattern</div>Build model → <code style="color:#ff6f00">model.compile(optimizer, loss, metrics)</code> → <code style="color:#ff6f00">model.fit(X, y, epochs=N)</code> → <code style="color:#ff6f00">model.evaluate(X_test, y_test)</code></div>`,
+
+    tensors: `<div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#ff6f00">tf.Tensor / tf.Variable</div><div class="ftag">Immutable tensor vs mutable variable</div></div><div class="fbadge" style="color:#ff6f00;border-color:#ff6f00">basics</div></div>
+      <div class="fdesc"><code style="color:#ff6f00">tf.Tensor</code> is immutable. <code style="color:#ff6f00">tf.Variable</code> is mutable and is used for model weights. Both support GPU acceleration. Shape, dtype, and device are key properties.</div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'tf-t-c')">Code</div><div class="ctab" onclick="ct(this,'tf-t-o')">Output</div></div>
+      <div class="cpanel active" id="tf-t-c"><pre><span class="kw">import</span> tensorflow <span class="kw">as</span> tf
+
+<span class="cm"># Creating tensors</span>
+a = tf.constant([[<span class="nu">1</span>,<span class="nu">2</span>],[<span class="nu">3</span>,<span class="nu">4</span>]], dtype=tf.float32)
+b = tf.zeros([<span class="nu">3</span>, <span class="nu">3</span>])
+c = tf.ones([<span class="nu">2</span>, <span class="nu">4</span>])
+r = tf.random.normal([<span class="nu">3</span>, <span class="nu">3</span>])
+
+<span class="bi">print</span>(<span class="st">"Shape:"</span>, a.shape)
+<span class="bi">print</span>(<span class="st">"Dtype:"</span>, a.dtype)
+<span class="bi">print</span>(<span class="st">"Matmul:"</span>, tf.matmul(a, a).numpy())
+
+<span class="cm"># Variables (model weights)</span>
+w = tf.Variable(tf.random.normal([<span class="nu">4</span>, <span class="nu">2</span>]))
+w.assign(tf.zeros([<span class="nu">4</span>, <span class="nu">2</span>]))
+<span class="bi">print</span>(<span class="st">"Variable shape:"</span>, w.shape)</pre></div>
+      <div class="cpanel" id="tf-t-o"><pre><span class="out">Shape: (2, 2)
+Dtype: float32
+Matmul: [[ 7. 10.]
+         [15. 22.]]
+Variable shape: (4, 2)</span></pre></div></div>
+    </div>`,
+
+    keras: `<div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#ff6f00">keras.Sequential</div><div class="ftag">Stack layers into a model</div></div><div class="fbadge" style="color:#ff6f00;border-color:#ff6f00">model</div></div>
+      <div class="fdesc">The simplest model API. Add layers in order. Use <code style="color:#ff6f00">model.summary()</code> to inspect parameters. Good for feedforward networks. Use the Functional API for skip connections or multiple inputs/outputs.</div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'tf-seq-c')">Code</div><div class="ctab" onclick="ct(this,'tf-seq-o')">Output</div></div>
+      <div class="cpanel active" id="tf-seq-c"><pre><span class="kw">import</span> tensorflow <span class="kw">as</span> tf
+<span class="kw">from</span> tensorflow <span class="kw">import</span> keras
+
+model = keras.Sequential([
+    keras.layers.Dense(<span class="nu">128</span>, activation=<span class="st">'relu'</span>, input_shape=(<span class="nu">20</span>,)),
+    keras.layers.Dropout(<span class="nu">0.3</span>),
+    keras.layers.Dense(<span class="nu">64</span>,  activation=<span class="st">'relu'</span>),
+    keras.layers.Dense(<span class="nu">10</span>,  activation=<span class="st">'softmax'</span>)
+])
+
+model.compile(
+    optimizer=<span class="st">'adam'</span>,
+    loss=<span class="st">'sparse_categorical_crossentropy'</span>,
+    metrics=[<span class="st">'accuracy'</span>]
+)
+
+model.summary()</pre></div>
+      <div class="cpanel" id="tf-seq-o"><pre><span class="out">Model: "sequential"
+┌─────────────────┬────────────────┬──────────┐
+│ Layer (type)    │ Output Shape   │  Param # │
+├─────────────────┼────────────────┼──────────┤
+│ dense (Dense)   │ (None, 128)    │   2,688  │
+│ dropout         │ (None, 128)    │       0  │
+│ dense_1 (Dense) │ (None, 64)     │   8,256  │
+│ dense_2 (Dense) │ (None, 10)     │     650  │
+└─────────────────┴────────────────┴──────────┘
+ Total params: 11,594</span></pre></div></div>
+    </div>`,
+
+    training: `<div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#ff6f00">model.fit() + callbacks</div><div class="ftag">Train with early stopping & LR scheduling</div></div><div class="fbadge" style="color:#ff6f00;border-color:#ff6f00">training</div></div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'tf-fit-c')">Code</div><div class="ctab" onclick="ct(this,'tf-fit-o')">Output</div></div>
+      <div class="cpanel active" id="tf-fit-c"><pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># Dummy dataset</span>
+X_train = np.random.randn(<span class="nu">1000</span>, <span class="nu">20</span>).astype(<span class="st">'float32'</span>)
+y_train = np.random.randint(<span class="nu">0</span>, <span class="nu">10</span>, <span class="nu">1000</span>)
+
+callbacks = [
+    keras.callbacks.EarlyStopping(
+        monitor=<span class="st">'val_loss'</span>, patience=<span class="nu">3</span>, restore_best_weights=<span class="kw">True</span>
+    ),
+    keras.callbacks.ReduceLROnPlateau(
+        monitor=<span class="st">'val_loss'</span>, factor=<span class="nu">0.5</span>, patience=<span class="nu">2</span>
+    )
+]
+
+history = model.fit(
+    X_train, y_train,
+    epochs=<span class="nu">50</span>,
+    batch_size=<span class="nu">32</span>,
+    validation_split=<span class="nu">0.2</span>,
+    callbacks=callbacks,
+    verbose=<span class="nu">1</span>
+)
+
+<span class="bi">print</span>(<span class="st">"Best val accuracy:"</span>, <span class="bi">max</span>(history.history[<span class="st">'val_accuracy'</span>]))</pre></div>
+      <div class="cpanel" id="tf-fit-o"><pre><span class="out">Epoch 1/50 - loss: 2.302 - accuracy: 0.103 - val_loss: 2.298
+Epoch 2/50 - loss: 2.298 - accuracy: 0.115 - val_loss: 2.295
+Epoch 3/50 - loss: 2.293 - accuracy: 0.122 - val_loss: 2.291
+...
+Epoch 12/50 - Early stopping triggered
+Best val accuracy: 0.1450</span></pre></div></div>
+    </div>`,
+
+    cnn: `<div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#ff6f00">Conv2D + MaxPooling2D</div><div class="ftag">Convolutional neural network for images</div></div><div class="fbadge" style="color:#ff6f00;border-color:#ff6f00">CNN</div></div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'tf-cnn-c')">Code</div><div class="ctab" onclick="ct(this,'tf-cnn-o')">Output</div></div>
+      <div class="cpanel active" id="tf-cnn-c"><pre>(X_train, y_train), (X_test, y_test) = keras.datasets.cifar10.load_data()
+X_train = X_train / <span class="nu">255.0</span>
+X_test  = X_test  / <span class="nu">255.0</span>
+
+cnn = keras.Sequential([
+    keras.layers.Conv2D(<span class="nu">32</span>, (<span class="nu">3</span>,<span class="nu">3</span>), activation=<span class="st">'relu'</span>, input_shape=(<span class="nu">32</span>,<span class="nu">32</span>,<span class="nu">3</span>)),
+    keras.layers.MaxPooling2D(<span class="nu">2</span>,<span class="nu">2</span>),
+    keras.layers.Conv2D(<span class="nu">64</span>, (<span class="nu">3</span>,<span class="nu">3</span>), activation=<span class="st">'relu'</span>),
+    keras.layers.MaxPooling2D(<span class="nu">2</span>,<span class="nu">2</span>),
+    keras.layers.Flatten(),
+    keras.layers.Dense(<span class="nu">64</span>, activation=<span class="st">'relu'</span>),
+    keras.layers.Dense(<span class="nu">10</span>, activation=<span class="st">'softmax'</span>)
+])
+
+cnn.compile(optimizer=<span class="st">'adam'</span>,
+            loss=<span class="st">'sparse_categorical_crossentropy'</span>,
+            metrics=[<span class="st">'accuracy'</span>])
+cnn.fit(X_train, y_train, epochs=<span class="nu">10</span>, validation_split=<span class="nu">0.1</span>)</pre></div>
+      <div class="cpanel" id="tf-cnn-o"><pre><span class="out">Epoch 1/10 - loss: 1.582 - accuracy: 0.421 - val_accuracy: 0.533
+Epoch 5/10 - loss: 1.101 - accuracy: 0.614 - val_accuracy: 0.630
+Epoch 10/10 - loss: 0.912 - accuracy: 0.678 - val_accuracy: 0.671</span></pre></div></div>
+    </div>`,
+
+    functional: `<div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#ff6f00">Functional API</div><div class="ftag">Multi-input, skip connections, complex graphs</div></div><div class="fbadge" style="color:#ff6f00;border-color:#ff6f00">model</div></div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'tf-func-c')">Code</div><div class="ctab" onclick="ct(this,'tf-func-o')">Output</div></div>
+      <div class="cpanel active" id="tf-func-c"><pre>inputs  = keras.Input(shape=(<span class="nu">20</span>,))
+x       = keras.layers.Dense(<span class="nu">64</span>, activation=<span class="st">'relu'</span>)(inputs)
+x       = keras.layers.Dense(<span class="nu">64</span>, activation=<span class="st">'relu'</span>)(x)
+<span class="cm"># Skip connection (like ResNet)</span>
+skip    = keras.layers.Dense(<span class="nu">64</span>)(inputs)
+x       = keras.layers.Add()([x, skip])
+outputs = keras.layers.Dense(<span class="nu">1</span>, activation=<span class="st">'sigmoid'</span>)(x)
+
+model = keras.Model(inputs=inputs, outputs=outputs)
+model.compile(<span class="st">'adam'</span>, <span class="st">'binary_crossentropy'</span>, [<span class="st">'accuracy'</span>])
+<span class="bi">print</span>(<span class="st">"Trainable params:"</span>, model.count_params())</pre></div>
+      <div class="cpanel" id="tf-func-o"><pre><span class="out">Trainable params: 9,409</span></pre></div></div>
+    </div>`,
+
+    save: `<div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#ff6f00">model.save() / load_model()</div><div class="ftag">Persist and deploy models</div></div><div class="fbadge" style="color:#ff6f00;border-color:#ff6f00">workflow</div></div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'tf-sv-c')">Code</div><div class="ctab" onclick="ct(this,'tf-sv-o')">Output</div></div>
+      <div class="cpanel active" id="tf-sv-c"><pre><span class="cm"># Save entire model (architecture + weights + optimizer)</span>
+model.save(<span class="st">'my_model.keras'</span>)
+
+<span class="cm"># Load it back</span>
+loaded = keras.models.load_model(<span class="st">'my_model.keras'</span>)
+
+<span class="cm"># Save only weights</span>
+model.save_weights(<span class="st">'weights.h5'</span>)
+model.load_weights(<span class="st">'weights.h5'</span>)
+
+<span class="cm"># Export for TF Serving (production)</span>
+model.export(<span class="st">'saved_model/'</span>)
+
+<span class="cm"># Convert to TFLite (mobile)</span>
+converter = tf.lite.TFLiteConverter.from_keras_model(model)
+tflite_model = converter.convert()
+<span class="bi">print</span>(<span class="st">"TFLite size:"</span>, <span class="bi">len</span>(tflite_model), <span class="st">"bytes"</span>)</pre></div>
+      <div class="cpanel" id="tf-sv-o"><pre><span class="out">Model saved to my_model.keras
+Weights saved to weights.h5
+TFLite size: 47832 bytes</span></pre></div></div>
+    </div>`,
+
+    callbacks: `<div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#ff6f00">Keras Callbacks</div><div class="ftag">Hook into training at every epoch</div></div><div class="fbadge" style="color:#ff6f00;border-color:#ff6f00">training</div></div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'tf-cb-c')">Code</div><div class="ctab" onclick="ct(this,'tf-cb-o')">Output</div></div>
+      <div class="cpanel active" id="tf-cb-c"><pre>callbacks = [
+    <span class="cm"># Stop early if no improvement</span>
+    keras.callbacks.EarlyStopping(
+        monitor=<span class="st">'val_loss'</span>, patience=<span class="nu">5</span>, restore_best_weights=<span class="kw">True</span>),
+    <span class="cm"># Save best checkpoint</span>
+    keras.callbacks.ModelCheckpoint(
+        <span class="st">'best_model.keras'</span>, save_best_only=<span class="kw">True</span>),
+    <span class="cm"># Reduce LR on plateau</span>
+    keras.callbacks.ReduceLROnPlateau(
+        monitor=<span class="st">'val_loss'</span>, factor=<span class="nu">0.5</span>, patience=<span class="nu">3</span>, min_lr=<span class="nu">1e-7</span>),
+    <span class="cm"># Log to TensorBoard</span>
+    keras.callbacks.TensorBoard(log_dir=<span class="st">'./logs'</span>)
+]</pre></div>
+      <div class="cpanel" id="tf-cb-o"><pre><span class="out">Epoch 5: val_loss improved from 0.432 to 0.398, saving model
+Epoch 8: ReduceLROnPlateau reducing lr to 0.0005
+Epoch 13: Early stopping triggered — restoring best weights</span></pre></div></div>
+    </div>`,
+
+    cheat: `<div class="sh">Layers</div>
+    <table class="cheat-tbl"><tr><th>Layer</th><th>Use for</th></tr>
+    <tr><td>Dense(n, activation='relu')</td><td>Fully connected layer</td></tr>
+    <tr><td>Conv2D(filters,(k,k))</td><td>Image feature extraction</td></tr>
+    <tr><td>MaxPooling2D(pool_size)</td><td>Spatial downsampling</td></tr>
+    <tr><td>LSTM(units)</td><td>Sequence / time series</td></tr>
+    <tr><td>Embedding(vocab,dim)</td><td>Word vectors</td></tr>
+    <tr><td>Dropout(rate)</td><td>Regularization</td></tr>
+    <tr><td>BatchNormalization()</td><td>Stabilise training</td></tr>
+    <tr><td>Flatten()</td><td>Multi-dim → 1D</td></tr>
+    </table>
+    <div class="sh">Compile options</div>
+    <table class="cheat-tbl"><tr><th>Option</th><th>Common choices</th></tr>
+    <tr><td>optimizer</td><td>'adam', 'sgd', 'rmsprop'</td></tr>
+    <tr><td>loss (classification)</td><td>'sparse_categorical_crossentropy', 'binary_crossentropy'</td></tr>
+    <tr><td>loss (regression)</td><td>'mse', 'mae', 'huber'</td></tr>
+    <tr><td>metrics</td><td>['accuracy'], ['mae']</td></tr>
+    </table>`,
+
+    quiz: `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div style="font-size:14px;font-weight:600">TensorFlow Quiz</div><div style="font-size:12px;color:var(--muted)">Score: <span id="qs" style="color:#ff6f00;font-weight:600">0</span>/<span id="qt">0</span></div></div>
+    <div class="pbar-wrap"><div class="pbar" id="qp" style="width:0%;background:#ff6f00"></div></div>
+    <div id="qc"></div>`
+  },
+
+  pt: {
+    home: `<div class="hero" style="border-color:rgba(238,76,44,.3)">
+      <div class="hero-title" style="color:#ee4c2c">PyTorch Reference</div>
+      <div class="hero-sub">Facebook's research-first deep learning framework. Dynamic computation graphs, Pythonic design, and the go-to choice for cutting-edge research and custom model architectures.</div>
+      <div class="stat-row">
+        <div class="stat"><strong style="color:#ee4c2c">dynamic</strong>Computation graph</div>
+        <div class="stat"><strong style="color:#ee4c2c">autograd</strong>Auto-differentiation</div>
+        <div class="stat"><strong style="color:#ee4c2c">nn.Module</strong>Model base class</div>
+      </div>
+    </div>
+    <div class="sh">Topics</div>
+    <div class="grid2">
+      <div class="topic-card" onclick="showPage('tensors')"><div class="topic-icon">🔢</div><div class="topic-title">Tensors</div><div class="topic-count">NumPy with GPU</div></div>
+      <div class="topic-card" onclick="showPage('autograd')"><div class="topic-icon">🔁</div><div class="topic-title">Autograd</div><div class="topic-count">Auto gradients</div></div>
+      <div class="topic-card" onclick="showPage('nn')"><div class="topic-icon">🧠</div><div class="topic-title">nn.Module</div><div class="topic-count">Custom models</div></div>
+      <div class="topic-card" onclick="showPage('dataloader')"><div class="topic-icon">📂</div><div class="topic-title">DataLoader</div><div class="topic-count">Batch your data</div></div>
+      <div class="topic-card" onclick="showPage('training')"><div class="topic-icon">🏋</div><div class="topic-title">Training Loop</div><div class="topic-count">Manual control</div></div>
+      <div class="topic-card" onclick="showPage('optim')"><div class="topic-icon">⚡</div><div class="topic-title">Optimizers</div><div class="topic-count">Adam, SGD, schedulers</div></div>
+    </div>
+    <div class="callout callout-tip"><div class="clabel">Core pattern</div>Define model as <code style="color:#ee4c2c">nn.Module</code> → loop over batches → <code style="color:#ee4c2c">optimizer.zero_grad()</code> → forward → <code style="color:#ee4c2c">loss.backward()</code> → <code style="color:#ee4c2c">optimizer.step()</code></div>`,
+
+    tensors: `<div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#ee4c2c">torch.Tensor</div><div class="ftag">N-dimensional array with GPU support</div></div><div class="fbadge" style="color:#ee4c2c;border-color:#ee4c2c">basics</div></div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'pt-t-c')">Code</div><div class="ctab" onclick="ct(this,'pt-t-o')">Output</div></div>
+      <div class="cpanel active" id="pt-t-c"><pre><span class="kw">import</span> torch
+
+a = torch.tensor([[<span class="nu">1.</span>,<span class="nu">2.</span>],[<span class="nu">3.</span>,<span class="nu">4.</span>]])
+b = torch.zeros(<span class="nu">3</span>, <span class="nu">3</span>)
+c = torch.randn(<span class="nu">4</span>, <span class="nu">4</span>)
+
+<span class="bi">print</span>(<span class="st">"Shape:"</span>, a.shape)
+<span class="bi">print</span>(<span class="st">"Dtype:"</span>, a.dtype)
+<span class="bi">print</span>(<span class="st">"Device:"</span>, a.device)
+
+<span class="cm"># Math operations</span>
+<span class="bi">print</span>(torch.mm(a, a))          <span class="cm"># matrix multiply</span>
+<span class="bi">print</span>(a.T)                     <span class="cm"># transpose</span>
+<span class="bi">print</span>(a.reshape(<span class="nu">1</span>, <span class="nu">4</span>))        <span class="cm"># reshape</span>
+
+<span class="cm"># Move to GPU if available</span>
+device = <span class="st">'cuda'</span> <span class="kw">if</span> torch.cuda.is_available() <span class="kw">else</span> <span class="st">'cpu'</span>
+a = a.to(device)
+<span class="bi">print</span>(<span class="st">"On device:"</span>, a.device)</pre></div>
+      <div class="cpanel" id="pt-t-o"><pre><span class="out">Shape: torch.Size([2, 2])
+Dtype: torch.float32
+Device: cpu
+tensor([[ 7., 10.],
+        [15., 22.]])
+tensor([[1., 3.],
+        [2., 4.]])
+tensor([[1., 2., 3., 4.]])
+On device: cpu</span></pre></div></div>
+    </div>`,
+
+    autograd: `<div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#ee4c2c">Autograd — automatic differentiation</div><div class="ftag">Compute gradients for any computation</div></div><div class="fbadge" style="color:#ee4c2c;border-color:#ee4c2c">core</div></div>
+      <div class="fdesc">Set <code style="color:#ee4c2c">requires_grad=True</code> and PyTorch tracks every operation. Call <code style="color:#ee4c2c">.backward()</code> to compute gradients. Access them via <code style="color:#ee4c2c">.grad</code>. Always call <code style="color:#ee4c2c">optimizer.zero_grad()</code> before each step — gradients accumulate by default.</div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'pt-ag-c')">Code</div><div class="ctab" onclick="ct(this,'pt-ag-o')">Output</div></div>
+      <div class="cpanel active" id="pt-ag-c"><pre>x = torch.tensor([<span class="nu">3.0</span>], requires_grad=<span class="kw">True</span>)
+y = x ** <span class="nu">2</span> + <span class="nu">2</span> * x + <span class="nu">1</span>
+
+y.backward()
+<span class="bi">print</span>(<span class="st">"dy/dx at x=3:"</span>, x.grad)  <span class="cm"># 2x+2 = 8</span>
+
+<span class="cm"># Using torch.no_grad() for inference</span>
+<span class="kw">with</span> torch.no_grad():
+    z = x ** <span class="nu">2</span>
+    <span class="bi">print</span>(<span class="st">"z requires grad:"</span>, z.requires_grad)
+
+<span class="cm"># GradientTape equivalent — context manager</span>
+x = torch.randn(<span class="nu">3</span>, requires_grad=<span class="kw">True</span>)
+loss = (x ** <span class="nu">2</span>).sum()
+loss.backward()
+<span class="bi">print</span>(<span class="st">"Gradients:"</span>, x.grad)</pre></div>
+      <div class="cpanel" id="pt-ag-o"><pre><span class="out">dy/dx at x=3: tensor([8.])
+z requires grad: False
+Gradients: tensor([ 0.84, -1.22,  0.66])</span></pre></div></div>
+    </div>`,
+
+    nn: `<div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#ee4c2c">nn.Module — custom model class</div><div class="ftag">Define any architecture</div></div><div class="fbadge" style="color:#ee4c2c;border-color:#ee4c2c">model</div></div>
+      <div class="fdesc">Subclass <code style="color:#ee4c2c">nn.Module</code>, define layers in <code style="color:#ee4c2c">__init__</code>, implement <code style="color:#ee4c2c">forward()</code>. PyTorch calls <code style="color:#ee4c2c">forward()</code> when you call the model. Use <code style="color:#ee4c2c">nn.Sequential</code> for simple stacks.</div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'pt-nn-c')">Code</div><div class="ctab" onclick="ct(this,'pt-nn-o')">Output</div></div>
+      <div class="cpanel active" id="pt-nn-c"><pre><span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+<span class="kw">import</span> torch.nn.functional <span class="kw">as</span> F
+
+<span class="kw">class</span> <span class="cl">MLP</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, in_dim, hidden, out_dim):
+        <span class="bi">super</span>().__init__()
+        self.fc1 = nn.Linear(in_dim, hidden)
+        self.fc2 = nn.Linear(hidden, hidden)
+        self.fc3 = nn.Linear(hidden, out_dim)
+        self.drop = nn.Dropout(<span class="nu">0.3</span>)
+
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x):
+        x = F.relu(self.fc1(x))
+        x = self.drop(x)
+        x = F.relu(self.fc2(x))
+        <span class="kw">return</span> self.fc3(x)
+
+model = <span class="cl">MLP</span>(<span class="nu">20</span>, <span class="nu">128</span>, <span class="nu">10</span>)
+<span class="bi">print</span>(model)
+<span class="bi">print</span>(<span class="st">"Params:"</span>, <span class="bi">sum</span>(p.numel() <span class="kw">for</span> p <span class="kw">in</span> model.parameters()))</pre></div>
+      <div class="cpanel" id="pt-nn-o"><pre><span class="out">MLP(
+  (fc1): Linear(in_features=20, out_features=128, bias=True)
+  (fc2): Linear(in_features=128, out_features=128, bias=True)
+  (fc3): Linear(in_features=128, out_features=10, bias=True)
+  (drop): Dropout(p=0.3)
+)
+Params: 19,082</span></pre></div></div>
+    </div>`,
+
+    dataloader: `<div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#ee4c2c">Dataset + DataLoader</div><div class="ftag">Efficient batched data loading</div></div><div class="fbadge" style="color:#ee4c2c;border-color:#ee4c2c">data</div></div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'pt-dl-c')">Code</div><div class="ctab" onclick="ct(this,'pt-dl-o')">Output</div></div>
+      <div class="cpanel active" id="pt-dl-c"><pre><span class="kw">from</span> torch.utils.data <span class="kw">import</span> Dataset, DataLoader
+<span class="kw">import</span> torch
+
+<span class="kw">class</span> <span class="cl">TabularDataset</span>(Dataset):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, X, y):
+        self.X = torch.FloatTensor(X)
+        self.y = torch.LongTensor(y)
+
+    <span class="kw">def</span> <span class="fn">__len__</span>(self): <span class="kw">return</span> <span class="bi">len</span>(self.X)
+
+    <span class="kw">def</span> <span class="fn">__getitem__</span>(self, idx):
+        <span class="kw">return</span> self.X[idx], self.y[idx]
+
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+X = np.random.randn(<span class="nu">200</span>, <span class="nu">20</span>)
+y = np.random.randint(<span class="nu">0</span>, <span class="nu">10</span>, <span class="nu">200</span>)
+
+dataset = <span class="cl">TabularDataset</span>(X, y)
+loader  = DataLoader(dataset, batch_size=<span class="nu">32</span>, shuffle=<span class="kw">True</span>, num_workers=<span class="nu">0</span>)
+
+<span class="kw">for</span> batch_X, batch_y <span class="kw">in</span> loader:
+    <span class="bi">print</span>(<span class="st">"Batch shape:"</span>, batch_X.shape, batch_y.shape)
+    <span class="kw">break</span></pre></div>
+      <div class="cpanel" id="pt-dl-o"><pre><span class="out">Batch shape: torch.Size([32, 20]) torch.Size([32])</span></pre></div></div>
+    </div>`,
+
+    training: `<div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#ee4c2c">The PyTorch Training Loop</div><div class="ftag">Full manual control over every step</div></div><div class="fbadge" style="color:#ee4c2c;border-color:#ee4c2c">training</div></div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'pt-tr-c')">Code</div><div class="ctab" onclick="ct(this,'pt-tr-o')">Output</div></div>
+      <div class="cpanel active" id="pt-tr-c"><pre>optimizer = torch.optim.Adam(model.parameters(), lr=<span class="nu">1e-3</span>)
+criterion = nn.CrossEntropyLoss()
+
+<span class="kw">def</span> <span class="fn">train_epoch</span>(model, loader, optimizer):
+    model.train()
+    total_loss = <span class="nu">0</span>
+    <span class="kw">for</span> X_batch, y_batch <span class="kw">in</span> loader:
+        optimizer.zero_grad()       <span class="cm"># clear gradients</span>
+        preds = model(X_batch)      <span class="cm"># forward pass</span>
+        loss  = criterion(preds, y_batch)
+        loss.backward()             <span class="cm"># backprop</span>
+        optimizer.step()            <span class="cm"># update weights</span>
+        total_loss += loss.item()
+    <span class="kw">return</span> total_loss / <span class="bi">len</span>(loader)
+
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="bi">range</span>(<span class="nu">5</span>):
+    loss = <span class="fn">train_epoch</span>(model, loader, optimizer)
+    <span class="bi">print</span>(<span class="kw">f</span><span class="st">"Epoch {epoch+1}: loss={loss:.4f}"</span>)</pre></div>
+      <div class="cpanel" id="pt-tr-o"><pre><span class="out">Epoch 1: loss=2.3451
+Epoch 2: loss=2.3012
+Epoch 3: loss=2.2891
+Epoch 4: loss=2.2745
+Epoch 5: loss=2.2634</span></pre></div></div>
+    </div>`,
+
+    optim: `<div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#ee4c2c">Optimizers + LR Schedulers</div><div class="ftag">Control how weights are updated</div></div><div class="fbadge" style="color:#ee4c2c;border-color:#ee4c2c">training</div></div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'pt-opt-c')">Code</div><div class="ctab" onclick="ct(this,'pt-opt-o')">Output</div></div>
+      <div class="cpanel active" id="pt-opt-c"><pre><span class="cm"># Adam — most common default</span>
+optimizer = torch.optim.Adam(model.parameters(), lr=<span class="nu">1e-3</span>, weight_decay=<span class="nu">1e-4</span>)
+
+<span class="cm"># SGD with momentum</span>
+optimizer = torch.optim.SGD(model.parameters(), lr=<span class="nu">0.01</span>, momentum=<span class="nu">0.9</span>)
+
+<span class="cm"># LR scheduler — decay every 10 epochs</span>
+scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=<span class="nu">10</span>, gamma=<span class="nu">0.1</span>)
+
+<span class="cm"># Cosine annealing (great for warmup)</span>
+scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=<span class="nu">50</span>)
+
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="bi">range</span>(<span class="nu">3</span>):
+    <span class="cm"># ... train ...</span>
+    scheduler.step()
+    <span class="bi">print</span>(<span class="kw">f</span><span class="st">"Epoch {epoch+1} LR: {scheduler.get_last_lr()[0]:.6f}"</span>)</pre></div>
+      <div class="cpanel" id="pt-opt-o"><pre><span class="out">Epoch 1 LR: 0.010000
+Epoch 2 LR: 0.009995
+Epoch 3 LR: 0.009980</span></pre></div></div>
+    </div>`,
+
+    save: `<div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#ee4c2c">torch.save / torch.load</div><div class="ftag">Checkpoints and full model saving</div></div><div class="fbadge" style="color:#ee4c2c;border-color:#ee4c2c">workflow</div></div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'pt-sv-c')">Code</div><div class="ctab" onclick="ct(this,'pt-sv-o')">Output</div></div>
+      <div class="cpanel active" id="pt-sv-c"><pre><span class="cm"># Save only weights (recommended)</span>
+torch.save(model.state_dict(), <span class="st">'model_weights.pt'</span>)
+
+<span class="cm"># Load weights back</span>
+model.load_state_dict(torch.load(<span class="st">'model_weights.pt'</span>))
+model.eval()   <span class="cm"># set to inference mode</span>
+
+<span class="cm"># Save full training checkpoint</span>
+checkpoint = {
+    <span class="st">'epoch'</span>: <span class="nu">10</span>,
+    <span class="st">'model_state'</span>: model.state_dict(),
+    <span class="st">'optimizer_state'</span>: optimizer.state_dict(),
+    <span class="st">'loss'</span>: <span class="nu">0.234</span>
+}
+torch.save(checkpoint, <span class="st">'checkpoint.pt'</span>)
+
+<span class="cm"># Resume training from checkpoint</span>
+ckpt = torch.load(<span class="st">'checkpoint.pt'</span>)
+model.load_state_dict(ckpt[<span class="st">'model_state'</span>])
+start_epoch = ckpt[<span class="st">'epoch'</span>]
+<span class="bi">print</span>(<span class="st">"Resuming from epoch:"</span>, start_epoch)</pre></div>
+      <div class="cpanel" id="pt-sv-o"><pre><span class="out">Resuming from epoch: 10</span></pre></div></div>
+    </div>`,
+
+    cheat: `<div class="sh">Common operations</div>
+    <table class="cheat-tbl"><tr><th>Code</th><th>What it does</th></tr>
+    <tr><td>torch.tensor([1,2,3])</td><td>Create tensor from data</td></tr>
+    <tr><td>torch.zeros(n,m)</td><td>All-zeros tensor</td></tr>
+    <tr><td>torch.randn(n,m)</td><td>Random normal tensor</td></tr>
+    <tr><td>t.to('cuda')</td><td>Move to GPU</td></tr>
+    <tr><td>t.view(n,-1)</td><td>Reshape (must be contiguous)</td></tr>
+    <tr><td>t.reshape(n,-1)</td><td>Reshape (safe version)</td></tr>
+    <tr><td>t.numpy()</td><td>Tensor → NumPy array</td></tr>
+    <tr><td>torch.from_numpy(arr)</td><td>NumPy → Tensor</td></tr>
+    <tr><td>torch.cat([a,b], dim=0)</td><td>Concatenate along dim</td></tr>
+    <tr><td>torch.stack([a,b])</td><td>Stack into new dimension</td></tr>
+    </table>
+    <div class="sh">nn.Module layers</div>
+    <table class="cheat-tbl"><tr><th>Layer</th><th>Use for</th></tr>
+    <tr><td>nn.Linear(in,out)</td><td>Fully connected</td></tr>
+    <tr><td>nn.Conv2d(in,out,k)</td><td>2D convolution</td></tr>
+    <tr><td>nn.LSTM(in,hidden)</td><td>Recurrent sequence</td></tr>
+    <tr><td>nn.Embedding(vocab,dim)</td><td>Learnable word vectors</td></tr>
+    <tr><td>nn.BatchNorm1d(n)</td><td>Batch normalisation</td></tr>
+    <tr><td>nn.Dropout(p)</td><td>Regularisation</td></tr>
+    </table>`,
+
+    quiz: `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div style="font-size:14px;font-weight:600">PyTorch Quiz</div><div style="font-size:12px;color:var(--muted)">Score: <span id="qs" style="color:#ee4c2c;font-weight:600">0</span>/<span id="qt">0</span></div></div>
+    <div class="pbar-wrap"><div class="pbar" id="qp" style="width:0%;background:#ee4c2c"></div></div>
+    <div id="qc"></div>`
+  },
+
+  r: {
+    home: `<div class="hero" style="border-color:rgba(39,109,195,.3)">
+      <div class="hero-title" style="color:#276dc3">R Language Reference</div>
+      <div class="hero-sub">The statistician's language. Best-in-class for data analysis, statistics, and publication-quality visualizations. The tidyverse makes data manipulation elegant and readable.</div>
+      <div class="stat-row">
+        <div class="stat"><strong style="color:#276dc3">tidyverse</strong>Data ecosystem</div>
+        <div class="stat"><strong style="color:#276dc3">ggplot2</strong>Visualization</div>
+        <div class="stat"><strong style="color:#276dc3">caret</strong>ML framework</div>
+      </div>
+    </div>
+    <div class="sh">Topics</div>
+    <div class="grid2">
+      <div class="topic-card" onclick="showPage('vectors')"><div class="topic-icon">📐</div><div class="topic-title">Vectors & Types</div><div class="topic-count">R's building blocks</div></div>
+      <div class="topic-card" onclick="showPage('dataframe')"><div class="topic-icon">📋</div><div class="topic-title">Data Frames</div><div class="topic-count">Tabular data</div></div>
+      <div class="topic-card" onclick="showPage('dplyr')"><div class="topic-icon">🔧</div><div class="topic-title">dplyr</div><div class="topic-count">Data manipulation</div></div>
+      <div class="topic-card" onclick="showPage('ggplot')"><div class="topic-icon">📊</div><div class="topic-title">ggplot2</div><div class="topic-count">Beautiful charts</div></div>
+      <div class="topic-card" onclick="showPage('lm')"><div class="topic-icon">📈</div><div class="topic-title">Linear Models</div><div class="topic-count">lm, glm</div></div>
+      <div class="topic-card" onclick="showPage('ml')"><div class="topic-icon">🤖</div><div class="topic-title">ML with caret</div><div class="topic-count">tidymodels</div></div>
+    </div>
+    <div class="callout callout-tip"><div class="clabel">Pipe operator</div>The pipe <code style="color:#276dc3">|></code> (or <code style="color:#276dc3">%>%</code> from magrittr) passes the left side as the first argument to the right side. It's the backbone of readable tidyverse code.</div>`,
+
+    vectors: `<div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#276dc3">Vectors — R's atomic unit</div><div class="ftag">Everything is a vector in R</div></div><div class="fbadge" style="color:#276dc3;border-color:#276dc3">basics</div></div>
+      <div class="fdesc">Unlike Python, R has no scalar type — a single number is a vector of length 1. Vectors are typed: numeric, character, logical, integer, complex, or factor.</div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'r-vec-c')">Code</div><div class="ctab" onclick="ct(this,'r-vec-o')">Output</div></div>
+      <div class="cpanel active" id="r-vec-c"><pre><span class="cm"># Create vectors</span>
+nums    <span class="op">&lt;-</span> c(<span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">3</span>, <span class="nu">4</span>, <span class="nu">5</span>)
+words   <span class="op">&lt;-</span> c(<span class="st">"apple"</span>, <span class="st">"banana"</span>, <span class="st">"cherry"</span>)
+flags   <span class="op">&lt;-</span> c(<span class="kw">TRUE</span>, <span class="kw">FALSE</span>, <span class="kw">TRUE</span>, <span class="kw">TRUE</span>)
+seq_v   <span class="op">&lt;-</span> <span class="bi">seq</span>(<span class="nu">0</span>, <span class="nu">10</span>, by=<span class="nu">2</span>)
+
+<span class="bi">print</span>(nums * <span class="nu">2</span>)        <span class="cm"># vectorized</span>
+<span class="bi">print</span>(<span class="bi">sum</span>(nums))
+<span class="bi">print</span>(<span class="bi">mean</span>(nums))
+<span class="bi">print</span>(<span class="bi">length</span>(words))
+
+<span class="cm"># Indexing (1-based!)</span>
+<span class="bi">print</span>(nums[<span class="nu">3</span>])         <span class="cm"># third element</span>
+<span class="bi">print</span>(nums[<span class="nu">2</span>:<span class="nu">4</span>])       <span class="cm"># slice</span>
+<span class="bi">print</span>(nums[nums > <span class="nu">3</span>]) <span class="cm"># boolean indexing</span>
+
+<span class="cm"># Factor (categorical)</span>
+sizes <span class="op">&lt;-</span> <span class="bi">factor</span>(c(<span class="st">"S"</span>,<span class="st">"M"</span>,<span class="st">"L"</span>,<span class="st">"M"</span>,<span class="st">"S"</span>))
+<span class="bi">print</span>(<span class="bi">table</span>(sizes))</pre></div>
+      <div class="cpanel" id="r-vec-o"><pre><span class="out">[1]  2  4  6  8 10
+[1] 15
+[1] 3
+[1] 3
+[1] 3
+[1] 2 3 4
+[1] 4 5
+sizes
+L M S
+1 2 2</span></pre></div></div>
+    </div>`,
+
+    dataframe: `<div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#276dc3">data.frame / tibble</div><div class="ftag">Tabular data — R's most-used structure</div></div><div class="fbadge" style="color:#276dc3;border-color:#276dc3">data</div></div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'r-df-c')">Code</div><div class="ctab" onclick="ct(this,'r-df-o')">Output</div></div>
+      <div class="cpanel active" id="r-df-c"><pre>df <span class="op">&lt;-</span> data.frame(
+  name  = c(<span class="st">"Alice"</span>,<span class="st">"Bob"</span>,<span class="st">"Charlie"</span>,<span class="st">"Diana"</span>),
+  age   = c(<span class="nu">25</span>, <span class="nu">30</span>, <span class="nu">35</span>, <span class="nu">28</span>),
+  score = c(<span class="nu">92</span>, <span class="nu">78</span>, <span class="nu">85</span>, <span class="nu">95</span>)
+)
+
+<span class="bi">str</span>(df)           <span class="cm"># structure overview</span>
+<span class="bi">summary</span>(df)       <span class="cm"># stats summary</span>
+<span class="bi">nrow</span>(df); <span class="bi">ncol</span>(df)
+
+<span class="cm"># Access columns</span>
+df$name
+df[,<span class="st">"score"</span>]
+
+<span class="cm"># Filter rows</span>
+df[df$score > <span class="nu">85</span>, ]
+
+<span class="cm"># Add a new column</span>
+df$grade <span class="op">&lt;-</span> <span class="bi">ifelse</span>(df$score >= <span class="nu">90</span>, <span class="st">"A"</span>, <span class="st">"B"</span>)
+<span class="bi">print</span>(df)</pre></div>
+      <div class="cpanel" id="r-df-o"><pre><span class="out">'data.frame': 4 obs. of 3 variables:
+ $ name : chr "Alice" "Bob" "Charlie" "Diana"
+ $ age  : num 25 30 35 28
+ $ score: num 92 78 85 95
+
+    name age score grade
+1  Alice  25    92     A
+2    Bob  30    78     B
+3 Charlie 35    85     B
+4  Diana  28    95     A</span></pre></div></div>
+    </div>`,
+
+    dplyr: `<div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#276dc3">dplyr — data manipulation verbs</div><div class="ftag">filter, select, mutate, summarise, group_by</div></div><div class="fbadge" style="color:#276dc3;border-color:#276dc3">tidyverse</div></div>
+      <div class="fdesc">Five core verbs cover 80% of data manipulation. Chain them with the pipe <code style="color:#276dc3">|></code>. Extremely readable — each step does one clear thing.</div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'r-dp-c')">Code</div><div class="ctab" onclick="ct(this,'r-dp-o')">Output</div></div>
+      <div class="cpanel active" id="r-dp-c"><pre><span class="kw">library</span>(dplyr)
+
+result <span class="op">&lt;-</span> df |>
+  <span class="fn">filter</span>(age > <span class="nu">25</span>) |>                    <span class="cm"># keep rows</span>
+  <span class="fn">select</span>(name, score) |>               <span class="cm"># keep columns</span>
+  <span class="fn">mutate</span>(bonus = score * <span class="nu">0.1</span>) |>       <span class="cm"># add column</span>
+  <span class="fn">arrange</span>(<span class="fn">desc</span>(score))                 <span class="cm"># sort</span>
+
+<span class="bi">print</span>(result)
+
+<span class="cm"># group_by + summarise</span>
+df |>
+  <span class="fn">group_by</span>(grade) |>
+  <span class="fn">summarise</span>(
+    count    = <span class="fn">n</span>(),
+    avg_age  = <span class="bi">mean</span>(age),
+    avg_score= <span class="bi">mean</span>(score)
+  )</pre></div>
+      <div class="cpanel" id="r-dp-o"><pre><span class="out">     name score bonus
+1   Diana    95   9.5
+2 Charlie    85   8.5
+3     Bob    78   7.8
+
+# A tibble: 2 x 4
+  grade count avg_age avg_score
+  &lt;chr&gt; &lt;int&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+1 A         2    26.5      93.5
+2 B         2    32.5      81.5</span></pre></div></div>
+    </div>`,
+
+    ggplot: `<div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#276dc3">ggplot2 — grammar of graphics</div><div class="ftag">Build charts layer by layer</div></div><div class="fbadge" style="color:#276dc3;border-color:#276dc3">visualization</div></div>
+      <div class="fdesc">ggplot2 uses a layered grammar: data + aesthetic mapping + geometry + optional facets/themes. Every chart starts with <code style="color:#276dc3">ggplot(data, aes(x,y))</code> and adds layers with <code style="color:#276dc3">+</code>.</div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'r-gg-c')">Code</div><div class="ctab" onclick="ct(this,'r-gg-o')">Output</div></div>
+      <div class="cpanel active" id="r-gg-c"><pre><span class="kw">library</span>(ggplot2)
+
+<span class="cm"># Scatter plot</span>
+<span class="fn">ggplot</span>(df, <span class="fn">aes</span>(x=age, y=score, color=grade, label=name)) +
+  <span class="fn">geom_point</span>(size=<span class="nu">4</span>) +
+  <span class="fn">geom_text</span>(vjust=<span class="nu">-0.8</span>, size=<span class="nu">3</span>) +
+  <span class="fn">labs</span>(title=<span class="st">"Age vs Score"</span>, x=<span class="st">"Age"</span>, y=<span class="st">"Score"</span>) +
+  <span class="fn">theme_minimal</span>()
+
+<span class="cm"># Bar chart with facets</span>
+<span class="fn">ggplot</span>(df, <span class="fn">aes</span>(x=name, y=score, fill=grade)) +
+  <span class="fn">geom_col</span>() +
+  <span class="fn">facet_wrap</span>(~grade) +
+  <span class="fn">coord_flip</span>() +
+  <span class="fn">theme_bw</span>()
+
+<span class="cm"># Histogram of scores</span>
+<span class="fn">ggplot</span>(df, <span class="fn">aes</span>(x=score)) +
+  <span class="fn">geom_histogram</span>(bins=<span class="nu">5</span>, fill=<span class="st">"#276dc3"</span>, alpha=<span class="nu">0.7</span>) +
+  <span class="fn">geom_density</span>(<span class="fn">aes</span>(y=<span class="fn">after_stat</span>(count)))</pre></div>
+      <div class="cpanel" id="r-gg-o"><pre><span class="out">[Plot rendered: Age vs Score scatter with color by grade]
+[Plot rendered: Faceted bar chart by grade]
+[Plot rendered: Score distribution histogram + density]
+
+Common geoms:
+  geom_point()     scatter
+  geom_line()      line chart
+  geom_col()       bar chart
+  geom_boxplot()   box plot
+  geom_histogram() histogram
+  geom_smooth()    trend line</span></pre></div></div>
+    </div>`,
+
+    lm: `<div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#276dc3">lm() / glm()</div><div class="ftag">Linear and generalised linear models</div></div><div class="fbadge" style="color:#276dc3;border-color:#276dc3">stats</div></div>
+      <div class="fdesc">R's formula syntax <code style="color:#276dc3">y ~ x1 + x2</code> is declarative and readable. <code style="color:#276dc3">lm()</code> for linear regression, <code style="color:#276dc3">glm(family=binomial)</code> for logistic. <code style="color:#276dc3">summary()</code> gives full statistical output.</div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'r-lm-c')">Code</div><div class="ctab" onclick="ct(this,'r-lm-o')">Output</div></div>
+      <div class="cpanel active" id="r-lm-c"><pre><span class="cm"># Linear regression</span>
+model <span class="op">&lt;-</span> <span class="fn">lm</span>(score ~ age, data=df)
+<span class="bi">summary</span>(model)
+
+<span class="cm"># Multiple regression</span>
+model2 <span class="op">&lt;-</span> <span class="fn">lm</span>(score ~ age + I(age^<span class="nu">2</span>), data=df)
+
+<span class="cm"># Predictions</span>
+<span class="fn">predict</span>(model, newdata=data.frame(age=<span class="nu">27</span>))
+
+<span class="cm"># Logistic regression (glm)</span>
+df$high <span class="op">&lt;-</span> <span class="fn">ifelse</span>(df$score > <span class="nu">85</span>, <span class="nu">1</span>, <span class="nu">0</span>)
+logit <span class="op">&lt;-</span> <span class="fn">glm</span>(high ~ age, data=df, family=<span class="fn">binomial</span>())
+<span class="fn">coef</span>(logit)</pre></div>
+      <div class="cpanel" id="r-lm-o"><pre><span class="out">Call: lm(formula = score ~ age, data = df)
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)
+(Intercept)  66.154     23.412   2.826  0.1060
+age           0.692      0.748   0.925  0.4507
+
+Residual standard error: 8.32
+R-squared: 0.299
+
+Prediction for age=27: 84.8
+
+(Intercept)       age
+    -3.4122    0.1021</span></pre></div></div>
+    </div>`,
+
+    tidyr: `<div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#276dc3">tidyr — reshape data</div><div class="ftag">pivot_longer, pivot_wider, nest</div></div><div class="fbadge" style="color:#276dc3;border-color:#276dc3">data</div></div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'r-td-c')">Code</div><div class="ctab" onclick="ct(this,'r-td-o')">Output</div></div>
+      <div class="cpanel active" id="r-td-c"><pre><span class="kw">library</span>(tidyr)
+
+<span class="cm"># Wide → long (great for ggplot)</span>
+wide <span class="op">&lt;-</span> data.frame(
+  person=c(<span class="st">"Alice"</span>,<span class="st">"Bob"</span>), math=c(<span class="nu">90</span>,<span class="nu">75</span>), english=c(<span class="nu">85</span>,<span class="nu">88</span>)
+)
+
+long <span class="op">&lt;-</span> wide |>
+  <span class="fn">pivot_longer</span>(cols=c(math,english), names_to=<span class="st">"subject"</span>, values_to=<span class="st">"score"</span>)
+<span class="bi">print</span>(long)
+
+<span class="cm"># Long → wide</span>
+wide_again <span class="op">&lt;-</span> long |>
+  <span class="fn">pivot_wider</span>(names_from=subject, values_from=score)
+<span class="bi">print</span>(wide_again)</pre></div>
+      <div class="cpanel" id="r-td-o"><pre><span class="out"># A tibble: 4 x 3
+  person subject score
+  &lt;chr&gt;  &lt;chr&gt;   &lt;dbl&gt;
+1 Alice  math       90
+2 Alice  english    85
+3 Bob    math       75
+4 Bob    english    88
+
+# A tibble: 2 x 3
+  person  math english
+  &lt;chr&gt;  &lt;dbl&gt;   &lt;dbl&gt;
+1 Alice     90      85
+2 Bob       75      88</span></pre></div></div>
+    </div>`,
+
+    ml: `<div class="fcard">
+      <div class="fcard-head"><div><div class="fname" style="color:#276dc3">caret / tidymodels</div><div class="ftag">Machine learning in R</div></div><div class="fbadge" style="color:#276dc3;border-color:#276dc3">ML</div></div>
+      <div class="code-block"><div class="ctabs"><div class="ctab active" onclick="ct(this,'r-ml-c')">Code</div><div class="ctab" onclick="ct(this,'r-ml-o')">Output</div></div>
+      <div class="cpanel active" id="r-ml-c"><pre><span class="kw">library</span>(caret)
+<span class="kw">data</span>(iris)
+
+<span class="cm"># Train/test split</span>
+set.seed(<span class="nu">42</span>)
+idx     <span class="op">&lt;-</span> <span class="fn">createDataPartition</span>(iris$Species, p=<span class="nu">0.8</span>, list=<span class="kw">FALSE</span>)
+train   <span class="op">&lt;-</span> iris[idx, ]
+test    <span class="op">&lt;-</span> iris[-idx, ]
+
+<span class="cm"># Train Random Forest with 5-fold CV</span>
+ctrl  <span class="op">&lt;-</span> <span class="fn">trainControl</span>(method=<span class="st">"cv"</span>, number=<span class="nu">5</span>)
+model <span class="op">&lt;-</span> <span class="fn">train</span>(Species ~ ., data=train,
+               method=<span class="st">"rf"</span>, trControl=ctrl)
+
+<span class="bi">print</span>(model)
+
+<span class="cm"># Predict and evaluate</span>
+preds <span class="op">&lt;-</span> <span class="fn">predict</span>(model, test)
+<span class="fn">confusionMatrix</span>(preds, test$Species)</pre></div>
+      <div class="cpanel" id="r-ml-o"><pre><span class="out">Random Forest, 120 samples, 4 predictors, 3 classes
+
+Resampling: Cross-Validated (5 fold)
+mtry  Accuracy   Kappa
+   2  0.9583    0.9375
+   3  0.9583    0.9375
+   4  0.9417    0.9125
+
+Accuracy: 0.9667
+Confusion Matrix:
+           Predicted
+Reference   setosa versicolor virginica
+  setosa        10          0         0
+  versicolor     0          9         1
+  virginica      0          0        10</span></pre></div></div>
+    </div>`,
+
+    cheat: `<div class="sh">Base R</div>
+    <table class="cheat-tbl"><tr><th>Code</th><th>What it does</th></tr>
+    <tr><td>c(1,2,3)</td><td>Create vector</td></tr>
+    <tr><td>seq(1,10,by=2)</td><td>Sequence with step</td></tr>
+    <tr><td>rep(x, n)</td><td>Repeat x n times</td></tr>
+    <tr><td>length(x)</td><td>Length of vector</td></tr>
+    <tr><td>which(x > 5)</td><td>Indices where TRUE</td></tr>
+    <tr><td>apply(m,1,fun)</td><td>Apply over rows/cols</td></tr>
+    <tr><td>lapply(lst, fun)</td><td>Apply to list → list</td></tr>
+    <tr><td>sapply(lst, fun)</td><td>Apply to list → vector</td></tr>
+    <tr><td>paste(a,b,sep="-")</td><td>String concatenation</td></tr>
+    </table>
+    <div class="sh">dplyr verbs</div>
+    <table class="cheat-tbl"><tr><th>Verb</th><th>What it does</th></tr>
+    <tr><td>filter(condition)</td><td>Keep rows matching condition</td></tr>
+    <tr><td>select(col1, col2)</td><td>Keep specified columns</td></tr>
+    <tr><td>mutate(new=expr)</td><td>Add or modify columns</td></tr>
+    <tr><td>arrange(col)</td><td>Sort rows by column</td></tr>
+    <tr><td>group_by(col)</td><td>Group for aggregation</td></tr>
+    <tr><td>summarise(stat=fn())</td><td>Aggregate per group</td></tr>
+    <tr><td>left_join(df2, by=)</td><td>Join two data frames</td></tr>
+    <tr><td>pivot_longer()</td><td>Wide → long format</td></tr>
+    </table>`,
+
+    quiz: `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div style="font-size:14px;font-weight:600">R Language Quiz</div><div style="font-size:12px;color:var(--muted)">Score: <span id="qs" style="color:#276dc3;font-weight:600">0</span>/<span id="qt">0</span></div></div>
+    <div class="pbar-wrap"><div class="pbar" id="qp" style="width:0%;background:#276dc3"></div></div>
+    <div id="qc"></div>`
+  }
+};
+
+const QUIZZES = {
+  sklearn: [
+    {q:'Which sklearn method is used to train a model?',opts:['.train()','.fit()','.learn()','.run()'],ans:1,exp:'All sklearn estimators use .fit(X_train, y_train) to train.'},
+    {q:'What does cross_val_score() do?',opts:['Scales features','Splits data once','Runs k-fold CV','Tunes hyperparams'],ans:2,exp:'cross_val_score runs k-fold cross-validation and returns a score for each fold.'},
+    {q:'Which class prevents data leakage when combining a scaler and model?',opts:['ColumnTransformer','Pipeline','GridSearchCV','StandardScaler'],ans:1,exp:'Pipeline chains steps — the scaler is fit only on training data during cross-validation.'},
+    {q:'What does RandomForest\'s feature_importances_ tell you?',opts:['Accuracy per feature','How much each feature reduces impurity','Feature correlation','P-values'],ans:1,exp:'Feature importances measure the mean decrease in impurity (Gini/entropy) from splitting on each feature.'},
+    {q:'What does KMeans.inertia_ measure?',opts:['Cluster count','Within-cluster sum of squares','Silhouette score','Number of iterations'],ans:1,exp:'Inertia is the sum of squared distances from each point to its nearest cluster centroid.'},
+  ],
+  tf: [
+    {q:'What does model.compile() configure?',opts:['Model architecture','Optimizer, loss, and metrics','Batch size','Number of epochs'],ans:1,exp:'compile() sets up the optimizer, loss function, and metrics before training begins.'},
+    {q:'What callback stops training when val_loss stops improving?',opts:['ModelCheckpoint','ReduceLROnPlateau','EarlyStopping','TensorBoard'],ans:2,exp:'EarlyStopping monitors a metric and stops training when it stops improving for N patience epochs.'},
+    {q:'What is the difference between tf.Tensor and tf.Variable?',opts:['Variables are faster','Tensors are mutable, Variables are not','Variables are mutable, Tensors are not','No difference'],ans:2,exp:'tf.Variable is mutable (used for model weights). tf.Tensor is immutable.'},
+    {q:'Which Keras layer should you add to reduce overfitting?',opts:['BatchNormalization','MaxPooling2D','Dropout','Flatten'],ans:2,exp:'Dropout randomly zeros out units during training, acting as regularization.'},
+    {q:'What activation function is standard for multiclass output layers?',opts:['relu','sigmoid','tanh','softmax'],ans:3,exp:'Softmax outputs a probability distribution over classes that sums to 1.'},
+  ],
+  pt: [
+    {q:'Why call optimizer.zero_grad() before each training step?',opts:['To free GPU memory','Gradients accumulate by default — must be cleared','To reset the model','Required by PyTorch API'],ans:1,exp:'PyTorch accumulates gradients. zero_grad() clears them so each step only considers the current batch.'},
+    {q:'What does .backward() do?',opts:['Forward pass','Computes gradients via backprop','Updates weights','Resets the model'],ans:1,exp:'.backward() computes gradients of the loss with respect to all parameters with requires_grad=True.'},
+    {q:'What is the difference between model.train() and model.eval()?',opts:['Speed only','Affects Dropout and BatchNorm behavior','Changes the optimizer','Only cosmetic'],ans:1,exp:'model.eval() disables Dropout and uses running stats for BatchNorm — critical for correct inference.'},
+    {q:'Which is the recommended way to save a PyTorch model?',opts:['torch.save(model)','torch.save(model.state_dict())','pickle.dump(model)','model.export()'],ans:1,exp:'Saving state_dict() is preferred — it is more portable and does not depend on the class definition location.'},
+    {q:'What does requires_grad=True do on a tensor?',opts:['Moves it to GPU','Tells PyTorch to track operations for autograd','Freezes the tensor','Makes it a Variable'],ans:1,exp:'requires_grad=True tells the autograd engine to record operations on this tensor to enable .backward().'},
+  ],
+  r: [
+    {q:'What is the index of the first element in an R vector?',opts:['0','1','-1','None'],ans:1,exp:'R uses 1-based indexing unlike Python. v[1] gives the first element.'},
+    {q:'What does the pipe operator |> do?',opts:['Creates a list','Passes left side as first argument to right','Logical OR','Concatenates strings'],ans:1,exp:'The pipe |> (or %>%) passes the result on the left as the first argument to the function on the right.'},
+    {q:'Which dplyr function adds new columns to a data frame?',opts:['select()','filter()','mutate()','arrange()'],ans:2,exp:'mutate() adds new columns or modifies existing ones, keeping all other columns.'},
+    {q:'In ggplot2, what does aes() specify?',opts:['Color palette','Aesthetic mappings (x, y, color, size...)','Plot theme','File export format'],ans:1,exp:'aes() (aesthetic) maps data columns to visual properties like x position, y position, color, and size.'},
+    {q:'What does lm(y ~ x, data=df) do in R?',opts:['Plots y vs x','Fits a linear model predicting y from x','Calculates correlation','Standardises variables'],ans:1,exp:'lm() fits a linear regression model using R formula syntax. The left of ~ is the response, right is predictors.'},
+  ]
+};
+
+let curLib = 'sklearn';
+let curPage = 'home';
+let qScore = 0, qAnswered = 0;
+
+function buildNav(lib) {
+  const nav = document.getElementById('sidebarNav');
+  const pages = LIBS[lib].pages;
+  const groups = {};
+  pages.forEach(p => { if (!groups[p.group]) groups[p.group] = []; groups[p.group].push(p); });
+  nav.innerHTML = Object.entries(groups).map(([g, ps]) =>
+    `<div class="nav-group"><div class="nav-label">${g}</div>${ps.map(p =>
+      `<div class="nav-item${p.id===curPage?' active':''}" data-lib="${lib}" onclick="showPage('${p.id}')">${p.label}</div>`
+    ).join('')}</div>`
+  ).join('');
+}
+
+function switchLib(lib, btn) {
+  curLib = lib;
+  curPage = 'home';
+  document.querySelectorAll('.lib-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const L = LIBS[lib];
+  document.getElementById('logoIcon').textContent = L.icon;
+  document.getElementById('logoIcon').style.background = L.color;
+  document.getElementById('logoTitle').textContent = L.label;
+  buildNav(lib);
+  showPage('home');
+}
+
+function showPage(id) {
+  curPage = id;
+  const lib = LIBS[curLib];
+  const pageData = LIBS[curLib].pages.find(p=>p.id===id);
+  document.getElementById('topTitle').textContent = pageData ? pageData.label : id;
+  document.getElementById('topCrumb').textContent = `${lib.label} → ${pageData ? pageData.label : id}`;
+  document.getElementById('topBadge').textContent = lib.short;
+  document.getElementById('topBadge').style.color = lib.color;
+  document.getElementById('topBadge').style.borderColor = lib.color;
+  const cont = CONTENT[curLib];
+  const html = cont && cont[id] ? cont[id] : `<div class="callout callout-note"><div class="clabel">Coming soon</div>This section is being added.</div>`;
+  document.getElementById('mainContent').innerHTML = html;
+  document.getElementById('mainContent').scrollTop = 0;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => { if (n.textContent.trim() === (pageData ? pageData.label : id)) n.classList.add('active'); });
+  if (id === 'quiz') initQuiz();
+}
+
+function ct(el, panelId) {
+  const block = el.closest('.code-block');
+  block.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
+  block.querySelectorAll('.cpanel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  const p = document.getElementById(panelId);
+  if (p) p.classList.add('active');
+}
+
+function filterNav(q) {
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.style.display = !q || n.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+  });
+}
+
+function initQuiz() {
+  qScore = 0; qAnswered = 0;
+  const qs = QUIZZES[curLib] || [];
+  const color = LIBS[curLib].color;
+  const container = document.getElementById('qc');
+  if (!container) return;
+  document.getElementById('qs').textContent = '0';
+  document.getElementById('qt').textContent = '0';
+  document.getElementById('qp').style.width = '0%';
+  container.innerHTML = qs.map((q, qi) => `
+    <div class="quiz-card" id="qcard-${qi}">
+      <div class="quiz-q">${qi+1}. ${q.q}</div>
+      <div class="quiz-opts">${q.opts.map((o, oi) =>
+        `<div class="qopt" id="qo-${qi}-${oi}" onclick="answerQ(${qi},${oi})">
+          <span style="color:var(--muted);margin-right:6px">${['A','B','C','D'][oi]}.</span>${o}
+        </div>`
+      ).join('')}</div>
+      <div class="qexp" id="qe-${qi}">${q.exp}</div>
+    </div>`).join('');
+}
+
+function answerQ(qi, oi) {
+  const card = document.getElementById('qcard-'+qi);
+  if (card.dataset.done) return;
+  card.dataset.done = '1';
+  const qs = QUIZZES[curLib];
+  const correct = qs[qi].ans;
+  qAnswered++;
+  if (oi === correct) { qScore++; document.getElementById(`qo-${qi}-${oi}`).classList.add('correct'); }
+  else { document.getElementById(`qo-${qi}-${oi}`).classList.add('wrong'); document.getElementById(`qo-${qi}-${correct}`).classList.add('correct'); }
+  document.getElementById('qe-'+qi).style.display = 'block';
+  document.getElementById('qs').textContent = qScore;
+  document.getElementById('qt').textContent = qAnswered;
+  document.getElementById('qp').style.width = (qAnswered / qs.length * 100) + '%';
+}
+
+buildNav('sklearn');
+showPage('home');
+</script>

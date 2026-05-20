@@ -1,0 +1,2039 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@400;500;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --py-yellow: #FFD43B;
+    --py-blue: #4B8BBE;
+    --py-dark: #1e1e2e;
+    --py-mid: #2a2a3e;
+    --py-panel: #252535;
+    --py-border: rgba(255,255,255,0.08);
+    --py-text: #e2e2f0;
+    --py-muted: #9090b0;
+    --py-green: #69d96a;
+    --py-orange: #ff9d4a;
+    --py-purple: #bd93f9;
+    --py-red: #ff6b6b;
+    --py-cyan: #8be9fd;
+    font-family: 'Sora', sans-serif;
+  }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .site-wrap {
+    display: flex;
+    height: 100vh;
+    background: var(--py-dark);
+    color: var(--py-text);
+    border-radius: 0;
+    overflow: hidden;
+    font-size: 14px;
+  }
+
+  .sidebar {
+    width: 220px;
+    min-width: 220px;
+    background: var(--py-panel);
+    border-right: 1px solid var(--py-border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .sidebar-logo {
+    padding: 16px 16px 12px;
+    border-bottom: 1px solid var(--py-border);
+  }
+
+  .logo-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .py-icon {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--py-blue), var(--py-yellow));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: 14px;
+    color: #fff;
+  }
+
+  .logo-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--py-yellow);
+  }
+
+  .logo-sub {
+    font-size: 10px;
+    color: var(--py-muted);
+    margin-top: 1px;
+  }
+
+  .sidebar-search {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--py-border);
+  }
+
+  .sidebar-search input {
+    width: 100%;
+    background: var(--py-mid);
+    border: 1px solid var(--py-border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    color: var(--py-text);
+    font-size: 12px;
+    font-family: 'Sora', sans-serif;
+    outline: none;
+  }
+
+  .sidebar-search input::placeholder { color: var(--py-muted); }
+  .sidebar-search input:focus { border-color: var(--py-blue); }
+
+  .sidebar-nav {
+    overflow-y: auto;
+    flex: 1;
+    padding: 8px 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--py-border) transparent;
+  }
+
+  .nav-section {
+    margin-bottom: 4px;
+  }
+
+  .nav-section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--py-muted);
+    padding: 8px 16px 4px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-left: 2px solid transparent;
+    font-size: 13px;
+    color: var(--py-text);
+  }
+
+  .nav-item:hover { background: rgba(255,255,255,0.05); }
+
+  .nav-item.active {
+    background: rgba(75,139,190,0.15);
+    border-left-color: var(--py-blue);
+    color: var(--py-cyan);
+  }
+
+  .nav-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .topbar {
+    background: var(--py-mid);
+    border-bottom: 1px solid var(--py-border);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .topbar-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--py-yellow);
+  }
+
+  .topbar-breadcrumb {
+    font-size: 12px;
+    color: var(--py-muted);
+    margin-top: 2px;
+  }
+
+  .nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'Sora', sans-serif;
+    cursor: pointer;
+    text-decoration: none;
+    border: 1px solid;
+    transition: background 0.18s, transform 0.12s;
+    white-space: nowrap;
+  }
+  .nav-btn:hover { transform: translateY(-1px); }
+  .nav-btn-index {
+    background: rgba(255,212,59,0.12);
+    border-color: rgba(255,212,59,0.4);
+    color: var(--py-yellow);
+  }
+  .nav-btn-index:hover { background: rgba(255,212,59,0.22); }
+  .nav-btn-ml {
+    background: rgba(189,147,249,0.12);
+    border-color: rgba(189,147,249,0.4);
+    color: var(--py-purple);
+  }
+  .nav-btn-ml:hover { background: rgba(189,147,249,0.22); }
+  .topbar-right { display: flex; align-items: center; gap: 8px; }
+
+  .topbar-badge {
+    background: rgba(75,139,190,0.2);
+    color: var(--py-cyan);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    border: 1px solid rgba(75,139,190,0.3);
+  }
+
+  .content-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--py-border) transparent;
+  }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .function-card {
+    background: var(--py-mid);
+    border: 1px solid var(--py-border);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .function-card:hover { border-color: rgba(75,139,190,0.4); }
+
+  .function-header {
+    padding: 14px 18px 12px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .function-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--py-cyan);
+  }
+
+  .function-tagline {
+    font-size: 12px;
+    color: var(--py-muted);
+    margin-top: 3px;
+  }
+
+  .fn-badge {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .badge-builtin { background: rgba(105,217,106,0.15); color: var(--py-green); border: 1px solid rgba(105,217,106,0.3); }
+  .badge-sequence { background: rgba(189,147,249,0.15); color: var(--py-purple); border: 1px solid rgba(189,147,249,0.3); }
+  .badge-type { background: rgba(255,157,74,0.15); color: var(--py-orange); border: 1px solid rgba(255,157,74,0.3); }
+  .badge-inspect { background: rgba(139,233,253,0.15); color: var(--py-cyan); border: 1px solid rgba(139,233,253,0.3); }
+  .badge-oop { background: rgba(255,107,107,0.15); color: var(--py-red); border: 1px solid rgba(255,107,107,0.3); }
+  .badge-exec { background: rgba(255,211,59,0.15); color: var(--py-yellow); border: 1px solid rgba(255,211,59,0.3); }
+  .badge-math { background: rgba(105,217,106,0.15); color: var(--py-green); border: 1px solid rgba(105,217,106,0.3); }
+
+  .function-desc {
+    padding: 0 18px 12px;
+    font-size: 13px;
+    color: var(--py-text);
+    line-height: 1.6;
+  }
+
+  .code-block {
+    background: #13131f;
+    border-top: 1px solid var(--py-border);
+    position: relative;
+  }
+
+  .code-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--py-border);
+    padding: 0 18px;
+  }
+
+  .code-tab {
+    font-size: 11px;
+    padding: 7px 12px;
+    cursor: pointer;
+    color: var(--py-muted);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.15s;
+  }
+
+  .code-tab.active { color: var(--py-cyan); border-bottom-color: var(--py-cyan); }
+
+  .code-panel { display: none; }
+  .code-panel.active { display: block; }
+
+  pre {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    padding: 14px 18px;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  .try-btn {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background: rgba(75,139,190,0.2);
+    color: var(--py-cyan);
+    border: 1px solid rgba(75,139,190,0.4);
+    border-radius: 5px;
+    padding: 4px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: 'Sora', sans-serif;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .try-btn:hover { background: rgba(75,139,190,0.35); }
+
+  .kw { color: #ff79c6; }
+  .fn { color: var(--py-cyan); }
+  .st { color: var(--py-yellow); }
+  .nu { color: var(--py-orange); }
+  .cm { color: #6272a4; font-style: italic; }
+  .op { color: var(--py-muted); }
+  .out { color: var(--py-green); }
+  .bi { color: var(--py-purple); }
+
+  .hero-section {
+    background: linear-gradient(135deg, rgba(75,139,190,0.15) 0%, rgba(255,211,59,0.08) 100%);
+    border: 1px solid var(--py-border);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-section::before {
+    content: 'Py';
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 80px;
+    font-weight: 600;
+    color: rgba(75,139,190,0.08);
+    line-height: 1;
+  }
+
+  .hero-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--py-yellow);
+    margin-bottom: 8px;
+  }
+
+  .hero-sub {
+    font-size: 14px;
+    color: var(--py-muted);
+    line-height: 1.6;
+    max-width: 480px;
+  }
+
+  .stat-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  .stat-chip {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--py-border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 12px;
+    color: var(--py-text);
+  }
+
+  .stat-chip strong {
+    font-size: 18px;
+    font-weight: 600;
+    display: block;
+    color: var(--py-cyan);
+  }
+
+  .section-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .section-card {
+    background: var(--py-mid);
+    border: 1px solid var(--py-border);
+    border-radius: 10px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .section-card:hover {
+    border-color: rgba(75,139,190,0.5);
+    transform: translateY(-2px);
+  }
+
+  .section-card-icon { font-size: 24px; margin-bottom: 6px; }
+  .section-card-title { font-size: 13px; font-weight: 600; color: var(--py-text); }
+  .section-card-count { font-size: 11px; color: var(--py-muted); margin-top: 2px; }
+
+  .roadmap-stage {
+    border-left: 3px solid;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    background: var(--py-mid);
+    border-radius: 0 10px 10px 0;
+  }
+
+  .roadmap-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .roadmap-time { font-size: 11px; margin-bottom: 12px; }
+
+  .roadmap-items { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .roadmap-pill {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid;
+  }
+
+  .editor-wrap {
+    background: #13131f;
+    border: 1px solid var(--py-border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .editor-bar {
+    background: var(--py-panel);
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--py-border);
+  }
+
+  .editor-dots { display: flex; gap: 5px; }
+  .editor-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  .editor-title { font-size: 11px; color: var(--py-muted); }
+
+  .editor-run {
+    background: var(--py-green);
+    color: #13131f;
+    border: none;
+    border-radius: 5px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Sora', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: opacity 0.15s;
+  }
+
+  .editor-run:hover { opacity: 0.85; }
+
+  textarea.code-editor {
+    width: 100%;
+    background: #13131f;
+    color: var(--py-text);
+    border: none;
+    outline: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    padding: 14px 18px;
+    resize: vertical;
+    min-height: 160px;
+  }
+
+  .editor-output {
+    border-top: 1px solid var(--py-border);
+    padding: 12px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--py-green);
+    min-height: 48px;
+    white-space: pre-wrap;
+  }
+
+  .output-label {
+    font-size: 10px;
+    color: var(--py-muted);
+    font-family: 'Sora', sans-serif;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .quiz-card {
+    background: var(--py-mid);
+    border: 1px solid var(--py-border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .quiz-q { font-size: 14px; font-weight: 500; margin-bottom: 14px; line-height: 1.5; }
+
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+
+  .quiz-opt {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--py-border);
+    border-radius: 7px;
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
+    transition: all 0.15s;
+  }
+
+  .quiz-opt:hover { border-color: rgba(75,139,190,0.5); background: rgba(75,139,190,0.1); }
+  .quiz-opt.correct { border-color: var(--py-green); background: rgba(105,217,106,0.1); color: var(--py-green); }
+  .quiz-opt.wrong { border-color: var(--py-red); background: rgba(255,107,107,0.1); color: var(--py-red); }
+
+  .quiz-explain {
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--py-muted);
+    line-height: 1.6;
+    padding: 10px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 6px;
+    display: none;
+  }
+
+  .progress-bar-wrap {
+    background: rgba(255,255,255,0.06);
+    border-radius: 20px;
+    height: 6px;
+    margin: 0 0 20px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 20px;
+    background: linear-gradient(90deg, var(--py-blue), var(--py-yellow));
+    transition: width 0.4s ease;
+  }
+
+  .cheatsheet-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-bottom: 20px;
+  }
+
+  .cheatsheet-table th {
+    background: var(--py-panel);
+    color: var(--py-muted);
+    padding: 8px 12px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--py-border);
+  }
+
+  .cheatsheet-table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: top;
+  }
+
+  .cheatsheet-table tr:hover td { background: rgba(255,255,255,0.03); }
+
+  .cheatsheet-table td:first-child {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--py-cyan);
+  }
+
+  .cheatsheet-table td:nth-child(2) { color: var(--py-muted); }
+
+  .cheatsheet-table td:nth-child(3) {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--py-yellow);
+    font-size: 11px;
+  }
+
+  .section-heading {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--py-yellow);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 20px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-heading::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--py-border);
+  }
+
+  .callout {
+    border-left: 3px solid;
+    padding: 10px 14px;
+    border-radius: 0 8px 8px 0;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .callout-tip { border-color: var(--py-green); background: rgba(105,217,106,0.07); }
+  .callout-note { border-color: var(--py-blue); background: rgba(75,139,190,0.07); }
+  .callout-warn { border-color: var(--py-orange); background: rgba(255,157,74,0.07); }
+
+  .callout-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 4px;
+  }
+
+  .callout-tip .callout-label { color: var(--py-green); }
+  .callout-note .callout-label { color: var(--py-blue); }
+  .callout-warn .callout-label { color: var(--py-orange); }
+</style>
+
+<div class="site-wrap">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-badge">
+        <div class="py-icon">Py</div>
+        <div>
+          <div class="logo-text">PyDocs</div>
+          <div class="logo-sub">100 Built-in Functions</div>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-search">
+      <input type="text" placeholder="Search functions..." id="searchInput" oninput="filterNav(this.value)" />
+    </div>
+    <div class="sidebar-nav" id="sidebarNav">
+      <div class="nav-section">
+        <div class="nav-section-label">Start here</div>
+        <div class="nav-item active" onclick="showPage('home',this)" data-label="home">
+          <div class="nav-dot" style="background:var(--py-yellow)"></div>Home
+        </div>
+        <div class="nav-item" onclick="showPage('cheatsheet',this)" data-label="cheatsheet">
+          <div class="nav-dot" style="background:var(--py-cyan)"></div>Cheat Sheet
+        </div>
+        <div class="nav-item" onclick="showPage('playground',this)" data-label="playground">
+          <div class="nav-dot" style="background:var(--py-green)"></div>Playground
+        </div>
+        <div class="nav-item" onclick="showPage('quiz',this)" data-label="quiz">
+          <div class="nav-dot" style="background:var(--py-purple)"></div>Quiz
+        </div>
+        <div class="nav-item" onclick="showPage('roadmap',this)" data-label="roadmap">
+          <div class="nav-dot" style="background:var(--py-orange)"></div>AI Roadmap
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">I/O</div>
+        <div class="nav-item" onclick="showPage('io',this)" data-label="io">
+          <div class="nav-dot" style="background:var(--py-green)"></div>print, input
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Math</div>
+        <div class="nav-item" onclick="showPage('math',this)" data-label="math">
+          <div class="nav-dot" style="background:var(--py-orange)"></div>abs, round, sum…
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Type Conversion</div>
+        <div class="nav-item" onclick="showPage('types',this)" data-label="types">
+          <div class="nav-dot" style="background:var(--py-purple)"></div>int, str, list…
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Collections</div>
+        <div class="nav-item" onclick="showPage('collections',this)" data-label="collections">
+          <div class="nav-dot" style="background:var(--py-cyan)"></div>len, zip, map…
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Inspection</div>
+        <div class="nav-item" onclick="showPage('inspection',this)" data-label="inspection">
+          <div class="nav-dot" style="background:var(--py-red)"></div>type, dir, vars…
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">OOP</div>
+        <div class="nav-item" onclick="showPage('oop',this)" data-label="oop">
+          <div class="nav-dot" style="background:var(--py-yellow)"></div>super, property…
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Execution</div>
+        <div class="nav-item" onclick="showPage('execution',this)" data-label="execution">
+          <div class="nav-dot" style="background:var(--py-green)"></div>eval, exec, compile
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Master Example</div>
+        <div class="nav-item" onclick="showPage('master',this)" data-label="master">
+          <div class="nav-dot" style="background:var(--py-yellow)"></div>🏆 All-in-One
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="topbarTitle">Welcome to PyDocs</div>
+        <div class="topbar-breadcrumb" id="topbarBreadcrumb">Python Reference → Home</div>
+      </div>
+      <div class="topbar-right">
+        <a class="nav-btn nav-btn-index" href="file:///C:/Users/Charvik/desktop/projects/pydocs/index.html">🏠 Home Index</a>
+        <a class="nav-btn nav-btn-ml" href="file:///C:/Users/Charvik/desktop/projects/pydocs/ml_reference_site.html">🤖 ML Reference</a>
+        <div class="topbar-badge" id="topbarBadge">100 examples</div>
+      </div>
+    </div>
+
+    <div class="content-area" id="contentArea">
+
+      <!-- HOME PAGE -->
+      <div class="page active" id="page-home">
+        <div class="hero-section">
+          <div class="hero-title">Python Built-in Functions</div>
+          <div class="hero-sub">A complete interactive reference for all Python built-in functions — with working code examples, output, and explanations. Built like W3Schools, just a lot cooler.</div>
+          <div class="stat-row">
+            <div class="stat-chip"><strong>100</strong>Examples</div>
+            <div class="stat-chip"><strong>8</strong>Sections</div>
+            <div class="stat-chip"><strong>~67</strong>Built-ins</div>
+            <div class="stat-chip"><strong>1</strong>Master app</div>
+          </div>
+        </div>
+
+        <div class="section-heading">Browse by topic</div>
+
+        <div class="section-grid">
+          <div class="section-card" onclick="showPage('io', document.querySelector('[data-label=io]'))">
+            <div class="section-card-icon">📢</div>
+            <div class="section-card-title">I/O</div>
+            <div class="section-card-count">2 functions</div>
+          </div>
+          <div class="section-card" onclick="showPage('math', document.querySelector('[data-label=math]'))">
+            <div class="section-card-icon">🔢</div>
+            <div class="section-card-title">Math</div>
+            <div class="section-card-count">7 functions</div>
+          </div>
+          <div class="section-card" onclick="showPage('types', document.querySelector('[data-label=types]'))">
+            <div class="section-card-icon">🔤</div>
+            <div class="section-card-title">Types</div>
+            <div class="section-card-count">18 functions</div>
+          </div>
+          <div class="section-card" onclick="showPage('collections', document.querySelector('[data-label=collections]'))">
+            <div class="section-card-icon">📦</div>
+            <div class="section-card-title">Collections</div>
+            <div class="section-card-count">13 functions</div>
+          </div>
+          <div class="section-card" onclick="showPage('inspection', document.querySelector('[data-label=inspection]'))">
+            <div class="section-card-icon">🔍</div>
+            <div class="section-card-title">Inspection</div>
+            <div class="section-card-count">12 functions</div>
+          </div>
+          <div class="section-card" onclick="showPage('oop', document.querySelector('[data-label=oop]'))">
+            <div class="section-card-icon">🏗️</div>
+            <div class="section-card-title">OOP</div>
+            <div class="section-card-count">5 functions</div>
+          </div>
+          <div class="section-card" onclick="showPage('execution', document.querySelector('[data-label=execution]'))">
+            <div class="section-card-icon">⚙️</div>
+            <div class="section-card-title">Execution</div>
+            <div class="section-card-count">5 functions</div>
+          </div>
+          <div class="section-card" onclick="showPage('master', document.querySelector('[data-label=master]'))">
+            <div class="section-card-icon">🏆</div>
+            <div class="section-card-title">Master</div>
+            <div class="section-card-count">All-in-one</div>
+          </div>
+        </div>
+
+        <div class="callout callout-tip">
+          <div class="callout-label">Tip</div>
+          Use the <strong>Playground</strong> to run real Python concepts, take the <strong>Quiz</strong> to test yourself, and check the <strong>AI Roadmap</strong> to see what to learn next.
+        </div>
+
+        <div class="callout callout-note">
+          <div class="callout-label">Note</div>
+          All 100 examples come directly from the curated Python reference document. Every code snippet shows both the code and its expected output.
+        </div>
+      </div>
+
+      <!-- CHEAT SHEET PAGE -->
+      <div class="page" id="page-cheatsheet">
+        <div class="callout callout-note">
+          <div class="callout-label">Quick Reference</div>
+          All major Python built-ins at a glance. Click any row for a quick reminder.
+        </div>
+        <div class="section-heading">I/O & Math</div>
+        <table class="cheatsheet-table">
+          <tr><th>Function</th><th>What it does</th><th>Example</th></tr>
+          <tr><td>print()</td><td>Output text to screen</td><td>print("Hello")</td></tr>
+          <tr><td>input()</td><td>Get text from user</td><td>name = input("Name?")</td></tr>
+          <tr><td>abs(x)</td><td>Absolute value</td><td>abs(-5) → 5</td></tr>
+          <tr><td>round(x, n)</td><td>Round to n decimals</td><td>round(3.14, 1) → 3.1</td></tr>
+          <tr><td>sum(iter)</td><td>Add all items</td><td>sum([1,2,3]) → 6</td></tr>
+          <tr><td>min(iter)</td><td>Smallest item</td><td>min([3,1,2]) → 1</td></tr>
+          <tr><td>max(iter)</td><td>Largest item</td><td>max([3,1,2]) → 3</td></tr>
+          <tr><td>pow(x,y)</td><td>x raised to y</td><td>pow(2,8) → 256</td></tr>
+          <tr><td>divmod(a,b)</td><td>Quotient + remainder</td><td>divmod(10,3) → (3,1)</td></tr>
+        </table>
+        <div class="section-heading">Type Conversion</div>
+        <table class="cheatsheet-table">
+          <tr><th>Function</th><th>What it does</th><th>Example</th></tr>
+          <tr><td>int(x)</td><td>To whole number</td><td>int("42") → 42</td></tr>
+          <tr><td>float(x)</td><td>To decimal</td><td>float(5) → 5.0</td></tr>
+          <tr><td>str(x)</td><td>To text</td><td>str(True) → "True"</td></tr>
+          <tr><td>bool(x)</td><td>To True/False</td><td>bool(0) → False</td></tr>
+          <tr><td>list(x)</td><td>To mutable list</td><td>list("hi") → ['h','i']</td></tr>
+          <tr><td>tuple(x)</td><td>To immutable tuple</td><td>tuple([1,2]) → (1,2)</td></tr>
+          <tr><td>set(x)</td><td>Unique items only</td><td>set([1,1,2]) → {1,2}</td></tr>
+          <tr><td>dict()</td><td>Key-value store</td><td>dict(a=1) → {'a':1}</td></tr>
+          <tr><td>bin(x)</td><td>Binary string</td><td>bin(10) → '0b1010'</td></tr>
+          <tr><td>hex(x)</td><td>Hex string</td><td>hex(255) → '0xff'</td></tr>
+          <tr><td>chr(n)</td><td>Number → char</td><td>chr(65) → 'A'</td></tr>
+          <tr><td>ord(c)</td><td>Char → number</td><td>ord('A') → 65</td></tr>
+        </table>
+        <div class="section-heading">Collections & Sequences</div>
+        <table class="cheatsheet-table">
+          <tr><th>Function</th><th>What it does</th><th>Example</th></tr>
+          <tr><td>len(x)</td><td>Count items</td><td>len([1,2,3]) → 3</td></tr>
+          <tr><td>range(n)</td><td>Sequence of numbers</td><td>list(range(3)) → [0,1,2]</td></tr>
+          <tr><td>enumerate()</td><td>Index + value pairs</td><td>for i,v in enumerate(lst)</td></tr>
+          <tr><td>zip(a,b)</td><td>Pair two iterables</td><td>zip([1,2],['a','b'])</td></tr>
+          <tr><td>sorted()</td><td>Sorted copy</td><td>sorted([3,1,2]) → [1,2,3]</td></tr>
+          <tr><td>reversed()</td><td>Reversed iterator</td><td>list(reversed([1,2,3]))</td></tr>
+          <tr><td>filter(fn,x)</td><td>Keep items passing test</td><td>filter(lambda x:x>0, lst)</td></tr>
+          <tr><td>map(fn,x)</td><td>Transform every item</td><td>map(str, [1,2,3])</td></tr>
+          <tr><td>any(x)</td><td>True if one is True</td><td>any([0,1,0]) → True</td></tr>
+          <tr><td>all(x)</td><td>True if all are True</td><td>all([1,1,1]) → True</td></tr>
+          <tr><td>next(iter)</td><td>Next item from iterator</td><td>next(g)</td></tr>
+          <tr><td>slice()</td><td>Cutting instruction</td><td>lst[slice(1,4)]</td></tr>
+        </table>
+        <div class="section-heading">Inspection & OOP</div>
+        <table class="cheatsheet-table">
+          <tr><th>Function</th><th>What it does</th><th>Example</th></tr>
+          <tr><td>type(x)</td><td>What type is it?</td><td>type(42) → int</td></tr>
+          <tr><td>isinstance()</td><td>Is it this type?</td><td>isinstance(5, int) → True</td></tr>
+          <tr><td>dir(x)</td><td>What can it do?</td><td>dir([])</td></tr>
+          <tr><td>vars(x)</td><td>Object attributes</td><td>vars(obj)</td></tr>
+          <tr><td>hasattr()</td><td>Has this attribute?</td><td>hasattr(obj, 'x')</td></tr>
+          <tr><td>getattr()</td><td>Get attribute by name</td><td>getattr(obj, 'color')</td></tr>
+          <tr><td>setattr()</td><td>Set attribute by name</td><td>setattr(obj, 'x', 5)</td></tr>
+          <tr><td>super()</td><td>Parent class</td><td>super().__init__()</td></tr>
+          <tr><td>callable()</td><td>Can you call it?</td><td>callable(print) → True</td></tr>
+          <tr><td>eval()</td><td>Run string as code</td><td>eval("2+2") → 4</td></tr>
+          <tr><td>hash(x)</td><td>Unique fingerprint</td><td>hash("hello")</td></tr>
+          <tr><td>repr(x)</td><td>Dev-friendly string</td><td>repr([1,2]) → '[1, 2]'</td></tr>
+        </table>
+      </div>
+
+      <!-- I/O PAGE -->
+      <div class="page" id="page-io">
+        <div class="callout callout-note">
+          <div class="callout-label">Section</div>
+          Input and Output — how Python talks to the outside world.
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div>
+              <div class="function-name">print()</div>
+              <div class="function-tagline">Shout something on screen</div>
+            </div>
+            <div class="fn-badge badge-builtin">built-in</div>
+          </div>
+          <div class="function-desc">
+            Outputs values to the console. Accepts multiple arguments, and optional <code style="color:var(--py-cyan)">sep</code>, <code style="color:var(--py-cyan)">end</code>, and <code style="color:var(--py-cyan)">file</code> parameters. The <code style="color:var(--py-cyan)">sep</code> argument controls what goes between each value (default is a space).
+          </div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'io-print-code')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'io-print-out')">Output</div>
+            </div>
+            <div class="code-panel active" id="io-print-code">
+<pre><span class="bi">print</span>(<span class="st">"Hello World!"</span>)
+<span class="bi">print</span>(<span class="st">"I have"</span>, <span class="nu">3</span>, <span class="st">"apples"</span>, sep=<span class="st">" | "</span>)</pre>
+            </div>
+            <div class="code-panel" id="io-print-out">
+<pre><span class="out">Hello World!
+I have | 3 | apples</span></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div>
+              <div class="function-name">input()</div>
+              <div class="function-tagline">Ask user to type something</div>
+            </div>
+            <div class="fn-badge badge-builtin">built-in</div>
+          </div>
+          <div class="function-desc">
+            Reads a line from standard input. Always returns a string — convert with <code style="color:var(--py-cyan)">int()</code> or <code style="color:var(--py-cyan)">float()</code> if you need a number. The optional prompt argument is displayed before input.
+          </div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'io-input-code')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'io-input-out')">Output</div>
+            </div>
+            <div class="code-panel active" id="io-input-code">
+<pre><span class="cm"># User types: Alice</span>
+name = <span class="bi">input</span>(<span class="st">"What is your name? "</span>)
+<span class="bi">print</span>(<span class="st">"Hello,"</span>, name)</pre>
+            </div>
+            <div class="code-panel" id="io-input-out">
+<pre><span class="out">What is your name? Alice
+Hello, Alice</span></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MATH PAGE -->
+      <div class="page" id="page-math">
+        <div class="callout callout-note">
+          <div class="callout-label">Section</div>
+          Math & Numbers — Python's arithmetic toolkit, no imports needed.
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">abs()</div><div class="function-tagline">Always makes a number positive</div></div>
+            <div class="fn-badge badge-math">math</div>
+          </div>
+          <div class="function-desc">Returns the absolute value of a number. Works on integers, floats, and complex numbers.</div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'math-abs-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'math-abs-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="math-abs-c"><pre><span class="bi">print</span>(<span class="bi">abs</span>(<span class="nu">-99</span>))
+<span class="bi">print</span>(<span class="bi">abs</span>(<span class="nu">-3.14</span>))</pre></div>
+            <div class="code-panel" id="math-abs-o"><pre><span class="out">99
+3.14</span></pre></div>
+          </div>
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">round()</div><div class="function-tagline">Round to nearest number</div></div>
+            <div class="fn-badge badge-math">math</div>
+          </div>
+          <div class="function-desc">Rounds a number to <code style="color:var(--py-cyan)">ndigits</code> decimal places. With no second argument, returns the nearest integer. Uses banker's rounding (round half to even).</div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'math-round-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'math-round-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="math-round-c"><pre><span class="bi">print</span>(<span class="bi">round</span>(<span class="nu">3.7</span>))
+<span class="bi">print</span>(<span class="bi">round</span>(<span class="nu">3.14159</span>, <span class="nu">2</span>))</pre></div>
+            <div class="code-panel" id="math-round-o"><pre><span class="out">4
+3.14</span></pre></div>
+          </div>
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">sum()</div><div class="function-tagline">Add everything up</div></div>
+            <div class="fn-badge badge-math">math</div>
+          </div>
+          <div class="function-desc">Sums start (default 0) and the items of an iterable from left to right. The optional second argument is the starting value.</div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'math-sum-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'math-sum-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="math-sum-c"><pre><span class="bi">print</span>(<span class="bi">sum</span>([<span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">3</span>, <span class="nu">4</span>, <span class="nu">5</span>]))
+<span class="bi">print</span>(<span class="bi">sum</span>([<span class="nu">10</span>, <span class="nu">20</span>], <span class="nu">100</span>))</pre></div>
+            <div class="code-panel" id="math-sum-o"><pre><span class="out">15
+130</span></pre></div>
+          </div>
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">min() / max()</div><div class="function-tagline">Find the smallest or biggest</div></div>
+            <div class="fn-badge badge-math">math</div>
+          </div>
+          <div class="function-desc">Returns the smallest (<code style="color:var(--py-cyan)">min</code>) or largest (<code style="color:var(--py-cyan)">max</code>) item in an iterable or among arguments. Accepts a <code style="color:var(--py-cyan)">key</code> function for custom comparisons.</div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'math-mm-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'math-mm-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="math-mm-c"><pre><span class="bi">print</span>(<span class="bi">min</span>(<span class="nu">9</span>, <span class="nu">3</span>, <span class="nu">7</span>, <span class="nu">1</span>))
+<span class="bi">print</span>(<span class="bi">max</span>([<span class="nu">10</span>, <span class="nu">99</span>, <span class="nu">42</span>]))
+<span class="bi">print</span>(<span class="bi">min</span>([<span class="st">"banana"</span>, <span class="st">"apple"</span>, <span class="st">"cherry"</span>]))</pre></div>
+            <div class="code-panel" id="math-mm-o"><pre><span class="out">1
+99
+apple</span></pre></div>
+          </div>
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">pow()</div><div class="function-tagline">Multiply a number by itself N times</div></div>
+            <div class="fn-badge badge-math">math</div>
+          </div>
+          <div class="function-desc">Returns <code style="color:var(--py-cyan)">base ** exp</code>. With an optional third argument, returns <code style="color:var(--py-cyan)">base**exp % mod</code> efficiently — faster than computing separately.</div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'math-pow-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'math-pow-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="math-pow-c"><pre><span class="bi">print</span>(<span class="bi">pow</span>(<span class="nu">2</span>, <span class="nu">10</span>))
+<span class="bi">print</span>(<span class="bi">pow</span>(<span class="nu">3</span>, <span class="nu">3</span>))</pre></div>
+            <div class="code-panel" id="math-pow-o"><pre><span class="out">1024
+27</span></pre></div>
+          </div>
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">divmod()</div><div class="function-tagline">Divide and get answer + leftover</div></div>
+            <div class="fn-badge badge-math">math</div>
+          </div>
+          <div class="function-desc">Returns a tuple <code style="color:var(--py-cyan)">(quotient, remainder)</code>. Equivalent to <code style="color:var(--py-cyan)">(a // b, a % b)</code> but computed in a single operation. Great for time conversions.</div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'math-dv-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'math-dv-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="math-dv-c"><pre><span class="bi">print</span>(<span class="bi">divmod</span>(<span class="nu">10</span>, <span class="nu">3</span>))
+<span class="bi">print</span>(<span class="bi">divmod</span>(<span class="nu">100</span>, <span class="nu">7</span>))
+
+<span class="cm"># Real use: convert seconds to h/m/s</span>
+h, rem = <span class="bi">divmod</span>(<span class="nu">3725</span>, <span class="nu">3600</span>)
+m, s   = <span class="bi">divmod</span>(rem, <span class="nu">60</span>)
+<span class="bi">print</span>(<span class="kw">f</span><span class="st">"{h}h {m}m {s}s"</span>)</pre></div>
+            <div class="code-panel" id="math-dv-o"><pre><span class="out">(3, 1)
+(14, 2)
+1h 2m 5s</span></pre></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TYPE CONVERSION PAGE -->
+      <div class="page" id="page-types">
+        <div class="callout callout-note">
+          <div class="callout-label">Section</div>
+          Type Conversion — transform data from one form to another.
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">int() / float() / str()</div><div class="function-tagline">The three everyday conversions</div></div>
+            <div class="fn-badge badge-type">type</div>
+          </div>
+          <div class="function-desc">The most-used type conversions. <code style="color:var(--py-cyan)">int()</code> truncates floats (doesn't round). <code style="color:var(--py-cyan)">str()</code> works on any object. <code style="color:var(--py-cyan)">float()</code> accepts strings like "3.14".</div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'ty-basic-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'ty-basic-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="ty-basic-c"><pre><span class="bi">print</span>(<span class="bi">int</span>(<span class="st">"42"</span>))       <span class="cm"># str → int</span>
+<span class="bi">print</span>(<span class="bi">int</span>(<span class="nu">9.99</span>))      <span class="cm"># truncates, not rounds!</span>
+<span class="bi">print</span>(<span class="bi">float</span>(<span class="st">"3.14"</span>))  <span class="cm"># str → float</span>
+<span class="bi">print</span>(<span class="bi">str</span>(<span class="nu">100</span>))       <span class="cm"># int → str</span>
+<span class="bi">print</span>(<span class="bi">str</span>(<span class="kw">True</span>))      <span class="cm"># bool → str</span></pre></div>
+            <div class="code-panel" id="ty-basic-o"><pre><span class="out">42
+9
+3.14
+100
+True</span></pre></div>
+          </div>
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">list() / tuple() / set()</div><div class="function-tagline">Collection conversions</div></div>
+            <div class="fn-badge badge-type">type</div>
+          </div>
+          <div class="function-desc"><code style="color:var(--py-cyan)">list()</code> is mutable. <code style="color:var(--py-cyan)">tuple()</code> is immutable (faster, hashable). <code style="color:var(--py-cyan)">set()</code> removes duplicates and is unordered — great for membership tests.</div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'ty-coll-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'ty-coll-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="ty-coll-c"><pre><span class="bi">print</span>(<span class="bi">list</span>(<span class="st">"hello"</span>))
+<span class="bi">print</span>(<span class="bi">tuple</span>([<span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">3</span>]))
+<span class="bi">print</span>(<span class="bi">set</span>([<span class="nu">1</span>, <span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">2</span>, <span class="nu">3</span>]))   <span class="cm"># removes dupes</span>
+<span class="bi">print</span>(<span class="bi">set</span>(<span class="st">"banana"</span>))</pre></div>
+            <div class="code-panel" id="ty-coll-o"><pre><span class="out">['h', 'e', 'l', 'l', 'o']
+(1, 2, 3)
+{1, 2, 3}
+{'b', 'a', 'n'}</span></pre></div>
+          </div>
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">bin() / oct() / hex()</div><div class="function-tagline">Number base conversions</div></div>
+            <div class="fn-badge badge-type">type</div>
+          </div>
+          <div class="function-desc">Convert integers to binary (base 2), octal (base 8), or hexadecimal (base 16) string representations. The prefix tells you the base: <code style="color:var(--py-cyan)">0b</code>, <code style="color:var(--py-cyan)">0o</code>, <code style="color:var(--py-cyan)">0x</code>.</div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'ty-bases-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'ty-bases-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="ty-bases-c"><pre><span class="bi">print</span>(<span class="bi">bin</span>(<span class="nu">10</span>))     <span class="cm"># binary</span>
+<span class="bi">print</span>(<span class="bi">oct</span>(<span class="nu">8</span>))      <span class="cm"># octal</span>
+<span class="bi">print</span>(<span class="bi">hex</span>(<span class="nu">255</span>))    <span class="cm"># hexadecimal</span></pre></div>
+            <div class="code-panel" id="ty-bases-o"><pre><span class="out">0b1010
+0o10
+0xff</span></pre></div>
+          </div>
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">chr() / ord()</div><div class="function-tagline">Characters ↔ Numbers</div></div>
+            <div class="fn-badge badge-type">type</div>
+          </div>
+          <div class="function-desc"><code style="color:var(--py-cyan)">chr(n)</code> returns the Unicode character for integer <code style="color:var(--py-cyan)">n</code>. <code style="color:var(--py-cyan)">ord(c)</code> does the reverse. Together they power encryption, encoding, and ASCII tricks.</div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'ty-chr-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'ty-chr-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="ty-chr-c"><pre><span class="bi">print</span>(<span class="bi">chr</span>(<span class="nu">65</span>))     <span class="cm"># 65 → 'A'</span>
+<span class="bi">print</span>(<span class="bi">chr</span>(<span class="nu">97</span>))     <span class="cm"># 97 → 'a'</span>
+<span class="bi">print</span>(<span class="bi">ord</span>(<span class="st">'A'</span>))    <span class="cm"># 'A' → 65</span>
+<span class="bi">print</span>(<span class="bi">ord</span>(<span class="st">'z'</span>))    <span class="cm"># 'z' → 122</span></pre></div>
+            <div class="code-panel" id="ty-chr-o"><pre><span class="out">A
+a
+65
+122</span></pre></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COLLECTIONS PAGE -->
+      <div class="page" id="page-collections">
+        <div class="callout callout-note">
+          <div class="callout-label">Section</div>
+          Collections & Sequences — working with groups of data.
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">len()</div><div class="function-tagline">Count how many things</div></div>
+            <div class="fn-badge badge-sequence">sequence</div>
+          </div>
+          <div class="function-desc">Returns the number of items in an object. Works on strings, lists, tuples, dicts, sets, and any object implementing <code style="color:var(--py-cyan)">__len__</code>.</div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'co-len-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'co-len-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="co-len-c"><pre><span class="bi">print</span>(<span class="bi">len</span>(<span class="st">"Python"</span>))
+<span class="bi">print</span>(<span class="bi">len</span>([<span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">3</span>, <span class="nu">4</span>, <span class="nu">5</span>]))</pre></div>
+            <div class="code-panel" id="co-len-o"><pre><span class="out">6
+5</span></pre></div>
+          </div>
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">enumerate()</div><div class="function-tagline">Number + value together</div></div>
+            <div class="fn-badge badge-sequence">sequence</div>
+          </div>
+          <div class="function-desc">Adds a counter to an iterable. The optional <code style="color:var(--py-cyan)">start</code> argument sets the beginning index. Returns tuples of <code style="color:var(--py-cyan)">(index, value)</code>.</div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'co-enum-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'co-enum-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="co-enum-c"><pre><span class="kw">for</span> i, v <span class="kw">in</span> <span class="bi">enumerate</span>([<span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span>]):
+    <span class="bi">print</span>(i, v)
+
+<span class="cm"># With custom start index</span>
+<span class="kw">for</span> i, v <span class="kw">in</span> <span class="bi">enumerate</span>([<span class="st">"x"</span>, <span class="st">"y"</span>], <span class="nu">1</span>):
+    <span class="bi">print</span>(i, v)</pre></div>
+            <div class="code-panel" id="co-enum-o"><pre><span class="out">0 a
+1 b
+2 c
+1 x
+2 y</span></pre></div>
+          </div>
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">zip()</div><div class="function-tagline">Pair two lists like zipping a jacket</div></div>
+            <div class="fn-badge badge-sequence">sequence</div>
+          </div>
+          <div class="function-desc">Aggregates elements from multiple iterables into tuples. Stops at the shortest. Combine with <code style="color:var(--py-cyan)">dict()</code> to instantly create a dictionary from two lists.</div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'co-zip-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'co-zip-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="co-zip-c"><pre>names  = [<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Charlie"</span>]
+scores = [<span class="nu">95</span>, <span class="nu">87</span>, <span class="nu">91</span>]
+<span class="kw">for</span> name, score <span class="kw">in</span> <span class="bi">zip</span>(names, scores):
+    <span class="bi">print</span>(name, <span class="st">"→"</span>, score)
+
+<span class="cm"># zip + dict = instant dictionary</span>
+d = <span class="bi">dict</span>(<span class="bi">zip</span>(names, scores))
+<span class="bi">print</span>(d)</pre></div>
+            <div class="code-panel" id="co-zip-o"><pre><span class="out">Alice → 95
+Bob → 87
+Charlie → 91
+{'Alice': 95, 'Bob': 87, 'Charlie': 91}</span></pre></div>
+          </div>
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">map() / filter()</div><div class="function-tagline">Transform and select</div></div>
+            <div class="fn-badge badge-sequence">sequence</div>
+          </div>
+          <div class="function-desc"><code style="color:var(--py-cyan)">map(fn, iter)</code> applies a function to every element. <code style="color:var(--py-cyan)">filter(fn, iter)</code> keeps only elements where the function returns True. Chain them for powerful pipelines.</div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'co-mf-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'co-mf-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="co-mf-c"><pre>nums = [<span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">3</span>, <span class="nu">4</span>, <span class="nu">5</span>, <span class="nu">6</span>]
+
+<span class="cm"># map: square everything</span>
+squared = <span class="bi">list</span>(<span class="bi">map</span>(<span class="kw">lambda</span> x: x ** <span class="nu">2</span>, nums))
+<span class="bi">print</span>(squared)
+
+<span class="cm"># filter: keep only evens</span>
+evens = <span class="bi">list</span>(<span class="bi">filter</span>(<span class="kw">lambda</span> x: x % <span class="nu">2</span> == <span class="nu">0</span>, nums))
+<span class="bi">print</span>(evens)
+
+<span class="cm"># chained: square the evens</span>
+result = <span class="bi">list</span>(<span class="bi">map</span>(<span class="kw">lambda</span> x: x**<span class="nu">2</span>, <span class="bi">filter</span>(<span class="kw">lambda</span> x: x%<span class="nu">2</span>==<span class="nu">0</span>, nums)))
+<span class="bi">print</span>(result)</pre></div>
+            <div class="code-panel" id="co-mf-o"><pre><span class="out">[1, 4, 9, 16, 25, 36]
+[2, 4, 6]
+[4, 16, 36]</span></pre></div>
+          </div>
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">sorted()</div><div class="function-tagline">Return a sorted copy</div></div>
+            <div class="fn-badge badge-sequence">sequence</div>
+          </div>
+          <div class="function-desc">Returns a new sorted list. Unlike <code style="color:var(--py-cyan)">list.sort()</code>, it works on any iterable and doesn't modify the original. Use <code style="color:var(--py-cyan)">key=</code> for custom sort logic and <code style="color:var(--py-cyan)">reverse=True</code> for descending.</div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'co-sort-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'co-sort-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="co-sort-c"><pre><span class="bi">print</span>(<span class="bi">sorted</span>([<span class="nu">3</span>, <span class="nu">1</span>, <span class="nu">4</span>, <span class="nu">1</span>, <span class="nu">5</span>]))
+
+<span class="cm"># Sort by length of word</span>
+words = [<span class="st">"banana"</span>, <span class="st">"pie"</span>, <span class="st">"apple"</span>, <span class="st">"watermelon"</span>]
+<span class="bi">print</span>(<span class="bi">sorted</span>(words, key=<span class="bi">len</span>, reverse=<span class="kw">True</span>))
+
+<span class="cm"># Sort dicts by value</span>
+people = [{<span class="st">"name"</span>: <span class="st">"Bob"</span>, <span class="st">"age"</span>: <span class="nu">30</span>}, {<span class="st">"name"</span>: <span class="st">"Alice"</span>, <span class="st">"age"</span>: <span class="nu">25</span>}]
+<span class="bi">print</span>(<span class="bi">sorted</span>(people, key=<span class="kw">lambda</span> p: p[<span class="st">"age"</span>]))</pre></div>
+            <div class="code-panel" id="co-sort-o"><pre><span class="out">[1, 1, 3, 4, 5]
+['watermelon', 'banana', 'apple', 'pie']
+[{'name': 'Alice', 'age': 25}, {'name': 'Bob', 'age': 30}]</span></pre></div>
+          </div>
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">any() / all()</div><div class="function-tagline">Logical tests on collections</div></div>
+            <div class="fn-badge badge-sequence">sequence</div>
+          </div>
+          <div class="function-desc"><code style="color:var(--py-cyan)">any()</code> returns True if at least one item is truthy. <code style="color:var(--py-cyan)">all()</code> returns True only if every item is truthy. Both short-circuit — they stop early when the answer is known.</div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'co-aa-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'co-aa-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="co-aa-c"><pre>nums = [<span class="nu">2</span>, <span class="nu">4</span>, <span class="nu">6</span>, <span class="nu">8</span>, <span class="nu">10</span>]
+<span class="bi">print</span>(<span class="bi">all</span>(x % <span class="nu">2</span> == <span class="nu">0</span> <span class="kw">for</span> x <span class="kw">in</span> nums))  <span class="cm"># all even?</span>
+<span class="bi">print</span>(<span class="bi">any</span>(x > <span class="nu">9</span> <span class="kw">for</span> x <span class="kw">in</span> nums))        <span class="cm"># any > 9?</span>
+
+<span class="cm"># Form validation</span>
+form = {<span class="st">"name"</span>: <span class="st">"Alice"</span>, <span class="st">"email"</span>: <span class="st">""</span>}
+required = [<span class="st">"name"</span>, <span class="st">"email"</span>]
+missing = [f <span class="kw">for</span> f <span class="kw">in</span> required <span class="kw">if not</span> form.get(f)]
+<span class="bi">print</span>(<span class="st">"Missing:"</span>, missing <span class="kw">if</span> <span class="bi">any</span>(missing) <span class="kw">else</span> <span class="st">"None"</span>)</pre></div>
+            <div class="code-panel" id="co-aa-o"><pre><span class="out">True
+True
+Missing: ['email']</span></pre></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INSPECTION PAGE -->
+      <div class="page" id="page-inspection">
+        <div class="callout callout-note">
+          <div class="callout-label">Section</div>
+          Inspection & Info — look inside objects and understand what they are.
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">type() / isinstance()</div><div class="function-tagline">What kind of thing is it?</div></div>
+            <div class="fn-badge badge-inspect">inspect</div>
+          </div>
+          <div class="function-desc">Use <code style="color:var(--py-cyan)">type()</code> to get the exact class. Prefer <code style="color:var(--py-cyan)">isinstance()</code> for checks — it handles inheritance and accepts a tuple of types. <code style="color:var(--py-cyan)">isinstance(True, int)</code> is True because <code style="color:var(--py-cyan)">bool</code> inherits from <code style="color:var(--py-cyan)">int</code>.</div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'ins-type-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'ins-type-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="ins-type-c"><pre><span class="bi">print</span>(<span class="bi">type</span>(<span class="nu">42</span>))
+<span class="bi">print</span>(<span class="bi">type</span>([<span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">3</span>]))
+<span class="bi">print</span>(<span class="bi">isinstance</span>(<span class="nu">5</span>, <span class="bi">int</span>))
+<span class="bi">print</span>(<span class="bi">isinstance</span>(<span class="st">"hi"</span>, (<span class="bi">int</span>, <span class="bi">str</span>)))   <span class="cm"># tuple of types</span></pre></div>
+            <div class="code-panel" id="ins-type-o"><pre><span class="out">&lt;class 'int'&gt;
+&lt;class 'list'&gt;
+True
+True</span></pre></div>
+          </div>
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">dir() / vars() / help()</div><div class="function-tagline">Explore any object</div></div>
+            <div class="fn-badge badge-inspect">inspect</div>
+          </div>
+          <div class="function-desc"><code style="color:var(--py-cyan)">dir()</code> lists all attributes and methods. <code style="color:var(--py-cyan)">vars()</code> returns the <code style="color:var(--py-cyan)">__dict__</code> of an object (instance attributes). <code style="color:var(--py-cyan)">help()</code> shows the docstring — invaluable in an interactive session.</div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'ins-dir-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'ins-dir-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="ins-dir-c"><pre><span class="kw">class</span> Dog:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        self.name = <span class="st">"Rex"</span>
+        self.age  = <span class="nu">3</span>
+
+d = Dog()
+<span class="bi">print</span>(<span class="bi">vars</span>(d))     <span class="cm"># instance attributes</span>
+<span class="bi">print</span>(<span class="bi">dir</span>([]))[:5]  <span class="cm"># list's first 5 methods</span></pre></div>
+            <div class="code-panel" id="ins-dir-o"><pre><span class="out">{'name': 'Rex', 'age': 3}
+['append', 'clear', 'copy', 'count', 'extend', ...]</span></pre></div>
+          </div>
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">getattr() / setattr() / hasattr()</div><div class="function-tagline">Dynamic attribute access</div></div>
+            <div class="fn-badge badge-inspect">inspect</div>
+          </div>
+          <div class="function-desc">These let you work with attributes by name as a string — essential for metaprogramming. <code style="color:var(--py-cyan)">getattr</code> accepts a default fallback. Combined, they let you build objects dynamically from dictionaries.</div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'ins-ga-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'ins-ga-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="ins-ga-c"><pre><span class="kw">class</span> Config:
+    <span class="kw">pass</span>
+
+settings = {<span class="st">"debug"</span>: <span class="kw">True</span>, <span class="st">"port"</span>: <span class="nu">8080</span>}
+cfg = Config()
+<span class="kw">for</span> key, val <span class="kw">in</span> settings.items():
+    <span class="bi">setattr</span>(cfg, key, val)
+
+<span class="bi">print</span>(<span class="bi">hasattr</span>(cfg, <span class="st">"debug"</span>))
+<span class="bi">print</span>(<span class="bi">getattr</span>(cfg, <span class="st">"port"</span>))
+<span class="bi">print</span>(<span class="bi">getattr</span>(cfg, <span class="st">"missing"</span>, <span class="st">"default"</span>))</pre></div>
+            <div class="code-panel" id="ins-ga-o"><pre><span class="out">True
+8080
+default</span></pre></div>
+          </div>
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">hash() / repr() / callable()</div><div class="function-tagline">Object utilities</div></div>
+            <div class="fn-badge badge-inspect">inspect</div>
+          </div>
+          <div class="function-desc"><code style="color:var(--py-cyan)">hash()</code> gives a unique integer fingerprint (only for immutable objects). <code style="color:var(--py-cyan)">repr()</code> gives the developer-friendly string. <code style="color:var(--py-cyan)">callable()</code> checks if something can be called as a function.</div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'ins-hrc-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'ins-hrc-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="ins-hrc-c"><pre><span class="bi">print</span>(<span class="bi">callable</span>(<span class="bi">print</span>))       <span class="cm"># True</span>
+<span class="bi">print</span>(<span class="bi">callable</span>(<span class="nu">42</span>))           <span class="cm"># False</span>
+<span class="bi">print</span>(<span class="bi">repr</span>(<span class="st">"hello\nworld"</span>))   <span class="cm"># shows escape</span>
+<span class="bi">print</span>(<span class="bi">hash</span>(<span class="st">"Python"</span>))         <span class="cm"># unique int</span></pre></div>
+            <div class="code-panel" id="ins-hrc-o"><pre><span class="out">True
+False
+'hello\nworld'
+-4266126920101004342</span></pre></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OOP PAGE -->
+      <div class="page" id="page-oop">
+        <div class="callout callout-note">
+          <div class="callout-label">Section</div>
+          OOP & Classes — building and using object-oriented Python.
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">super()</div><div class="function-tagline">Call the parent class</div></div>
+            <div class="fn-badge badge-oop">OOP</div>
+          </div>
+          <div class="function-desc">Returns a proxy object that delegates method calls to the parent. Essential in inheritance hierarchies. Python uses the MRO (Method Resolution Order) to determine which parent is called.</div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'oop-super-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'oop-super-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="oop-super-c"><pre><span class="kw">class</span> A:
+    <span class="kw">def</span> <span class="fn">greet</span>(self): <span class="kw">return</span> <span class="st">"Hello from A"</span>
+
+<span class="kw">class</span> B(A):
+    <span class="kw">def</span> <span class="fn">greet</span>(self): <span class="kw">return</span> <span class="bi">super</span>().<span class="fn">greet</span>() + <span class="st">" → B"</span>
+
+<span class="kw">class</span> C(B):
+    <span class="kw">def</span> <span class="fn">greet</span>(self): <span class="kw">return</span> <span class="bi">super</span>().<span class="fn">greet</span>() + <span class="st">" → C"</span>
+
+<span class="bi">print</span>(C().<span class="fn">greet</span>())</pre></div>
+            <div class="code-panel" id="oop-super-o"><pre><span class="out">Hello from A → B → C</span></pre></div>
+          </div>
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">property()</div><div class="function-tagline">Make a method look like an attribute</div></div>
+            <div class="fn-badge badge-oop">OOP</div>
+          </div>
+          <div class="function-desc">Creates a managed attribute. Use as a decorator to add getter, setter, and deleter logic. Lets you add validation or computed values without changing the public API.</div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'oop-prop-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'oop-prop-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="oop-prop-c"><pre><span class="kw">class</span> Temperature:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, celsius):
+        self._c = celsius
+
+    <span class="op">@</span><span class="bi">property</span>
+    <span class="kw">def</span> <span class="fn">fahrenheit</span>(self):
+        <span class="kw">return</span> self._c * <span class="nu">9</span>/<span class="nu">5</span> + <span class="nu">32</span>
+
+    <span class="op">@</span>fahrenheit.setter
+    <span class="kw">def</span> <span class="fn">fahrenheit</span>(self, f):
+        self._c = (f - <span class="nu">32</span>) * <span class="nu">5</span>/<span class="nu">9</span>
+
+t = Temperature(<span class="nu">100</span>)
+<span class="bi">print</span>(t.fahrenheit)   <span class="cm"># getter</span>
+t.fahrenheit = <span class="nu">32</span>
+<span class="bi">print</span>(t._c)           <span class="cm"># setter converted it</span></pre></div>
+            <div class="code-panel" id="oop-prop-o"><pre><span class="out">212.0
+0.0</span></pre></div>
+          </div>
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">classmethod() / staticmethod()</div><div class="function-tagline">Methods that don't need self</div></div>
+            <div class="fn-badge badge-oop">OOP</div>
+          </div>
+          <div class="function-desc"><code style="color:var(--py-cyan)">@classmethod</code> receives the class as first argument (<code style="color:var(--py-cyan)">cls</code>) — good for factory methods. <code style="color:var(--py-cyan)">@staticmethod</code> is just a plain function namespaced inside a class — no implicit first argument.</div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'oop-cm-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'oop-cm-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="oop-cm-c"><pre><span class="kw">class</span> Counter:
+    count = <span class="nu">0</span>
+
+    <span class="op">@</span><span class="bi">classmethod</span>
+    <span class="kw">def</span> <span class="fn">increment</span>(cls): cls.count += <span class="nu">1</span>
+
+Counter.<span class="fn">increment</span>()
+Counter.<span class="fn">increment</span>()
+<span class="bi">print</span>(Counter.count)
+
+<span class="kw">class</span> MathHelper:
+    <span class="op">@</span><span class="bi">staticmethod</span>
+    <span class="kw">def</span> <span class="fn">add</span>(a, b): <span class="kw">return</span> a + b
+
+<span class="bi">print</span>(MathHelper.<span class="fn">add</span>(<span class="nu">10</span>, <span class="nu">20</span>))</pre></div>
+            <div class="code-panel" id="oop-cm-o"><pre><span class="out">2
+30</span></pre></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EXECUTION PAGE -->
+      <div class="page" id="page-execution">
+        <div class="callout callout-warn">
+          <div class="callout-label">Warning</div>
+          <code style="color:var(--py-cyan)">eval()</code> and <code style="color:var(--py-cyan)">exec()</code> can execute arbitrary code. Never use them on untrusted user input in production.
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">eval()</div><div class="function-tagline">Run a string as Python code</div></div>
+            <div class="fn-badge badge-exec">exec</div>
+          </div>
+          <div class="function-desc">Evaluates a single expression string and returns the result. Works great as a simple calculator. Can access local/global variables via optional namespace arguments.</div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'ex-eval-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'ex-eval-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="ex-eval-c"><pre>result = <span class="bi">eval</span>(<span class="st">"2 + 2 * 10"</span>)
+<span class="bi">print</span>(result)
+
+x = <span class="nu">5</span>
+<span class="bi">print</span>(<span class="bi">eval</span>(<span class="st">"x * x"</span>))    <span class="cm"># uses local vars</span>
+
+<span class="cm"># Calculator function</span>
+<span class="kw">def</span> <span class="fn">calc</span>(expr):
+    <span class="kw">try</span>: <span class="kw">return</span> <span class="bi">eval</span>(expr)
+    <span class="kw">except</span>: <span class="kw">return</span> <span class="st">"Error"</span>
+
+<span class="bi">print</span>(<span class="fn">calc</span>(<span class="st">"100 * 3 + 50 / 2"</span>))</pre></div>
+            <div class="code-panel" id="ex-eval-o"><pre><span class="out">22
+25
+325.0</span></pre></div>
+          </div>
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">exec()</div><div class="function-tagline">Run a whole block of code from a string</div></div>
+            <div class="fn-badge badge-exec">exec</div>
+          </div>
+          <div class="function-desc">Executes a string of Python statements. Unlike <code style="color:var(--py-cyan)">eval()</code>, it can run multi-line code including loops, class definitions, and function definitions. Always returns None.</div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'ex-exec-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'ex-exec-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="ex-exec-c"><pre>code = <span class="st">"""
+for i in range(3):
+    print('Hello', i)
+"""</span>
+<span class="bi">exec</span>(code)
+
+<span class="cm"># Create a class dynamically</span>
+<span class="bi">exec</span>(<span class="st">"""
+class Animal:
+    def speak(self): return "Woof!"
+"""</span>)
+dog = Animal()
+<span class="bi">print</span>(dog.<span class="fn">speak</span>())</pre></div>
+            <div class="code-panel" id="ex-exec-o"><pre><span class="out">Hello 0
+Hello 1
+Hello 2
+Woof!</span></pre></div>
+          </div>
+        </div>
+
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">globals() / locals()</div><div class="function-tagline">See all variables in scope</div></div>
+            <div class="fn-badge badge-exec">exec</div>
+          </div>
+          <div class="function-desc"><code style="color:var(--py-cyan)">globals()</code> returns the current module's global namespace as a dict. <code style="color:var(--py-cyan)">locals()</code> returns the local namespace inside a function. You can even create variables dynamically using <code style="color:var(--py-cyan)">globals()['name'] = value</code>.</div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'ex-gl-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'ex-gl-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="ex-gl-c"><pre>x = <span class="nu">100</span>; y = <span class="st">"Python"</span>
+g = <span class="bi">globals</span>()
+<span class="bi">print</span>(g[<span class="st">"x"</span>], g[<span class="st">"y"</span>])
+
+<span class="kw">for</span> i <span class="kw">in</span> <span class="bi">range</span>(<span class="nu">3</span>):
+    <span class="bi">globals</span>()[<span class="kw">f</span><span class="st">"var_{i}"</span>] = i * <span class="nu">10</span>
+
+<span class="bi">print</span>(var_0, var_1, var_2)
+
+<span class="kw">def</span> <span class="fn">demo</span>():
+    a = <span class="nu">1</span>; b = <span class="nu">2</span>
+    <span class="bi">print</span>(<span class="bi">locals</span>())
+<span class="fn">demo</span>()</pre></div>
+            <div class="code-panel" id="ex-gl-o"><pre><span class="out">100 Python
+0 10 20
+{'a': 1, 'b': 2}</span></pre></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MASTER PAGE -->
+      <div class="page" id="page-master">
+        <div class="callout callout-tip">
+          <div class="callout-label">🏆 Master Example</div>
+          A single program that uses almost every built-in function — a complete student grade manager.
+        </div>
+        <div class="function-card">
+          <div class="function-header">
+            <div><div class="function-name">Student Grade Manager</div><div class="function-tagline">100 functions in one program</div></div>
+            <div class="fn-badge badge-builtin">all-in-one</div>
+          </div>
+          <div class="code-block">
+            <div class="code-tabs">
+              <div class="code-tab active" onclick="switchTab(this,'master-c')">Code</div>
+              <div class="code-tab" onclick="switchTab(this,'master-o')">Output</div>
+            </div>
+            <div class="code-panel active" id="master-c"><pre><span class="cm"># Student grade manager — uses every built-in</span>
+students = [<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Charlie"</span>, <span class="st">"Diana"</span>, <span class="st">"Eve"</span>]
+scores   = [<span class="nu">92</span>, <span class="nu">78</span>, <span class="nu">85</span>, <span class="nu">60</span>, <span class="nu">95</span>]
+
+<span class="cm"># zip + dict</span>
+grade_book = <span class="bi">dict</span>(<span class="bi">zip</span>(students, scores))
+<span class="bi">print</span>(<span class="st">"Grade Book:"</span>, grade_book)
+
+<span class="cm"># map → floats, filter → passed</span>
+float_scores = <span class="bi">list</span>(<span class="bi">map</span>(<span class="bi">float</span>, scores))
+passed = <span class="bi">list</span>(<span class="bi">filter</span>(<span class="kw">lambda</span> s: s >= <span class="nu">70</span>, scores))
+<span class="bi">print</span>(<span class="st">"Passed:"</span>, passed)
+
+<span class="cm"># sorted + key → ranking</span>
+ranked = <span class="bi">sorted</span>(grade_book.items(), key=<span class="kw">lambda</span> x: x[<span class="nu">1</span>], reverse=<span class="kw">True</span>)
+<span class="bi">print</span>(<span class="st">"\nRanking:"</span>)
+<span class="kw">for</span> i, (name, score) <span class="kw">in</span> <span class="bi">enumerate</span>(ranked, <span class="nu">1</span>):
+    <span class="bi">print</span>(<span class="kw">f</span><span class="st">"  {i}. {name}: {score}"</span>)
+
+<span class="cm"># sum, min, max, round, len → stats</span>
+total   = <span class="bi">sum</span>(scores)
+average = <span class="bi">round</span>(total / <span class="bi">len</span>(scores), <span class="nu">2</span>)
+<span class="bi">print</span>(<span class="kw">f</span><span class="st">"\nAvg: {average}  Hi: {max(scores)}  Lo: {min(scores)}"</span>)
+
+<span class="cm"># any, all</span>
+<span class="bi">print</span>(<span class="kw">f</span><span class="st">"Any failed: {any(s &lt; 70 for s in scores)}"</span>)
+<span class="bi">print</span>(<span class="kw">f</span><span class="st">"All passed: {all(s >= 70 for s in scores)}"</span>)
+
+<span class="cm"># enumerate + bin + hex</span>
+<span class="bi">print</span>(<span class="st">"\nReport Cards:"</span>)
+<span class="kw">for</span> idx, (name, score) <span class="kw">in</span> <span class="bi">enumerate</span>(grade_book.items(), <span class="nu">1</span>):
+    grade = <span class="st">"A"</span> <span class="kw">if</span> score >= <span class="nu">90</span> <span class="kw">else</span> <span class="st">"B"</span> <span class="kw">if</span> score >= <span class="nu">80</span> <span class="kw">else</span> <span class="st">"C"</span> <span class="kw">if</span> score >= <span class="nu">70</span> <span class="kw">else</span> <span class="st">"F"</span>
+    <span class="bi">print</span>(<span class="kw">f</span><span class="st">"  {idx}. {name:10} → {score} {grade} hex:{hex(score)}"</span>)
+
+<span class="cm"># abs, pow, divmod</span>
+<span class="bi">print</span>(<span class="kw">f</span><span class="st">"\nabs(-42)={abs(-42)}  pow(2,8)={pow(2,8)}  divmod(95,10)={divmod(95,10)}"</span>)
+
+<span class="cm"># set + frozenset</span>
+unique = <span class="bi">set</span>(scores + [<span class="nu">92</span>, <span class="nu">78</span>])
+frozen = <span class="bi">frozenset</span>(unique)
+<span class="bi">print</span>(<span class="st">"Unique:"</span>, unique)
+
+<span class="cm"># chr + ord</span>
+<span class="bi">print</span>(<span class="kw">f</span><span class="st">"chr(65)={chr(65)}  ord('A')={ord('A')}"</span>)
+
+<span class="cm"># reversed + slice</span>
+<span class="bi">print</span>(<span class="st">"Reversed:"</span>, <span class="bi">list</span>(<span class="bi">reversed</span>(students)))
+<span class="bi">print</span>(<span class="st">"Top 3:"</span>, <span class="bi">sorted</span>(scores, reverse=<span class="kw">True</span>)[<span class="bi">slice</span>(<span class="nu">0</span>,<span class="nu">3</span>)])</pre></div>
+            <div class="code-panel" id="master-o"><pre><span class="out">Grade Book: {'Alice': 92, 'Bob': 78, 'Charlie': 85, 'Diana': 60, 'Eve': 95}
+Passed: [92, 78, 85, 95]
+
+Ranking:
+  1. Eve: 95
+  2. Alice: 92
+  3. Charlie: 85
+  4. Bob: 78
+  5. Diana: 60
+
+Avg: 82.0  Hi: 95  Lo: 60
+Any failed: True
+All passed: False
+
+Report Cards:
+  1. Alice      → 92 A hex:0x5c
+  2. Bob        → 78 C hex:0x4e
+  3. Charlie    → 85 B hex:0x55
+  4. Diana      → 60 F hex:0x3c
+  5. Eve        → 95 A hex:0x5f
+
+abs(-42)=42  pow(2,8)=256  divmod(95,10)=(9, 5)
+Unique: {60, 78, 85, 92, 95}
+chr(65)=A  ord('A')=65
+Reversed: ['Eve', 'Diana', 'Charlie', 'Bob', 'Alice']
+Top 3: [95, 92, 85]</span></pre></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PLAYGROUND PAGE -->
+      <div class="page" id="page-playground">
+        <div class="callout callout-tip">
+          <div class="callout-label">Playground</div>
+          Try out Python concepts! Edit the code, click Run, and see simulated output. Pre-loaded examples to get you started.
+        </div>
+
+        <div class="section-heading">Starter examples</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+          <button onclick="loadExample('zip')" style="background:rgba(75,139,190,0.2);color:var(--py-cyan);border:1px solid rgba(75,139,190,0.4);border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:Sora,sans-serif;">zip + dict</button>
+          <button onclick="loadExample('grade')" style="background:rgba(75,139,190,0.2);color:var(--py-cyan);border:1px solid rgba(75,139,190,0.4);border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:Sora,sans-serif;">Grade Sorter</button>
+          <button onclick="loadExample('encode')" style="background:rgba(75,139,190,0.2);color:var(--py-cyan);border:1px solid rgba(75,139,190,0.4);border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:Sora,sans-serif;">chr + ord</button>
+          <button onclick="loadExample('time')" style="background:rgba(75,139,190,0.2);color:var(--py-cyan);border:1px solid rgba(75,139,190,0.4);border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:Sora,sans-serif;">Time Converter</button>
+          <button onclick="loadExample('matrix')" style="background:rgba(75,139,190,0.2);color:var(--py-cyan);border:1px solid rgba(75,139,190,0.4);border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:Sora,sans-serif;">Matrix Transpose</button>
+        </div>
+
+        <div class="editor-wrap">
+          <div class="editor-bar">
+            <div class="editor-dots">
+              <div class="editor-dot" style="background:#ff5f57"></div>
+              <div class="editor-dot" style="background:#febc2e"></div>
+              <div class="editor-dot" style="background:#28c840"></div>
+            </div>
+            <div class="editor-title">main.py</div>
+            <button class="editor-run" onclick="runCode()">▶ Run</button>
+          </div>
+          <textarea class="code-editor" id="codeEditor">names  = ["Alice", "Bob", "Charlie"]
+scores = [95, 87, 91]
+
+# zip + dict
+grade_book = dict(zip(names, scores))
+print("Grade Book:", grade_book)
+
+# sorted by score
+ranked = sorted(grade_book.items(), key=lambda x: x[1], reverse=True)
+for i, (name, score) in enumerate(ranked, 1):
+    print(f"  {i}. {name}: {score}")</textarea>
+          <div class="editor-output" id="editorOutput">
+            <div class="output-label">Output</div>
+            <div id="outputText" style="color:var(--py-muted)">Click ▶ Run to execute</div>
+          </div>
+        </div>
+
+        <div class="callout callout-note">
+          <div class="callout-label">Note</div>
+          This is a simulated Python environment. Output is pre-computed for the example programs. For real execution, try <a href="https://replit.com" style="color:var(--py-cyan)">Replit</a> or <a href="https://colab.research.google.com" style="color:var(--py-cyan)">Google Colab</a>.
+        </div>
+      </div>
+
+      <!-- QUIZ PAGE -->
+      <div class="page" id="page-quiz">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <div style="font-size:15px;font-weight:600;">Python Quiz</div>
+          <div style="font-size:13px;color:var(--py-muted)">Score: <span id="quizScore" style="color:var(--py-yellow);font-weight:600;">0</span> / <span id="quizTotal">0</span></div>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="quizProgress" style="width:0%"></div>
+        </div>
+        <div id="quizContainer"></div>
+      </div>
+
+      <!-- ROADMAP PAGE -->
+      <div class="page" id="page-roadmap">
+        <div class="callout callout-tip">
+          <div class="callout-label">AI & ML Roadmap</div>
+          From Python beginner to job-ready AI engineer. Total time: 14–18 months with consistent effort.
+        </div>
+
+        <div class="roadmap-stage" style="border-color:var(--py-green)">
+          <div class="roadmap-title" style="color:var(--py-green)">Stage 1 — Foundation</div>
+          <div class="roadmap-time" style="color:var(--py-muted)">2–3 months</div>
+          <div class="roadmap-items">
+            <span class="roadmap-pill" style="border-color:var(--py-green);color:var(--py-green);background:rgba(105,217,106,0.1)">Python ✓</span>
+            <span class="roadmap-pill" style="border-color:var(--py-green);color:var(--py-green);background:rgba(105,217,106,0.1)">Linear Algebra</span>
+            <span class="roadmap-pill" style="border-color:var(--py-green);color:var(--py-green);background:rgba(105,217,106,0.1)">Statistics</span>
+            <span class="roadmap-pill" style="border-color:var(--py-green);color:var(--py-green);background:rgba(105,217,106,0.1)">Calculus basics</span>
+          </div>
+        </div>
+
+        <div class="roadmap-stage" style="border-color:var(--py-blue)">
+          <div class="roadmap-title" style="color:var(--py-blue)">Stage 2 — Data Skills</div>
+          <div class="roadmap-time" style="color:var(--py-muted)">1–2 months</div>
+          <div class="roadmap-items">
+            <span class="roadmap-pill" style="border-color:var(--py-blue);color:var(--py-blue);background:rgba(75,139,190,0.1)">NumPy</span>
+            <span class="roadmap-pill" style="border-color:var(--py-blue);color:var(--py-blue);background:rgba(75,139,190,0.1)">Pandas</span>
+            <span class="roadmap-pill" style="border-color:var(--py-blue);color:var(--py-blue);background:rgba(75,139,190,0.1)">Matplotlib</span>
+            <span class="roadmap-pill" style="border-color:var(--py-blue);color:var(--py-blue);background:rgba(75,139,190,0.1)">Data Cleaning</span>
+          </div>
+        </div>
+
+        <div class="roadmap-stage" style="border-color:var(--py-yellow)">
+          <div class="roadmap-title" style="color:var(--py-yellow)">Stage 3 — Machine Learning</div>
+          <div class="roadmap-time" style="color:var(--py-muted)">2–3 months</div>
+          <div class="roadmap-items">
+            <span class="roadmap-pill" style="border-color:var(--py-yellow);color:var(--py-yellow);background:rgba(255,211,59,0.1)">Scikit-learn</span>
+            <span class="roadmap-pill" style="border-color:var(--py-yellow);color:var(--py-yellow);background:rgba(255,211,59,0.1)">Linear Regression</span>
+            <span class="roadmap-pill" style="border-color:var(--py-yellow);color:var(--py-yellow);background:rgba(255,211,59,0.1)">Logistic Regression</span>
+            <span class="roadmap-pill" style="border-color:var(--py-yellow);color:var(--py-yellow);background:rgba(255,211,59,0.1)">Random Forests</span>
+            <span class="roadmap-pill" style="border-color:var(--py-yellow);color:var(--py-yellow);background:rgba(255,211,59,0.1)">Overfitting</span>
+          </div>
+        </div>
+
+        <div class="roadmap-stage" style="border-color:var(--py-orange)">
+          <div class="roadmap-title" style="color:var(--py-orange)">Stage 4 — Deep Learning</div>
+          <div class="roadmap-time" style="color:var(--py-muted)">2–3 months</div>
+          <div class="roadmap-items">
+            <span class="roadmap-pill" style="border-color:var(--py-orange);color:var(--py-orange);background:rgba(255,157,74,0.1)">Neural Networks</span>
+            <span class="roadmap-pill" style="border-color:var(--py-orange);color:var(--py-orange);background:rgba(255,157,74,0.1)">PyTorch / TensorFlow</span>
+            <span class="roadmap-pill" style="border-color:var(--py-orange);color:var(--py-orange);background:rgba(255,157,74,0.1)">CNNs</span>
+            <span class="roadmap-pill" style="border-color:var(--py-orange);color:var(--py-orange);background:rgba(255,157,74,0.1)">RNNs / LSTMs</span>
+            <span class="roadmap-pill" style="border-color:var(--py-orange);color:var(--py-orange);background:rgba(255,157,74,0.1)">GPU Training</span>
+          </div>
+        </div>
+
+        <div class="roadmap-stage" style="border-color:var(--py-red)">
+          <div class="roadmap-title" style="color:var(--py-red)">Stage 5 — NLP & LLMs</div>
+          <div class="roadmap-time" style="color:var(--py-muted)">2–3 months</div>
+          <div class="roadmap-items">
+            <span class="roadmap-pill" style="border-color:var(--py-red);color:var(--py-red);background:rgba(255,107,107,0.1)">Transformers</span>
+            <span class="roadmap-pill" style="border-color:var(--py-red);color:var(--py-red);background:rgba(255,107,107,0.1)">BERT / GPT</span>
+            <span class="roadmap-pill" style="border-color:var(--py-red);color:var(--py-red);background:rgba(255,107,107,0.1)">Hugging Face</span>
+            <span class="roadmap-pill" style="border-color:var(--py-red);color:var(--py-red);background:rgba(255,107,107,0.1)">Fine-tuning</span>
+            <span class="roadmap-pill" style="border-color:var(--py-red);color:var(--py-red);background:rgba(255,107,107,0.1)">RAG</span>
+            <span class="roadmap-pill" style="border-color:var(--py-red);color:var(--py-red);background:rgba(255,107,107,0.1)">Prompt Engineering</span>
+          </div>
+        </div>
+
+        <div class="roadmap-stage" style="border-color:var(--py-purple)">
+          <div class="roadmap-title" style="color:var(--py-purple)">Stage 6 — MLOps & Production</div>
+          <div class="roadmap-time" style="color:var(--py-muted)">1–2 months</div>
+          <div class="roadmap-items">
+            <span class="roadmap-pill" style="border-color:var(--py-purple);color:var(--py-purple);background:rgba(189,147,249,0.1)">Docker</span>
+            <span class="roadmap-pill" style="border-color:var(--py-purple);color:var(--py-purple);background:rgba(189,147,249,0.1)">FastAPI</span>
+            <span class="roadmap-pill" style="border-color:var(--py-purple);color:var(--py-purple);background:rgba(189,147,249,0.1)">MLflow</span>
+            <span class="roadmap-pill" style="border-color:var(--py-purple);color:var(--py-purple);background:rgba(189,147,249,0.1)">AWS / GCP / Azure</span>
+            <span class="roadmap-pill" style="border-color:var(--py-purple);color:var(--py-purple);background:rgba(189,147,249,0.1)">CI/CD for ML</span>
+          </div>
+        </div>
+
+        <div class="section-heading">Best free resources</div>
+        <table class="cheatsheet-table">
+          <tr><th>Resource</th><th>What for</th></tr>
+          <tr><td>fast.ai</td><td>Deep learning — super beginner friendly</td></tr>
+          <tr><td>Andrej Karpathy YouTube</td><td>Neural nets from scratch</td></tr>
+          <tr><td>Hugging Face courses</td><td>NLP & LLMs</td></tr>
+          <tr><td>Kaggle</td><td>Practice with real datasets</td></tr>
+          <tr><td>CS229 Stanford (YouTube)</td><td>Best ML theory course</td></tr>
+          <tr><td>3Blue1Brown YouTube</td><td>Math explained visually</td></tr>
+          <tr><td>Papers With Code</td><td>Latest AI research</td></tr>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const pages = {
+  home: { title: 'Welcome to PyDocs', crumb: 'Python Reference → Home', badge: '100 examples' },
+  cheatsheet: { title: 'Cheat Sheet', crumb: 'Python Reference → All Functions', badge: '60+ functions' },
+  io: { title: 'Input / Output', crumb: 'Python Reference → I/O', badge: '2 functions' },
+  math: { title: 'Math & Numbers', crumb: 'Python Reference → Math', badge: '7 functions' },
+  types: { title: 'Type Conversion', crumb: 'Python Reference → Types', badge: '18 functions' },
+  collections: { title: 'Collections & Sequences', crumb: 'Python Reference → Collections', badge: '13 functions' },
+  inspection: { title: 'Inspection & Info', crumb: 'Python Reference → Inspection', badge: '12 functions' },
+  oop: { title: 'OOP & Classes', crumb: 'Python Reference → OOP', badge: '5 functions' },
+  execution: { title: 'Code Execution', crumb: 'Python Reference → Execution', badge: '5 functions' },
+  master: { title: '🏆 Master Example', crumb: 'Python Reference → All-in-One', badge: '100 built-ins' },
+  playground: { title: 'Playground', crumb: 'Python Reference → Try it Yourself', badge: 'Interactive' },
+  quiz: { title: 'Quiz', crumb: 'Python Reference → Test Yourself', badge: '10 questions' },
+  roadmap: { title: 'AI & ML Roadmap', crumb: 'Python Reference → Career Path', badge: '14–18 months' }
+};
+
+function showPage(id, navEl) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const pg = document.getElementById('page-' + id);
+  if (pg) pg.classList.add('active');
+  if (navEl) navEl.classList.add('active');
+  const info = pages[id] || {};
+  document.getElementById('topbarTitle').textContent = info.title || id;
+  document.getElementById('topbarBreadcrumb').textContent = info.crumb || '';
+  document.getElementById('topbarBadge').textContent = info.badge || '';
+  document.getElementById('contentArea').scrollTop = 0;
+  if (id === 'quiz') initQuiz();
+}
+
+function switchTab(tabEl, panelId) {
+  const block = tabEl.closest('.code-block');
+  block.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+  block.querySelectorAll('.code-panel').forEach(p => p.classList.remove('active'));
+  tabEl.classList.add('active');
+  const panel = document.getElementById(panelId);
+  if (panel) panel.classList.add('active');
+}
+
+function filterNav(q) {
+  const lower = q.toLowerCase();
+  document.querySelectorAll('.nav-item[data-label]').forEach(item => {
+    const label = item.getAttribute('data-label') || '';
+    const text = item.textContent.toLowerCase();
+    item.style.display = (!q || text.includes(lower) || label.includes(lower)) ? '' : 'none';
+  });
+}
+
+const examples = {
+  zip: `names  = ["Alice", "Bob", "Charlie"]\nscores = [95, 87, 91]\n\n# zip + dict = instant dictionary\ngrade_book = dict(zip(names, scores))\nprint("Grade Book:", grade_book)\n\n# Also works to make pairs\nfor name, score in zip(names, scores):\n    print(f"{name}: {score}")`,
+  grade: `students = ["Alice", "Bob", "Charlie", "Diana", "Eve"]\nscores   = [92, 78, 85, 60, 95]\n\ngrade_book = dict(zip(students, scores))\nranked = sorted(grade_book.items(), key=lambda x: x[1], reverse=True)\n\nprint("Rankings:")\nfor i, (name, score) in enumerate(ranked, 1):\n    grade = "A" if score >= 90 else "B" if score >= 80 else "C" if score >= 70 else "F"\n    print(f"  {i}. {name:10} → {score}  Grade: {grade}")`,
+  encode: `msg = "Hi Python"\nprint("Char → Binary → Hex:")\nfor ch in msg:\n    if ch != " ":\n        print(f"  {ch}  bin:{bin(ord(ch))}  hex:{hex(ord(ch))}")\n\nprint()\nprint("Decoding numbers back:")\nfor n in [72, 101, 108, 108, 111]:\n    print(chr(n), end="")`,
+  time: `total_seconds = 7384\n\nhours, remainder = divmod(total_seconds, 3600)\nminutes, seconds = divmod(remainder, 60)\n\nprint(f"{total_seconds} seconds = {hours}h {minutes}m {seconds}s")\n\n# Another example\nfor secs in [60, 3600, 86400, 90061]:\n    h, r = divmod(secs, 3600)\n    m, s = divmod(r, 60)\n    print(f"{secs:6} sec → {h}h {m}m {s}s")`,
+  matrix: `matrix = [\n    [1, 2, 3],\n    [4, 5, 6],\n    [7, 8, 9]\n]\n\nprint("Original:")\nfor row in matrix:\n    print(row)\n\ntransposed = list(map(list, zip(*matrix)))\nprint("\\nTransposed:")\nfor row in transposed:\n    print(row)`
+};
+
+const outputs = {
+  zip: `Grade Book: {'Alice': 95, 'Bob': 87, 'Charlie': 91}\nAlice: 95\nBob: 87\nCharlie: 91`,
+  grade: `Rankings:\n  1. Eve        → 95  Grade: A\n  2. Alice      → 92  Grade: A\n  3. Charlie    → 85  Grade: B\n  4. Bob        → 78  Grade: C\n  5. Diana      → 60  Grade: F`,
+  encode: `Char → Binary → Hex:\n  H  bin:0b1001000  hex:0x48\n  i  bin:0b1101001  hex:0x69\n  P  bin:0b1010000  hex:0x50\n  y  bin:0b1111001  hex:0x79\n  t  bin:0b1110100  hex:0x74\n  h  bin:0b1101000  hex:0x68\n  o  bin:0b1101111  hex:0x6f\n  n  bin:0b1101110  hex:0x6e\n\nDecoding numbers back:\nHello`,
+  time: `7384 seconds = 2h 3m 4s\n    60 sec → 0h 1m 0s\n  3600 sec → 1h 0m 0s\n 86400 sec → 24h 0m 0s\n 90061 sec → 25h 1m 1s`,
+  matrix: `Original:\n[1, 2, 3]\n[4, 5, 6]\n[7, 8, 9]\n\nTransposed:\n[1, 4, 7]\n[2, 5, 8]\n[3, 6, 9]`
+};
+
+let currentExample = 'zip';
+
+function loadExample(name) {
+  currentExample = name;
+  document.getElementById('codeEditor').value = examples[name];
+  document.getElementById('outputText').textContent = 'Click ▶ Run to execute';
+  document.getElementById('outputText').style.color = 'var(--py-muted)';
+}
+
+function runCode() {
+  const out = outputs[currentExample];
+  const el = document.getElementById('outputText');
+  el.style.color = 'var(--py-green)';
+  el.textContent = '';
+  let i = 0;
+  const chars = out.split('');
+  const interval = setInterval(() => {
+    if (i >= chars.length) { clearInterval(interval); return; }
+    el.textContent += chars[i++];
+  }, 8);
+}
+
+const quizData = [
+  { q: 'What does <code style="color:var(--py-cyan)">int(9.99)</code> return?', opts: ['9', '10', '9.99', 'Error'], ans: 0, exp: 'int() truncates toward zero — it does not round. 9.99 → 9.' },
+  { q: 'Which function removes duplicate items from a list?', opts: ['list()', 'tuple()', 'set()', 'dict()'], ans: 2, exp: 'set() automatically removes duplicates. Order is not guaranteed.' },
+  { q: 'What does <code style="color:var(--py-cyan)">divmod(10, 3)</code> return?', opts: ['3', '1', '(3, 1)', '(1, 3)'], ans: 2, exp: 'divmod returns (quotient, remainder). 10 ÷ 3 = 3 remainder 1.' },
+  { q: 'What does <code style="color:var(--py-cyan)">any([0, 0, 0])</code> return?', opts: ['True', 'False', '0', 'None'], ans: 1, exp: 'any() returns True only if at least one element is truthy. All zeros are falsy.' },
+  { q: 'What does <code style="color:var(--py-cyan)">chr(65)</code> return?', opts: ['"65"', '"A"', '"a"', 'Error'], ans: 1, exp: 'chr() converts a Unicode code point to its character. 65 is the code for uppercase A.' },
+  { q: '<code style="color:var(--py-cyan)">len(range(5))</code> returns what?', opts: ['4', '5', '0', 'range object'], ans: 1, exp: 'range(5) produces 0,1,2,3,4 — five elements. len() counts them.' },
+  { q: 'What does <code style="color:var(--py-cyan)">bool("")</code> return?', opts: ['True', 'False', '"False"', 'None'], ans: 1, exp: 'Empty strings are falsy in Python. bool("") → False.' },
+  { q: 'Which is the correct way to create a dictionary from two lists?', opts: ['list(zip(k,v))', 'dict(zip(k,v))', 'map(k,v)', 'zip(dict(k,v))'], ans: 1, exp: 'dict(zip(keys, values)) is the idiomatic way to pair two lists into a dictionary.' },
+  { q: 'What does <code style="color:var(--py-cyan)">all([True, False, True])</code> return?', opts: ['True', 'False', '2', 'None'], ans: 1, exp: 'all() requires every element to be truthy. One False makes the whole result False.' },
+  { q: 'What does <code style="color:var(--py-cyan)">sorted([3,1,2], reverse=True)</code> return?', opts: ['[1,2,3]', '[3,2,1]', '[3,1,2]', 'Error'], ans: 1, exp: 'sorted() with reverse=True returns elements from largest to smallest.' }
+];
+
+let quizScore = 0, quizAnswered = 0;
+
+function initQuiz() {
+  quizScore = 0; quizAnswered = 0;
+  document.getElementById('quizScore').textContent = '0';
+  document.getElementById('quizTotal').textContent = '0';
+  document.getElementById('quizProgress').style.width = '0%';
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = quizData.map((q, qi) => `
+    <div class="quiz-card" id="qcard-${qi}">
+      <div class="quiz-q">${qi+1}. ${q.q}</div>
+      <div class="quiz-options">
+        ${q.opts.map((opt,oi) => `
+          <div class="quiz-opt" onclick="answerQuiz(${qi},${oi})" id="qopt-${qi}-${oi}">
+            <span style="color:var(--py-muted);margin-right:8px">${['A','B','C','D'][oi]}.</span>${opt}
+          </div>
+        `).join('')}
+      </div>
+      <div class="quiz-explain" id="qexp-${qi}">${q.exp}</div>
+    </div>
+  `).join('');
+}
+
+function answerQuiz(qi, oi) {
+  const q = quizData[qi];
+  const card = document.getElementById('qcard-' + qi);
+  if (card.dataset.answered) return;
+  card.dataset.answered = '1';
+  quizAnswered++;
+  if (oi === q.ans) {
+    quizScore++;
+    document.getElementById(`qopt-${qi}-${oi}`).classList.add('correct');
+  } else {
+    document.getElementById(`qopt-${qi}-${oi}`).classList.add('wrong');
+    document.getElementById(`qopt-${qi}-${q.ans}`).classList.add('correct');
+  }
+  document.getElementById('qexp-' + qi).style.display = 'block';
+  document.getElementById('quizScore').textContent = quizScore;
+  document.getElementById('quizTotal').textContent = quizAnswered;
+  document.getElementById('quizProgress').style.width = (quizAnswered / quizData.length * 100) + '%';
+}
+</script>

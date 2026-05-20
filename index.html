@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LogicLab — 20 Brain Games</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FFFDF5;--sidebar:#FFFFFF;--acc:#F59E0B;--acc2:#10B981;--acc3:#3B82F6;--acc4:#EC4899;
+  --text:#1C1917;--muted:#78716C;--border:#E7E2D5;--card:#FFFFFF;
+  --font:'Nunito',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;font-size:14px;}
+/* SIDEBAR */
+#sb{width:255px;flex-shrink:0;background:var(--sidebar);border-right:2px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.logobar{padding:14px 16px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:10px;}
+.logo-icon{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#F59E0B,#EF4444);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.logo-text h2{font-size:15px;font-weight:900;color:var(--text);}
+.logo-text p{font-size:11px;color:var(--muted);}
+/* points bar in sidebar */
+.pts-bar{padding:10px 14px;border-bottom:2px solid var(--border);background:#FFFBEB;}
+.pts-inner{background:#FEF3C7;border-radius:10px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;}
+.pts-label{font-size:11px;font-weight:700;color:#92400E;text-transform:uppercase;letter-spacing:.04em;}
+.pts-val{font-size:22px;font-weight:900;color:#B45309;font-family:var(--mono);}
+.pts-sub{font-size:10px;color:#B45309;text-align:right;}
+.search-wrap{padding:10px 12px;border-bottom:2px solid var(--border);}
+.search-wrap input{width:100%;padding:8px 12px;border-radius:8px;border:1.5px solid var(--border);font-family:var(--font);font-size:13px;background:#F9F7EF;color:var(--text);outline:none;}
+.search-wrap input:focus{border-color:var(--acc);}
+.search-wrap input::placeholder{color:#ccc;}
+.nav-list{flex:1;overflow-y:auto;padding:8px 8px 20px;}
+.nav-sec{font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--muted);padding:10px 10px 4px;text-transform:uppercase;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;color:var(--muted);transition:all .14s;margin-bottom:1px;position:relative;}
+.nav-item:hover{background:#FEF9EC;color:var(--text);}
+.nav-item.active{background:#FEF3C7;color:#92400E;}
+.nav-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.nav-pts{margin-left:auto;font-size:10px;font-weight:700;color:#B45309;background:#FEF3C7;padding:2px 6px;border-radius:5px;white-space:nowrap;}
+.nav-pts.earned{background:#D1FAE5;color:#065F46;}
+/* MAIN */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{padding:12px 24px;border-bottom:2px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.breadcrumb{font-size:13px;color:var(--muted);}
+.breadcrumb b{color:var(--text);}
+.top-right{display:flex;align-items:center;gap:10px;}
+.total-pts{background:#FEF3C7;border:1.5px solid #FCD34D;border-radius:20px;padding:5px 16px;font-size:13px;font-weight:800;color:#92400E;}
+.badge-20{background:#DBEAFE;color:#1E40AF;border:1.5px solid #93C5FD;border-radius:20px;padding:4px 14px;font-size:12px;font-weight:700;}
+#content{flex:1;overflow-y:auto;padding:24px 28px;}
+/* HOME */
+.home-hero{background:linear-gradient(120deg,#FFFBEB,#FEF3C7,#FDE68A);border-radius:14px;padding:26px 30px;margin-bottom:22px;border:2px solid #FCD34D;position:relative;overflow:hidden;}
+.home-hero::after{content:'🧠';font-size:110px;position:absolute;right:20px;top:50%;transform:translateY(-50%);opacity:.12;pointer-events:none;}
+.home-hero h1{font-size:24px;font-weight:900;color:#78350F;}
+.home-hero p{font-size:13px;color:#92400E;max-width:480px;line-height:1.65;margin-top:5px;}
+.stats-row{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
+.stat-pill{background:#fff;border-radius:10px;padding:10px 18px;border:2px solid #FCD34D;text-align:center;}
+.stat-pill .num{font-size:20px;font-weight:900;color:#78350F;}
+.stat-pill .lbl{font-size:11px;color:#92400E;font-weight:700;}
+.sec-title{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--acc);margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid #FDE68A;}
+.games-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:10px;margin-bottom:26px;}
+.gcard{background:var(--card);border-radius:12px;border:2px solid var(--border);padding:16px 12px;cursor:pointer;transition:all .17s;text-align:center;position:relative;}
+.gcard:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(0,0,0,.09);border-color:var(--acc);}
+.gcard.active-card{border-color:var(--acc);background:#FFFBEB;}
+.gcard.done-card{border-color:#10B981;background:#ECFDF5;}
+.gcard .gi{font-size:30px;margin-bottom:7px;}
+.gcard .gn{font-size:12px;font-weight:800;color:var(--text);margin-bottom:3px;}
+.gcard .gc{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;}
+.gcard .gpts{position:absolute;top:7px;right:7px;font-size:9px;font-weight:800;padding:2px 6px;border-radius:5px;}
+.gpts-e{background:#D1FAE5;color:#065F46;}
+.gpts-p{background:#FEF3C7;color:#92400E;}
+/* GAME PANEL */
+.game-panel{background:var(--card);border-radius:14px;border:2px solid var(--border);padding:24px;}
+.game-header{margin-bottom:4px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.game-title-row{display:flex;align-items:center;gap:10px;}
+.game-title{font-size:20px;font-weight:900;}
+.game-pts-badge{background:#FEF3C7;color:#92400E;border:1.5px solid #FCD34D;border-radius:8px;padding:3px 10px;font-size:12px;font-weight:800;}
+.game-subtitle{font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.55;}
+/* HOW TO PLAY box */
+.how-to-play{background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#1E40AF;line-height:1.7;}
+.how-to-play strong{font-weight:800;display:block;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:.04em;}
+.how-to-play ul{margin-left:16px;}
+.score-bar{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px;}
+.sc{font-size:13px;color:var(--muted);font-weight:700;} .sc strong{color:var(--text);}
+.game-body{min-height:300px;}
+.btn{padding:9px 20px;border-radius:9px;border:1.5px solid var(--border);font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:all .14s;background:#fff;color:var(--text);}
+.btn:hover{background:#F9F7EF;border-color:#ccc;}
+.btn.primary{background:var(--acc);color:#fff;border-color:var(--acc);}
+.btn.primary:hover{background:#D97706;}
+.btn.success{background:#10B981;color:#fff;border-color:#10B981;}
+.btn.info{background:#3B82F6;color:#fff;border-color:#3B82F6;}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.msg{padding:10px 16px;border-radius:9px;font-size:13px;font-weight:700;margin:10px 0;text-align:center;}
+.msg.ok{background:#D1FAE5;color:#065F46;border:1.5px solid #6EE7B7;}
+.msg.err{background:#FEE2E2;color:#991B1B;border:1.5px solid #FCA5A5;}
+.msg.info{background:#DBEAFE;color:#1E40AF;border:1.5px solid #93C5FD;}
+.msg.warn{background:#FEF9C3;color:#854D0E;border:1.5px solid #FDE047;}
+
+/* +pts animation */
+@keyframes ptsPop{0%{transform:scale(1) translateY(0);opacity:1}100%{transform:scale(1.8) translateY(-30px);opacity:0}}
+.pts-pop{position:fixed;pointer-events:none;font-size:18px;font-weight:900;color:#10B981;animation:ptsPop .8s ease-out forwards;z-index:999;}
+
+/* HANOI */
+canvas{display:block;margin:0 auto;max-width:100%;}
+.peg-btns{display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap;}
+.pbtn{padding:7px 18px;border-radius:8px;border:1.5px solid var(--border);background:#fff;cursor:pointer;font-weight:800;font-size:13px;font-family:var(--font);transition:all .14s;}
+.pbtn:hover{background:#FFFBEB;}
+.pbtn.sel{background:var(--acc);color:#fff;border-color:var(--acc);}
+
+/* BINARY */
+#bin-grid{display:grid;gap:5px;justify-content:center;margin:0 auto 14px;}
+.bc{width:46px;height:46px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;border-radius:9px;border:1.5px solid var(--border);cursor:pointer;transition:all .14s;background:#F9F7EF;color:#ccc;user-select:none;font-family:var(--mono);}
+.bc.fixed{cursor:default;}
+.bc.v0{background:#DBEAFE;color:#1E3A8A;border-color:#93C5FD;}
+.bc.v1{background:#D1FAE5;color:#14532D;border-color:#6EE7B7;}
+.bc.fixed.v0{background:#BFDBFE;border-color:#60A5FA;}
+.bc.fixed.v1{background:#A7F3D0;border-color:#34D399;}
+.bc.berr{border-color:#EF4444!important;box-shadow:0 0 0 2px #FCA5A5;}
+
+/* MASTERMIND */
+.mm-board{max-width:360px;margin:0 auto;}
+.mmrow{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.mmp{width:38px;height:38px;border-radius:50%;border:2px solid var(--border);background:#F0ECE0;transition:all .14s;}
+.cur-peg{width:38px;height:38px;border-radius:50%;border:2px dashed #ccc;background:#F9F7EF;cursor:pointer;transition:all .14s;}
+.cur-peg:hover{border-color:var(--acc);}
+.mmfb{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-left:8px;}
+.mmfbd{width:14px;height:14px;border-radius:50%;background:#E5E0D0;border:1px solid #ccc;}
+.mmfbd.blk{background:#1C1917;border-color:#1C1917;}
+.mmfbd.wht{background:#fff;border:2px solid #888;}
+.mm-colors{display:flex;gap:10px;justify-content:center;margin:12px 0;flex-wrap:wrap;}
+.mmcb{width:40px;height:40px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .14s;}
+.mmcb:hover,.mmcb.chosen{border-color:#1C1917;transform:scale(1.12);}
+.mm-cur{display:flex;gap:8px;justify-content:center;margin-bottom:10px;}
+
+/* SUDOKU */
+#sudoku-grid{display:grid;grid-template-columns:repeat(9,40px);gap:0;margin:0 auto 14px;border:3px solid #1C1917;width:fit-content;}
+.sk{width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;border:1px solid #C8C4B0;cursor:pointer;font-family:var(--mono);background:#fff;transition:all .1s;outline:none;}
+.sk.fixed{background:#F0ECE0;cursor:default;color:#374151;}
+.sk.selected{background:#FEF3C7;}
+.sk.sk-err{background:#FEE2E2;color:#991B1B;}
+.sk.sk-ok{color:#1E40AF;}
+.sk[data-br="right"]{border-right:3px solid #1C1917;}
+.sk[data-bb="bottom"]{border-bottom:3px solid #1C1917;}
+
+/* SEQUENCE */
+.seq-display{font-size:24px;letter-spacing:10px;text-align:center;padding:16px;background:#F0F9FF;border-radius:10px;margin-bottom:14px;color:var(--text);font-family:var(--mono);font-weight:700;border:2px solid #BAE6FD;}
+.seq-opts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;}
+.seq-opt{padding:10px 24px;border-radius:9px;border:2px solid var(--border);background:#fff;font-size:16px;cursor:pointer;font-family:var(--mono);font-weight:700;color:var(--text);transition:all .14s;}
+.seq-opt:hover{background:#FFFBEB;border-color:var(--acc);}
+.seq-opt.correct{background:#D1FAE5;border-color:#10B981;color:#065F46;}
+.seq-opt.wrong{background:#FEE2E2;border-color:#EF4444;color:#991B1B;}
+
+/* DEDUCTION */
+.clue-box{background:#F0FDF4;border:1.5px solid #BBF7D0;border-radius:10px;padding:12px 16px;margin-bottom:12px;font-size:13px;color:#166534;line-height:1.8;}
+.ded-table{margin:0 auto 12px;border-collapse:collapse;}
+.ded-table th{font-size:11px;font-weight:800;padding:6px 8px;text-align:center;color:var(--muted);}
+.ded-table td{padding:3px;}
+.ded-label{font-size:12px;font-weight:700;padding:6px 10px!important;text-align:right;color:var(--text);}
+.ded-cell{width:52px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:7px;border:1.5px solid var(--border);cursor:pointer;font-size:15px;background:#F9F7EF;transition:all .14s;}
+.ded-cell:hover{border-color:var(--acc);}
+.ded-cell.yes{background:#D1FAE5;border-color:#10B981;color:#065F46;}
+.ded-cell.no{background:#FEE2E2;border-color:#EF4444;color:#991B1B;}
+
+/* MEMORY */
+.mem-grid{display:grid;gap:8px;justify-content:center;margin:0 auto 14px;}
+.mem-card{width:64px;height:64px;border-radius:10px;cursor:pointer;font-size:26px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#3B82F6,#2563EB);border:2px solid #2563EB;transition:all .2s;user-select:none;}
+.mem-card.revealed,.mem-card.matched{background:#fff;border:2px solid var(--border);}
+.mem-card.matched{background:#D1FAE5;border-color:#10B981;}
+.mem-card span{display:none;}
+.mem-card.revealed span,.mem-card.matched span{display:block;}
+
+/* WORDLE */
+#wordle-grid{display:grid;gap:6px;justify-content:center;margin:0 auto 14px;}
+.wrow{display:flex;gap:6px;}
+.wc{width:46px;height:46px;border-radius:8px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;font-family:var(--mono);transition:all .2s;}
+.wc.correct{background:#10B981;color:#fff;border-color:#10B981;}
+.wc.present{background:#F59E0B;color:#fff;border-color:#F59E0B;}
+.wc.absent{background:#78716C;color:#fff;border-color:#78716C;}
+.wc.filled{background:#FFFBEB;border-color:#FCD34D;}
+.w-keyboard{display:flex;flex-direction:column;gap:6px;align-items:center;margin-top:10px;}
+.w-krow{display:flex;gap:5px;}
+.wkey{padding:8px 10px;min-width:32px;border-radius:6px;border:1.5px solid var(--border);background:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--mono);transition:all .1s;text-align:center;}
+.wkey:hover{background:#FFFBEB;}
+.wkey.kc{background:#10B981;color:#fff;border-color:#10B981;}
+.wkey.kp{background:#F59E0B;color:#fff;border-color:#F59E0B;}
+.wkey.ka{background:#D6D3CB;color:#78716C;border-color:#D6D3CB;}
+
+/* NUMBER GUESS */
+.guess-input-wrap{display:flex;gap:8px;justify-content:center;margin-bottom:12px;}
+.guess-input-wrap input{width:120px;padding:10px 14px;border-radius:9px;border:2px solid var(--border);font-size:18px;font-weight:700;font-family:var(--mono);text-align:center;outline:none;}
+.guess-input-wrap input:focus{border-color:var(--acc);}
+.history-list{max-height:180px;overflow-y:auto;font-family:var(--mono);font-size:13px;}
+.h-item{padding:5px 10px;border-radius:6px;margin-bottom:4px;display:flex;justify-content:space-between;}
+.h-high{background:#FEE2E2;color:#991B1B;}
+.h-low{background:#DBEAFE;color:#1E40AF;}
+.h-win{background:#D1FAE5;color:#065F46;font-weight:800;}
+
+/* ARITHMETIC BLITZ */
+.arith-q{font-size:36px;font-weight:900;text-align:center;font-family:var(--mono);margin-bottom:12px;color:var(--text);}
+.arith-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:300px;margin:0 auto;}
+.arith-opt{padding:14px;border-radius:10px;border:2px solid var(--border);background:#fff;font-size:20px;font-weight:800;cursor:pointer;font-family:var(--mono);transition:all .14s;text-align:center;}
+.arith-opt:hover{background:#FFFBEB;border-color:var(--acc);}
+.arith-opt.correct{background:#D1FAE5;border-color:#10B981;}
+.arith-opt.wrong{background:#FEE2E2;border-color:#EF4444;}
+.timer-bar{height:6px;background:#E7E2D5;border-radius:3px;margin-bottom:14px;overflow:hidden;}
+.timer-fill{height:100%;background:linear-gradient(to right,#10B981,#F59E0B,#EF4444);transition:width .1s linear;border-radius:3px;}
+
+/* TRUTH TABLES */
+.tt-q{background:#F0F9FF;border:2px solid #BAE6FD;border-radius:10px;padding:14px;margin-bottom:12px;font-family:var(--mono);font-size:15px;text-align:center;color:#1E40AF;font-weight:700;}
+.tt-opts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.tt-opt{padding:10px 24px;border-radius:9px;border:2px solid var(--border);font-size:14px;font-weight:700;cursor:pointer;transition:all .14s;font-family:var(--mono);}
+.tt-opt:hover{background:#FFFBEB;border-color:var(--acc);}
+
+/* PATTERN MATCH */
+.pat-grid{display:grid;gap:6px;justify-content:center;margin:0 auto 12px;}
+.pat-cell{width:40px;height:40px;border-radius:8px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;font-family:var(--mono);}
+.pat-choice{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;}
+.pat-btn{padding:8px 18px;border-radius:9px;border:2px solid var(--border);background:#fff;font-size:16px;cursor:pointer;font-family:var(--mono);transition:all .14s;}
+.pat-btn:hover{background:#FFFBEB;border-color:var(--acc);}
+
+/* SIMON SAYS */
+.simon-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:240px;margin:0 auto 14px;}
+.simon-btn{height:90px;border-radius:12px;cursor:pointer;border:3px solid rgba(0,0,0,.1);transition:all .14s;opacity:.6;}
+.simon-btn.active{opacity:1;transform:scale(1.05);box-shadow:0 0 20px rgba(0,0,0,.2);}
+.simon-btn:hover{opacity:.8;}
+
+/* COIN SCALE */
+.coins-area{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;}
+.scale-side{flex:1;min-width:100px;max-width:160px;}
+.scale-label{font-size:11px;font-weight:800;text-align:center;color:var(--muted);margin-bottom:8px;text-transform:uppercase;}
+.coin-slot{min-height:50px;border:2px dashed var(--border);border-radius:10px;display:flex;flex-wrap:wrap;gap:6px;padding:8px;justify-content:center;align-items:center;}
+.coin{width:32px;height:32px;border-radius:50%;border:2px solid #D97706;background:linear-gradient(135deg,#FCD34D,#F59E0B);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#78350F;user-select:none;transition:all .14s;}
+.coin:hover{transform:scale(1.1);}
+.coin.heavy{background:linear-gradient(135deg,#D97706,#B45309);border-color:#92400E;color:#FEF3C7;}
+.scale-beam{width:100%;height:8px;background:#78716C;border-radius:4px;margin:8px 0;position:relative;}
+.balance-eq{text-align:center;font-size:22px;margin:4px 0;}
+
+/* CRYPTOGRAM */
+.crypto-box{font-family:var(--mono);font-size:13px;background:#F0F9FF;border:2px solid #BAE6FD;border-radius:10px;padding:14px;margin-bottom:12px;letter-spacing:2px;line-height:2.2;color:#1E40AF;word-break:break-all;}
+.crypto-inputs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+.crypto-pair{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.crypto-pair span{font-size:11px;font-family:var(--mono);font-weight:700;color:var(--muted);}
+.crypto-pair input{width:32px;height:32px;border:2px solid var(--border);border-radius:6px;text-align:center;font-size:14px;font-weight:700;font-family:var(--mono);outline:none;text-transform:uppercase;}
+.crypto-pair input:focus{border-color:var(--acc);}
+
+/* NONOGRAM */
+.nono-table{margin:0 auto 14px;border-collapse:collapse;}
+.nono-cell{width:32px;height:32px;border:1px solid #C8C4B0;cursor:pointer;transition:background .1s;}
+.nono-cell.filled{background:#1C1917;}
+.nono-cell.marked{background:#FEE2E2;}
+.nono-cell:hover:not(.filled):not(.marked){background:#F0ECE0;}
+.nono-hint{font-size:11px;font-weight:800;font-family:var(--mono);padding:2px 4px;color:var(--text);}
+[data-br3]{border-right:3px solid #374151;}
+[data-bb3]{border-bottom:3px solid #374151;}
+
+/* RIVER CROSSING */
+.river-scene{display:flex;gap:0;margin:0 auto 14px;max-width:500px;border-radius:12px;overflow:hidden;border:2px solid var(--border);}
+.bank{flex:1;background:#ECFDF5;padding:12px;display:flex;flex-direction:column;gap:8px;min-height:180px;}
+.river-mid{width:80px;background:#DBEAFE;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;position:relative;}
+.river-label{font-size:11px;font-weight:800;color:#1E40AF;text-transform:uppercase;letter-spacing:.04em;}
+.boat{width:60px;height:40px;background:#F59E0B;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;border:2px solid #D97706;transition:all .2s;}
+.boat:hover{transform:scale(1.05);}
+.character{padding:6px 10px;border-radius:8px;border:2px solid var(--border);font-size:13px;font-weight:700;cursor:pointer;transition:all .14s;user-select:none;display:flex;align-items:center;gap:5px;}
+.character:hover{border-color:var(--acc);}
+.character.in-boat{background:#FEF3C7;border-color:var(--acc);}
+.river-status{font-size:12px;color:#1E40AF;font-weight:700;text-align:center;padding:4px;}
+
+/* TOWERS DEDUCTION */
+.tower-wrap{display:grid;gap:0;justify-content:center;margin:0 auto 14px;width:fit-content;}
+.tower-clue{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#78350F;font-family:var(--mono);}
+.tower-cell{width:36px;height:36px;border:1px solid #C8C4B0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--mono);transition:all .1s;}
+.tower-cell:hover{background:#FFFBEB;}
+.tower-cell.tc-filled{background:#FEF3C7;color:#92400E;}
+.tower-cell.tc-err{background:#FEE2E2;color:#991B1B;}
+
+/* LIGHTS OUT */
+.lo-grid{display:grid;gap:6px;justify-content:center;margin:0 auto 14px;}
+.lo-cell{width:52px;height:52px;border-radius:10px;cursor:pointer;border:2px solid var(--border);transition:all .14s;}
+.lo-cell.on{background:linear-gradient(135deg,#FDE68A,#F59E0B);border-color:#D97706;box-shadow:0 0 12px rgba(245,158,11,.4);}
+.lo-cell.off{background:#E7E2D5;}
+.lo-cell:hover{transform:scale(1.05);}
+
+/* WORD SCRAMBLE */
+.scramble-word{font-size:36px;font-weight:900;text-align:center;letter-spacing:8px;font-family:var(--mono);color:var(--text);margin-bottom:14px;padding:14px;background:#F0FDF4;border-radius:10px;border:2px solid #BBF7D0;}
+.scramble-input{width:100%;max-width:300px;display:block;margin:0 auto 10px;padding:12px;font-size:18px;font-weight:700;font-family:var(--mono);text-align:center;border:2px solid var(--border);border-radius:10px;outline:none;text-transform:uppercase;}
+.scramble-input:focus{border-color:var(--acc);}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#D6D3CB;border-radius:3px;}
+</style>
+</head>
+<body>
+<div id="sb">
+  <div class="logobar">
+    <div class="logo-icon">🧠</div>
+    <div class="logo-text"><h2>LogicLab</h2><p>20 Brain Games</p></div>
+  </div>
+  <div class="pts-bar">
+    <div class="pts-inner">
+      <div><div class="pts-label">Your Points</div><div class="pts-val" id="sidebar-pts">0</div></div>
+      <div style="text-align:right"><div style="font-size:18px">🏆</div><div class="pts-sub" id="sidebar-level">Beginner</div></div>
+    </div>
+  </div>
+  <div class="search-wrap"><input type="text" id="search-box" placeholder="Search games..." oninput="filterGames(this.value)"></div>
+  <div class="nav-list" id="nav-list"></div>
+</div>
+<div id="main">
+  <div class="topbar">
+    <div class="breadcrumb">LogicLab → <b id="bread">Home</b></div>
+    <div class="top-right">
+      <div class="total-pts">⭐ <span id="top-pts">0</span> pts</div>
+      <div class="badge-20">20 Games</div>
+    </div>
+  </div>
+  <div id="content"></div>
+</div>
+
+<script>
+// ============================
+// GLOBAL STATE
+// ============================
+let totalPoints = 0;
+let currentGame = 'home';
+const earnedGames = new Set();
+
+const GAMES = [
+  {id:'hanoi',name:'Towers of Hanoi',icon:'🗼',cat:'Logic',pts:30,diff:'hard'},
+  {id:'binary',name:'Binary Puzzle',icon:'01',cat:'Logic',pts:20,diff:'medium'},
+  {id:'sudoku',name:'Sudoku',icon:'🔢',cat:'Numbers',pts:40,diff:'hard'},
+  {id:'mastermind',name:'Mastermind',icon:'🎯',cat:'Deduction',pts:25,diff:'medium'},
+  {id:'sequence',name:'Sequences',icon:'📈',cat:'Math',pts:10,diff:'easy'},
+  {id:'wordle',name:'Wordle',icon:'📝',cat:'Words',pts:20,diff:'medium'},
+  {id:'deduction',name:'Logic Grid',icon:'🕵️',cat:'Deduction',pts:25,diff:'medium'},
+  {id:'memory',name:'Memory Match',icon:'🃏',cat:'Memory',pts:15,diff:'easy'},
+  {id:'arithmetic',name:'Arithmetic Blitz',icon:'⚡',cat:'Math',pts:15,diff:'easy'},
+  {id:'truthtable',name:'Truth Tables',icon:'⊕',cat:'Logic',pts:20,diff:'medium'},
+  {id:'pattern',name:'Pattern Match',icon:'🔷',cat:'Patterns',pts:15,diff:'easy'},
+  {id:'simon',name:'Simon Says',icon:'🔴',cat:'Memory',pts:20,diff:'medium'},
+  {id:'numguess',name:'Number Hunt',icon:'🎲',cat:'Deduction',pts:15,diff:'easy'},
+  {id:'nonogram',name:'Nonogram',icon:'🖼️',cat:'Logic',pts:30,diff:'hard'},
+  {id:'wordscramble',name:'Word Scramble',icon:'🔀',cat:'Words',pts:10,diff:'easy'},
+  {id:'lightout',name:'Lights Out',icon:'💡',cat:'Logic',pts:25,diff:'medium'},
+  {id:'river',name:'River Crossing',icon:'⛵',cat:'Logic',pts:20,diff:'medium'},
+  {id:'towers',name:'Towers Puzzle',icon:'🏙️',cat:'Logic',pts:30,diff:'hard'},
+  {id:'crypto',name:'Cryptogram',icon:'🔐',cat:'Words',pts:25,diff:'medium'},
+  {id:'coins',name:'Coin Balance',icon:'⚖️',cat:'Math',pts:20,diff:'medium'},
+];
+
+const CATEGORIES = {};
+GAMES.forEach(g => { if(!CATEGORIES[g.cat]) CATEGORIES[g.cat]=[]; CATEGORIES[g.cat].push(g); });
+
+function addPoints(p, x, y) {
+  totalPoints += p;
+  document.getElementById('sidebar-pts').textContent = totalPoints;
+  document.getElementById('top-pts').textContent = totalPoints;
+  const lvl = totalPoints < 50 ? 'Beginner' : totalPoints < 150 ? 'Thinker' : totalPoints < 300 ? 'Logician' : totalPoints < 500 ? 'Genius' : 'Mastermind';
+  document.getElementById('sidebar-level').textContent = lvl;
+  // floating +pts
+  const el = document.createElement('div');
+  el.className = 'pts-pop';
+  el.textContent = '+' + p + ' pts';
+  el.style.left = (x||window.innerWidth/2-30)+'px';
+  el.style.top = (y||200)+'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 900);
+  updateNav();
+}
+
+function updateNav() {
+  const searchVal = document.getElementById('search-box').value.toLowerCase();
+  const navEl = document.getElementById('nav-list');
+  navEl.innerHTML = '';
+  Object.entries(CATEGORIES).forEach(([cat, games]) => {
+    const filtered = games.filter(g => g.name.toLowerCase().includes(searchVal) || g.cat.toLowerCase().includes(searchVal));
+    if(!filtered.length) return;
+    navEl.innerHTML += `<div class="nav-sec">${cat}</div>`;
+    filtered.forEach(g => {
+      const earned = earnedGames.has(g.id);
+      navEl.innerHTML += `<div class="nav-item${currentGame===g.id?' active':''}" onclick="loadGame('${g.id}')">
+        <span class="nav-dot" style="background:${dotColor(g.cat)}"></span>
+        ${g.name}
+        <span class="nav-pts${earned?' earned':''}">${earned?'✓':'+'+g.pts}</span>
+      </div>`;
+    });
+  });
+}
+function dotColor(c){return{Logic:'#3B82F6',Numbers:'#8B5CF6',Math:'#10B981',Words:'#EC4899',Deduction:'#F59E0B',Memory:'#EF4444',Patterns:'#06B6D4'}[c]||'#78716C';}
+function filterGames(v){updateNav();}
+
+function loadGame(id) {
+  currentGame = id;
+  document.getElementById('bread').textContent = id === 'home' ? 'Home' : (GAMES.find(g=>g.id===id)||{name:'Home'}).name;
+  updateNav();
+  const el = document.getElementById('content');
+  if(id==='home'){renderHome();return;}
+  const g = GAMES.find(x=>x.id===id);
+  if(!g){renderHome();return;}
+  window['init_'+id]?window['init_'+id]():null;
+  window['render_'+id]?window['render_'+id]():null;
+}
+
+// ============================
+// HOME
+// ============================
+function renderHome() {
+  const el = document.getElementById('content');
+  let grid = '';
+  GAMES.forEach(g => {
+    const earned = earnedGames.has(g.id);
+    const diffCls = {easy:'#D1FAE5',medium:'#FEF9C3',hard:'#FEE2E2'}[g.diff];
+    const diffCol = {easy:'#065F46',medium:'#854D0E',hard:'#991B1B'}[g.diff];
+    grid += `<div class="gcard${currentGame===g.id?' active-card':''}${earned?' done-card':''}" onclick="loadGame('${g.id}')">
+      <span class="gpts ${earned?'gpts-e':'gpts-p'}">${earned?'✓+'+g.pts:'+'+g.pts}</span>
+      <div class="gi">${g.icon}</div>
+      <div class="gn">${g.name}</div>
+      <div class="gc" style="margin-top:4px;color:${diffCol};background:${diffCls};padding:2px 6px;border-radius:4px;font-size:9px;">${g.diff}</div>
+    </div>`;
+  });
+  el.innerHTML = `
+    <div class="home-hero">
+      <h1>Welcome to LogicLab 🧠</h1>
+      <p>A complete interactive brain-training hub with 20 logic games. Earn points by solving each game. Start from 0 and climb the leaderboard!</p>
+      <div class="stats-row">
+        <div class="stat-pill"><div class="num">20</div><div class="lbl">Games</div></div>
+        <div class="stat-pill"><div class="num" id="home-pts">${totalPoints}</div><div class="lbl">Your Points</div></div>
+        <div class="stat-pill"><div class="num" id="home-done">${earnedGames.size}</div><div class="lbl">Completed</div></div>
+        <div class="stat-pill"><div class="num">${GAMES.reduce((a,b)=>a+b.pts,0)}</div><div class="lbl">Max Points</div></div>
+      </div>
+    </div>
+    <div class="sec-title">All Games — Click to Play</div>
+    <div class="games-grid">${grid}</div>`;
+}
+
+// ============================
+// GAME WRAPPER
+// ============================
+function gameWrap(g, howTo, bodyHtml, statsHtml='') {
+  return `<div class="game-panel">
+    <div class="game-header">
+      <div><div class="game-title-row"><div class="game-title">${g.icon} ${g.name}</div><div class="game-pts-badge">+${g.pts} pts</div></div></div>
+    </div>
+    <div class="game-subtitle">${g.cat} · ${g.diff} difficulty</div>
+    <div class="how-to-play"><strong>📖 How to Play</strong><ul>${howTo}</ul></div>
+    ${statsHtml}
+    <div class="game-body" id="gb-${g.id}"></div>
+  </div>`;
+}
+
+// ============================
+// 1. TOWERS OF HANOI
+// ============================
+let han = {};
+function init_hanoi(){han={pegs:[[4,3,2,1],[],[]],sel:null,moves:0,solved:false,disks:4};}
+function render_hanoi(){
+  const g=GAMES.find(x=>x.id==='hanoi');
+  const min=Math.pow(2,han.disks)-1;
+  document.getElementById('content').innerHTML=gameWrap(g,
+    '<li>Move all disks from peg A to peg C.</li><li>Click a peg to select it, click another to move.</li><li>A larger disk may never go on top of a smaller one.</li><li>Solve in '+min+' moves for maximum points.</li>',
+    '', `<div class="score-bar"><div class="sc">Moves: <strong id="han-m">0</strong></div><div class="sc">Min: <strong>${min}</strong></div><div class="sc">Disks: <strong>${han.disks}</strong></div></div>`);
+  drawHanoi();
+}
+function drawHanoi(){
+  const gb=document.getElementById('gb-hanoi'); if(!gb)return;
+  const min=Math.pow(2,han.disks)-1;
+  let html=han.solved?`<div class="msg ok">✅ Solved in ${han.moves} moves! ${han.moves===min?'Perfect!':''}</div>`:'';
+  html+=`<canvas id="han-c" width="480" height="220"></canvas>
+  <div class="peg-btns">
+    <button class="pbtn${han.sel===0?' sel':''}" onclick="hanSel(0)">Peg A</button>
+    <button class="pbtn${han.sel===1?' sel':''}" onclick="hanSel(1)">Peg B</button>
+    <button class="pbtn${han.sel===2?' sel':''}" onclick="hanSel(2)">Peg C</button>
+  </div>
+  <div class="btn-row" style="justify-content:center;margin-top:10px;">
+    <button class="btn" onclick="init_hanoi();init_hanoi_d(3)">3 Disks</button>
+    <button class="btn" onclick="init_hanoi_d(4)">4 Disks</button>
+    <button class="btn" onclick="init_hanoi_d(5)">5 Disks</button>
+    <button class="btn primary" onclick="init_hanoi();render_hanoi()">↺ Reset</button>
+  </div>`;
+  gb.innerHTML=html;
+  const c=document.getElementById('han-c'); if(!c)return;
+  const ctx=c.getContext('2d');
+  const W=480,H=220;
+  ctx.clearRect(0,0,W,H);
+  const cols=['#6366F1','#EC4899','#10B981','#F59E0B','#EF4444'];
+  const px=[W*.18,W*.5,W*.82];
+  const baseY=H-26;
+  ctx.fillStyle='#D6D3CB'; ctx.fillRect(20,baseY,W-40,8); ctx.fillRect(20,baseY+8,W-40,2);
+  px.forEach((x,pi)=>{
+    ctx.fillStyle=han.sel===pi?'#F59E0B':'#78716C';
+    ctx.fillRect(x-5,baseY-H+50,10,H-50);
+    han.pegs[pi].forEach((d,di)=>{
+      const w=20+d*28,y=baseY-(di+1)*22;
+      ctx.beginPath(); ctx.roundRect(x-w/2,y,w,20,8); ctx.fillStyle=cols[d-1]||'#6366F1'; ctx.fill();
+    });
+    ctx.fillStyle='#1C1917'; ctx.font='bold 13px Nunito,sans-serif'; ctx.textAlign='center';
+    ctx.fillText(['A','B','C'][pi],x,H-5);
+  });
+  if(document.getElementById('han-m')) document.getElementById('han-m').textContent=han.moves;
+}
+function init_hanoi_d(d){han.disks=d;const a=[];for(let i=d;i>=1;i--)a.push(i);han.pegs=[a,[],[]];han.sel=null;han.moves=0;han.solved=false;render_hanoi();}
+window.hanSel=function(i){
+  if(han.solved)return;
+  if(han.sel===null){if(!han.pegs[i].length)return;han.sel=i;}
+  else if(han.sel===i){han.sel=null;}
+  else{
+    const f=han.pegs[han.sel],t=han.pegs[i],top=f[f.length-1];
+    if(!t.length||t[t.length-1]>top){t.push(f.pop());han.moves++;han.sel=null;
+      if(han.pegs[2].length===han.disks){han.solved=true;if(!earnedGames.has('hanoi')){earnedGames.add('hanoi');addPoints(GAMES.find(x=>x.id==='hanoi').pts);}}
+    }else{han.sel=i;}
+  }
+  drawHanoi();
+};
+
+// ============================
+// 2. BINARY PUZZLE
+// ============================
+let bin={};
+const BIN_SOL=[[0,1,0,1,1,0],[1,0,1,0,0,1],[0,1,1,0,1,0],[1,0,0,1,0,1],[1,1,0,0,1,0],[0,0,1,1,0,1]];
+function init_binary(){
+  bin.grid=BIN_SOL.map(r=>[...r]);
+  bin.fixed=BIN_SOL.map(r=>r.map(()=>Math.random()<0.45));
+  bin.errors=new Set();bin.solved=false;
+}
+function render_binary(){
+  const g=GAMES.find(x=>x.id==='binary');
+  document.getElementById('content').innerHTML=gameWrap(g,
+    '<li>Fill the 6×6 grid with 0s and 1s.</li><li>Each row and column must have exactly three 0s and three 1s.</li><li>No three consecutive same values in a row or column.</li><li>Shaded cells are fixed — click empty cells to toggle.</li>','');
+  drawBinary();
+}
+function drawBinary(){
+  const gb=document.getElementById('gb-binary'); if(!gb)return;
+  const done=BIN_SOL.every((r,ri)=>r.every((v,ci)=>bin.grid[ri][ci]===v));
+  let html='';
+  if(done&&!bin.solved){bin.solved=true;if(!earnedGames.has('binary')){earnedGames.add('binary');addPoints(GAMES.find(x=>x.id==='binary').pts);}html+=`<div class="msg ok">✅ Perfect! Binary puzzle solved!</div>`;}
+  else if(bin.errors.size)html+=`<div class="msg err">⚠️ Some cells are incorrect — keep thinking!</div>`;
+  html+=`<div id="bin-grid" style="grid-template-columns:repeat(6,46px);">`;
+  for(let r=0;r<6;r++)for(let c=0;c<6;c++){
+    const v=bin.grid[r][c],fix=bin.fixed[r][c],err=bin.errors.has(`${r},${c}`);
+    html+=`<div class="bc${fix?' fixed':''}${v===0?' v0':v===1?' v1':''}${err?' berr':''}" onclick="binClick(${r},${c})">${v===null||v===undefined?'':v}</div>`;
+  }
+  html+=`</div><div class="btn-row" style="justify-content:center;"><button class="btn primary" onclick="init_binary();render_binary()">↺ New Puzzle</button></div>`;
+  gb.innerHTML=html;
+}
+window.binClick=function(r,c){
+  if(bin.fixed[r][c])return;
+  bin.grid[r][c]=bin.grid[r][c]===null||bin.grid[r][c]===undefined?0:1-bin.grid[r][c];
+  bin.errors=new Set();
+  BIN_SOL.forEach((row,ri)=>row.forEach((v,ci)=>{if(!bin.fixed[ri][ci]&&bin.grid[ri][ci]!==undefined&&bin.grid[ri][ci]!==null&&bin.grid[ri][ci]!==v)bin.errors.add(`${ri},${ci}`);}));
+  drawBinary();
+};
+
+// ============================
+// 3. SUDOKU (mini 4x4)
+// ============================
+const SDK_SOL=[[3,1,2,4],[4,2,3,1],[1,3,4,2],[2,4,1,3]];
+let sdk={};
+function init_sudoku(){
+  sdk.grid=SDK_SOL.map(r=>[...r]);
+  sdk.fixed=SDK_SOL.map(r=>r.map(()=>Math.random()<0.5));
+  sdk.sel=null;sdk.solved=false;
+}
+function render_sudoku(){
+  const g=GAMES.find(x=>x.id==='sudoku');
+  document.getElementById('content').innerHTML=gameWrap(g,
+    '<li>Fill the 4×4 grid so each row, column, and 2×2 box has 1–4 exactly once.</li><li>Click a cell to select, then click a number button to fill.</li><li>Gray cells are fixed — work around them.</li>','');
+  drawSudoku();
+}
+function drawSudoku(){
+  const gb=document.getElementById('gb-sudoku');if(!gb)return;
+  let html=`<div id="sudoku-grid" style="grid-template-columns:repeat(4,42px);border:3px solid #374151;width:fit-content;display:grid;gap:0;margin:0 auto 14px;">`;
+  for(let r=0;r<4;r++)for(let c=0;c<4;c++){
+    const v=sdk.grid[r][c],fix=sdk.fixed[r][c],isSel=sdk.sel&&sdk.sel[0]===r&&sdk.sel[1]===c;
+    const br=c===1?'border-right:3px solid #374151;':'',bb=r===1?'border-bottom:3px solid #374151;':'';
+    const bg=fix?'background:#F0ECE0;cursor:default':isSel?'background:#FEF3C7;':'background:#fff;cursor:pointer';
+    const wrong=!fix&&v&&v!==SDK_SOL[r][c];
+    html+=`<div class="sk${fix?' fixed':''}" style="${bg};${br}${bb}${wrong?'background:#FEE2E2;color:#991B1B;':''}" onclick="sdkSel(${r},${c})">${v||''}</div>`;
+  }
+  html+=`</div>`;
+  html+=`<div style="display:flex;gap:8px;justify-content:center;margin-bottom:12px;">`;
+  [1,2,3,4].forEach(n=>html+=`<button class="btn" style="width:48px;font-size:18px;font-family:var(--mono);font-weight:800;" onclick="sdkFill(${n})">${n}</button>`);
+  html+=`<button class="btn" onclick="sdkFill(null)" style="font-size:16px;">✕</button></div>`;
+  const done=SDK_SOL.every((r,ri)=>r.every((v,ci)=>sdk.grid[ri][ci]===v));
+  if(done&&!sdk.solved){sdk.solved=true;if(!earnedGames.has('sudoku')){earnedGames.add('sudoku');addPoints(GAMES.find(x=>x.id==='sudoku').pts);}html+=`<div class="msg ok">✅ Sudoku solved! Brilliant!</div>`;}
+  html+=`<button class="btn primary" onclick="init_sudoku();render_sudoku()">↺ New Puzzle</button>`;
+  gb.innerHTML=html;
+}
+window.sdkSel=function(r,c){if(!sdk.fixed[r][c])sdk.sel=[r,c];drawSudoku();};
+window.sdkFill=function(v){if(!sdk.sel)return;const[r,c]=sdk.sel;if(!sdk.fixed[r][c]){sdk.grid[r][c]=v;drawSudoku();}};
+
+// ============================
+// 4. MASTERMIND
+// ============================
+const MM_C=['#6366F1','#EF4444','#10B981','#F59E0B','#EC4899','#3B82F6'];
+let mm={};
+function init_mastermind(){
+  const pool=[...MM_C];const s=[];
+  for(let i=0;i<4;i++){const idx=Math.floor(Math.random()*pool.length);s.push(pool.splice(idx,1)[0]);}
+  mm={secret:s,rows:[],cur:Array(4).fill(null),chosen:null,solved:false,failed:false};
+}
+function render_mastermind(){
+  const g=GAMES.find(x=>x.id==='mastermind');
+  document.getElementById('content').innerHTML=gameWrap(g,
+    '<li>Guess the secret 4-color code (all colors unique).</li><li>Pick a color from the palette, then click a slot to place it.</li><li>● = right color right spot. ○ = right color wrong spot.</li><li>You have 10 attempts. Deduce the code!</li>','');
+  drawMM();
+}
+function drawMM(){
+  const gb=document.getElementById('gb-mastermind');if(!gb)return;
+  let html='';
+  if(mm.solved)html+=`<div class="msg ok">✅ Cracked in ${mm.rows.length} guesses!</div>`;
+  if(mm.failed)html+=`<div class="msg err">❌ The code was: ${mm.secret.map(c=>`<span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:${c};vertical-align:middle;margin:0 2px;"></span>`).join('')}</div>`;
+  html+=`<div class="mm-board">`;
+  for(let i=9;i>=0;i--){
+    const row=mm.rows[mm.rows.length-1-i]||null;
+    if(!row&&mm.rows.length+i<10&&!mm.solved&&!mm.failed)continue;
+    if(row){
+      html+=`<div class="mmrow">`;
+      row.guess.forEach(c=>html+=`<div class="mmp" style="background:${c};border-color:${c};"></div>`);
+      html+=`<div class="mmfb">`;
+      for(let j=0;j<4;j++){
+        let cls='mmfbd';
+        if(j<row.blacks)cls+=' blk';
+        else if(j<row.blacks+row.whites)cls+=' wht';
+        html+=`<div class="${cls}"></div>`;
+      }
+      html+=`</div><span style="font-size:11px;color:var(--muted);margin-left:6px;">${row.blacks}● ${row.whites}○</span></div>`;
+    }
+  }
+  if(!mm.solved&&!mm.failed){
+    html+=`<div class="mm-cur">`;
+    mm.cur.forEach((c,i)=>html+=`<div class="cur-peg" style="${c?'background:'+c+';border:2px solid '+c+';':''}" onclick="mmPlace(${i})"></div>`);
+    html+=`</div>`;
+    html+=`<div class="mm-colors">`;
+    MM_C.forEach(c=>html+=`<div class="mmcb${mm.chosen===c?' chosen':''}" style="background:${c};" onclick="mmPick('${c}')"></div>`);
+    html+=`</div>`;
+    html+=`<div style="text-align:center;"><button class="btn primary" onclick="mmSubmit()">Submit Guess</button></div>`;
+  }
+  html+=`</div><div class="btn-row" style="justify-content:center;margin-top:10px;"><button class="btn" onclick="init_mastermind();render_mastermind()">↺ New Game</button></div>`;
+  gb.innerHTML=html;
+}
+window.mmPick=function(c){mm.chosen=c;drawMM();};
+window.mmPlace=function(i){if(!mm.chosen||mm.solved||mm.failed)return;mm.cur[i]=mm.chosen;drawMM();};
+window.mmSubmit=function(){
+  if(mm.cur.includes(null))return;
+  const guess=[...mm.cur],s=mm.secret;
+  let blk=0,wht=0;const uS=Array(4).fill(false),uG=Array(4).fill(false);
+  guess.forEach((c,i)=>{if(c===s[i]){blk++;uS[i]=uG[i]=true;}});
+  guess.forEach((c,i)=>{if(uG[i])return;s.forEach((sc,si)=>{if(!uS[si]&&!uG[i]&&c===sc){wht++;uS[si]=uG[i]=true;}});});
+  mm.rows.push({guess,blacks:blk,whites:wht});
+  if(blk===4){mm.solved=true;if(!earnedGames.has('mastermind')){earnedGames.add('mastermind');addPoints(GAMES.find(x=>x.id==='mastermind').pts);}}
+  else if(mm.rows.length>=10)mm.failed=true;
+  mm.cur=Array(4).fill(null);mm.chosen=null;drawMM();
+};
+
+// ============================
+// 5. SEQUENCES
+// ============================
+const SEQS=[
+  {s:[2,4,8,16,32],a:64,opts:[60,62,64,68],rule:'×2 each step (geometric)'},
+  {s:[1,1,2,3,5],a:8,opts:[7,8,9,10],rule:'Fibonacci (add previous two)'},
+  {s:[1,4,9,16,25],a:36,opts:[30,34,36,40],rule:'Perfect squares (n²)'},
+  {s:[2,3,5,7,11],a:13,opts:[12,13,14,15],rule:'Prime numbers'},
+  {s:[3,6,11,18,27],a:38,opts:[35,36,38,40],rule:'+3,+5,+7,+9,+11 (odd increments)'},
+  {s:[1,2,4,7,11],a:16,opts:[14,15,16,17],rule:'+1,+2,+3,+4,+5 (increasing)'},
+  {s:[100,50,25],a:13,opts:[11,12,13,14],rule:'÷2 rounded down'},
+  {s:[0,1,3,6,10],a:15,opts:[13,14,15,16],rule:'Triangular numbers'},
+  {s:[1,8,27,64],a:125,opts:[100,115,125,130],rule:'Perfect cubes (n³)'},
+  {s:[5,10,20,40],a:80,opts:[70,80,90,100],rule:'×2 each step'},
+];
+let seq={idx:0,answered:false,correct:0,total:0};
+function init_sequence(){seq={idx:0,answered:false,correct:0,total:0};}
+function render_sequence(){
+  const g=GAMES.find(x=>x.id==='sequence');
+  document.getElementById('content').innerHTML=gameWrap(g,
+    '<li>Identify the pattern in each number sequence.</li><li>Choose the correct next number from the 4 options.</li><li>Get 7+ correct out of 10 to earn points!</li><li>Read carefully — patterns can be tricky.</li>',
+    '',`<div class="score-bar"><div class="sc">Score: <strong>${seq.correct}/${seq.total}</strong></div><div class="sc">Remaining: <strong>${SEQS.length-seq.idx}</strong></div></div>`);
+  drawSeq();
+}
+function drawSeq(){
+  const gb=document.getElementById('gb-sequence');if(!gb)return;
+  if(seq.idx>=SEQS.length){
+    const pts=seq.correct>=7?GAMES.find(x=>x.id==='sequence').pts:0;
+    gb.innerHTML=`<div class="msg${seq.correct>=7?' ok':' err'}">${seq.correct>=7?'✅':'❌'} Final Score: ${seq.correct}/${SEQS.length} ${seq.correct>=7?'— Points Earned!':'— Need 7+ to earn points'}</div>
+    <button class="btn primary" onclick="init_sequence();render_sequence()">Play Again</button>`;
+    if(seq.correct>=7&&!earnedGames.has('sequence')){earnedGames.add('sequence');addPoints(pts);}
+    return;
+  }
+  const s=SEQS[seq.idx];
+  const shuffled=[...s.opts].sort(()=>Math.random()-.5);
+  gb.innerHTML=`<div class="seq-display">${s.s.join('   ')}   <span style="color:#FCD34D">?</span></div>
+  <div class="seq-opts" id="seq-opts">
+    ${shuffled.map(o=>`<button class="seq-opt" onclick="ansSeq(${o})">${o}</button>`).join('')}
+  </div>
+  ${seq.answered?`<div class="msg info">💡 Rule: ${s.rule}</div><button class="btn primary" onclick="nextSeq()">Next →</button>`:''}`;
+}
+window.ansSeq=function(v){
+  if(seq.answered)return;
+  seq.answered=true;seq.total++;
+  const s=SEQS[seq.idx];
+  if(v===s.a)seq.correct++;
+  document.querySelectorAll('.seq-opt').forEach(b=>{
+    const n=parseInt(b.textContent);
+    if(n===s.a)b.classList.add('correct');
+    else if(n===v&&v!==s.a)b.classList.add('wrong');
+    b.disabled=true;
+  });
+  drawSeq();
+};
+window.nextSeq=function(){seq.idx++;seq.answered=false;drawSeq();};
+
+// ============================
+// 6. WORDLE
+// ============================
+const WORDS=['BRAIN','LOGIC','THINK','CHESS','SMART','PUZZLE','SOLVE','CODES','CLUES','MINDS'];
+const WORD5=['BRAIN','LOGIC','THINK','CHESS','SMART','SOLVE','CLUES','MINDS','DIGIT','PRIME'];
+let wrd={};
+function init_wordle(){
+  const w=WORD5[Math.floor(Math.random()*WORD5.length)];
+  wrd={word:w,guesses:[],cur:'',won:false,lost:false,keys:{}};
+}
+function render_wordle(){
+  const g=GAMES.find(x=>x.id==='wordle');
+  document.getElementById('content').innerHTML=gameWrap(g,
+    '<li>Guess the 5-letter logic word in 6 tries.</li><li>🟩 Green = right letter, right spot.</li><li>🟨 Yellow = right letter, wrong spot.</li><li>⬜ Gray = letter not in word.</li><li>Type letters using the on-screen keyboard.</li>','');
+  drawWordle();
+}
+function drawWordle(){
+  const gb=document.getElementById('gb-wordle');if(!gb)return;
+  if(wrd.won&&!earnedGames.has('wordle')){earnedGames.add('wordle');addPoints(GAMES.find(x=>x.id==='wordle').pts);}
+  let rows='';
+  for(let r=0;r<6;r++){
+    rows+=`<div class="wrow">`;
+    const g=wrd.guesses[r];
+    for(let c=0;c<5;c++){
+      let cls='wc',ch='';
+      if(g){ch=g.result[c].ch;cls='wc '+g.result[c].cls;}
+      else if(r===wrd.guesses.length&&!wrd.won&&!wrd.lost){ch=wrd.cur[c]||'';if(ch)cls='wc filled';}
+      rows+=`<div class="${cls}">${ch}</div>`;
+    }
+    rows+=`</div>`;
+  }
+  const krows=[['Q','W','E','R','T','Y','U','I','O','P'],['A','S','D','F','G','H','J','K','L'],['ENTER','Z','X','C','V','B','N','M','⌫']];
+  let kbd=`<div class="w-keyboard">`;
+  krows.forEach(row=>{
+    kbd+=`<div class="w-krow">`;
+    row.forEach(k=>{
+      const st=wrd.keys[k]||'';
+      kbd+=`<div class="wkey${st?' k'+st[0]:''}" onclick="wrdKey('${k}')">${k}</div>`;
+    });
+    kbd+=`</div>`;
+  });
+  kbd+=`</div>`;
+  let msg='';
+  if(wrd.won)msg=`<div class="msg ok">✅ Correct! The word was ${wrd.word}!</div>`;
+  if(wrd.lost)msg=`<div class="msg err">❌ The word was <b>${wrd.word}</b></div>`;
+  gb.innerHTML=`${msg}<div id="wordle-grid" style="display:flex;flex-direction:column;gap:6px;align-items:center;margin-bottom:12px;">${rows}</div>${kbd}
+  <div class="btn-row" style="justify-content:center;margin-top:10px;"><button class="btn primary" onclick="init_wordle();render_wordle()">↺ New Word</button></div>`;
+}
+window.wrdKey=function(k){
+  if(wrd.won||wrd.lost)return;
+  if(k==='⌫'||k==='BACKSPACE'){wrd.cur=wrd.cur.slice(0,-1);}
+  else if(k==='ENTER'){
+    if(wrd.cur.length!==5)return;
+    const res=[];
+    const wordArr=[...wrd.word];
+    const used=Array(5).fill(false);
+    wrd.cur.split('').forEach((ch,i)=>{if(ch===wordArr[i]){res[i]={ch,cls:'correct'};used[i]=true;}else res[i]={ch,cls:'absent'};});
+    wrd.cur.split('').forEach((ch,i)=>{if(res[i].cls==='correct')return;const fi=wordArr.findIndex((wc,wi)=>!used[wi]&&wc===ch);if(fi>=0){res[i].cls='present';used[fi]=true;}});
+    res.forEach(r=>{if(!wrd.keys[r.ch]||wrd.keys[r.ch]==='absent')wrd.keys[r.ch]=r.cls;});
+    wrd.guesses.push({word:wrd.cur,result:res});
+    if(wrd.cur===wrd.word)wrd.won=true;
+    else if(wrd.guesses.length>=6)wrd.lost=true;
+    wrd.cur='';
+  }else if(wrd.cur.length<5&&/^[A-Z]$/.test(k)){wrd.cur+=k;}
+  drawWordle();
+};
+document.addEventListener('keydown',e=>{if(currentGame==='wordle'){const k=e.key.toUpperCase();if(k==='ENTER'||k==='BACKSPACE'||/^[A-Z]$/.test(k))wrdKey(k==='BACKSPACE'?'⌫':k);}});
+
+// ============================
+// 7. LOGIC GRID
+// ============================
+const DED_P={
+  clues:['Alice drinks <b>tea</b> and owns a <b>dog</b>.','Bob drinks <b>coffee</b> — his pet is NOT a cat.','Carol drinks <b>milk</b>.','Dave drinks <b>water</b> and owns a <b>bird</b>.','The juice drinker owns a <b>cat</b>.','Eve drinks what remains — and owns the <b>fish</b>.','Bob owns the remaining pet.'],
+  people:['Alice','Bob','Carol','Dave','Eve'],
+  attrs:['Dog','Cat','Bird','Fish','Hamster'],
+  sol:{Alice:'Dog',Bob:'Hamster',Carol:'Cat',Dave:'Bird',Eve:'Fish'},
+  q:'Who owns the fish?'
+};
+let ded={grid:{},revealed:false};
+function init_deduction(){ded={grid:{},revealed:false};DED_P.people.forEach(p=>DED_P.attrs.forEach(a=>{ded.grid[p+','+a]=null;}));}
+function render_deduction(){
+  const g=GAMES.find(x=>x.id==='deduction');
+  document.getElementById('content').innerHTML=gameWrap(g,
+    '<li>Read the clues carefully and deduce who owns the fish.</li><li>Click a cell once for ✓ (yes), again for ✗ (no), again to clear.</li><li>Each person has exactly one unique pet.</li><li>Use elimination — if you know Alice has a Dog, mark all other pets as ✗ for Alice.</li>','');
+  drawDed();
+}
+function drawDed(){
+  const gb=document.getElementById('gb-deduction');if(!gb)return;
+  let html=`<div class="clue-box"><b>Clues:</b><ul style="margin-left:14px;">`;
+  DED_P.clues.forEach(c=>html+=`<li>${c}</li>`);
+  html+=`</ul></div><table class="ded-table"><tr><th></th>`;
+  DED_P.attrs.forEach(a=>html+=`<th>${a}</th>`);
+  html+=`</tr>`;
+  DED_P.people.forEach(p=>{
+    html+=`<tr><td class="ded-label">${p}</td>`;
+    DED_P.attrs.forEach(a=>{
+      const v=ded.grid[p+','+a];
+      let cls='ded-cell',lbl='·';
+      if(ded.revealed&&DED_P.sol[p]===a){cls+=' yes';lbl='✓';}
+      else if(v==='yes'){cls+=' yes';lbl='✓';}
+      else if(v==='no'){cls+=' no';lbl='✗';}
+      html+=`<td><div class="${cls}" onclick="dedClick('${p}','${a}')">${lbl}</div></td>`;
+    });
+    html+=`</tr>`;
+  });
+  html+=`</table>`;
+  if(ded.revealed){html+=`<div class="msg ok">✅ Answer: Eve owns the Fish!</div>`;}
+  html+=`<div class="btn-row" style="justify-content:center;"><button class="btn primary" onclick="checkDed()">Check / Reveal</button><button class="btn" onclick="init_deduction();render_deduction()">↺ Reset</button></div>`;
+  gb.innerHTML=html;
+}
+window.dedClick=function(p,a){
+  if(ded.revealed)return;
+  const k=p+','+a,v=ded.grid[k];
+  ded.grid[k]=v===null?'yes':v==='yes'?'no':null;
+  drawDed();
+};
+window.checkDed=function(){
+  let ok=true;DED_P.people.forEach(p=>{if(ded.grid[p+','+DED_P.sol[p]]!=='yes')ok=false;});
+  ded.revealed=true;
+  if(ok&&!earnedGames.has('deduction')){earnedGames.add('deduction');addPoints(GAMES.find(x=>x.id==='deduction').pts);}
+  drawDed();
+};
+
+// ============================
+// 8. MEMORY MATCH
+// ============================
+const MEM_EMOJIS=['🦁','🐯','🦊','🐻','🦄','🐸','🐙','🦋'];
+let mem={};
+function init_memory(){
+  const pairs=[...MEM_EMOJIS,...MEM_EMOJIS].sort(()=>Math.random()-.5);
+  mem={cards:pairs.map((e,i)=>({id:i,emoji:e,revealed:false,matched:false})),flipped:[],moves:0,won:false};
+}
+function render_memory(){
+  const g=GAMES.find(x=>x.id==='memory');
+  document.getElementById('content').innerHTML=gameWrap(g,
+    '<li>Flip cards to find matching pairs of emojis.</li><li>Click any face-down card to reveal it.</li><li>Two cards are flipped at a time — if they match, they stay face-up.</li><li>Match all 8 pairs to win!</li>',
+    '',`<div class="score-bar"><div class="sc">Moves: <strong id="mem-moves">0</strong></div><div class="sc">Pairs: <strong id="mem-pairs">0</strong></div></div>`);
+  drawMem();
+}
+function drawMem(){
+  const gb=document.getElementById('gb-memory');if(!gb)return;
+  const matched=mem.cards.filter(c=>c.matched).length/2;
+  if(matched===8&&!mem.won){mem.won=true;if(!earnedGames.has('memory')){earnedGames.add('memory');addPoints(GAMES.find(x=>x.id==='memory').pts);}}
+  let html=mem.won?`<div class="msg ok">✅ All pairs matched in ${mem.moves} moves!</div>`:'';
+  html+=`<div class="mem-grid" style="grid-template-columns:repeat(4,64px);">`;
+  mem.cards.forEach((c,i)=>{
+    const show=c.revealed||c.matched||mem.flipped.includes(i);
+    html+=`<div class="mem-card${c.matched?' matched':show?' revealed':''}" onclick="memFlip(${i})"><span>${c.emoji}</span></div>`;
+  });
+  html+=`</div>`;
+  html+=`<div class="score-bar"><div class="sc">Moves: <strong>${mem.moves}</strong></div><div class="sc">Pairs: <strong>${matched}/8</strong></div></div>`;
+  html+=`<button class="btn primary" onclick="init_memory();render_memory()">↺ New Game</button>`;
+  gb.innerHTML=html;
+}
+window.memFlip=function(i){
+  const c=mem.cards[i];if(c.matched||mem.flipped.includes(i)||mem.flipped.length>=2)return;
+  mem.flipped.push(i);
+  if(mem.flipped.length===2){
+    mem.moves++;
+    const[a,b]=mem.flipped;
+    if(mem.cards[a].emoji===mem.cards[b].emoji){mem.cards[a].matched=mem.cards[b].matched=true;mem.flipped=[];}
+    else{setTimeout(()=>{mem.flipped=[];drawMem();},900);}
+  }
+  drawMem();
+};
+
+// ============================
+// 9. ARITHMETIC BLITZ
+// ============================
+let arith={q:null,score:0,total:0,timer:0,interval:null,answered:false,done:false};
+function init_arithmetic(){arith={q:null,score:0,total:0,timer:0,interval:null,answered:false,done:false};}
+function render_arithmetic(){
+  const g=GAMES.find(x=>x.id==='arithmetic');
+  document.getElementById('content').innerHTML=gameWrap(g,
+    '<li>Answer 10 math questions as fast as you can!</li><li>4 answer options — pick the correct one.</li><li>You have 8 seconds per question.</li><li>Get 7+ correct to earn points!</li>',
+    '',`<div class="score-bar"><div class="sc">Score: <strong id="arith-sc">0</strong>/10</div><div class="sc">Time: <strong id="arith-tm">8s</strong></div></div>`);
+  nextArith();
+}
+function genQ(){
+  const ops=['+','-','×'];const op=ops[Math.floor(Math.random()*ops.length)];
+  let a,b,ans;
+  if(op==='+'){a=Math.floor(Math.random()*50)+1;b=Math.floor(Math.random()*50)+1;ans=a+b;}
+  else if(op==='-'){a=Math.floor(Math.random()*50)+20;b=Math.floor(Math.random()*20)+1;ans=a-b;}
+  else{a=Math.floor(Math.random()*12)+1;b=Math.floor(Math.random()*12)+1;ans=a*b;}
+  const wrongs=new Set();while(wrongs.size<3){const w=ans+Math.floor(Math.random()*20)-10;if(w!==ans&&w>0)wrongs.add(w);}
+  const opts=[ans,...wrongs].sort(()=>Math.random()-.5);
+  return{text:`${a} ${op} ${b} = ?`,ans,opts};
+}
+function nextArith(){
+  if(arith.total>=10){arith.done=true;clearInterval(arith.interval);
+    const gb=document.getElementById('gb-arithmetic');if(!gb)return;
+    const pts=arith.score>=7?GAMES.find(x=>x.id==='arithmetic').pts:0;
+    gb.innerHTML=`<div class="msg${arith.score>=7?' ok':' err'}">${arith.score>=7?'✅':'❌'} Final: ${arith.score}/10 ${arith.score>=7?'— Points Earned!':''}</div>
+    <button class="btn primary" onclick="init_arithmetic();render_arithmetic()">Play Again</button>`;
+    if(arith.score>=7&&!earnedGames.has('arithmetic')){earnedGames.add('arithmetic');addPoints(pts);}
+    return;
+  }
+  arith.q=genQ();arith.answered=false;arith.timer=8;
+  clearInterval(arith.interval);
+  arith.interval=setInterval(()=>{
+    arith.timer--;
+    const el=document.getElementById('arith-tm');if(el)el.textContent=arith.timer+'s';
+    const fill=document.getElementById('arith-fill');if(fill)fill.style.width=(arith.timer/8*100)+'%';
+    if(arith.timer<=0){clearInterval(arith.interval);arith.total++;setTimeout(nextArith,500);}
+  },1000);
+  drawArith();
+}
+function drawArith(){
+  const gb=document.getElementById('gb-arithmetic');if(!gb)return;
+  gb.innerHTML=`<div class="timer-bar"><div id="arith-fill" style="width:${arith.timer/8*100}%;height:100%;background:linear-gradient(to right,#10B981,#F59E0B,#EF4444);border-radius:3px;transition:width .1s linear;"></div></div>
+  <div class="arith-q">${arith.q.text}</div>
+  <div class="arith-opts">${arith.q.opts.map(o=>`<div class="arith-opt" onclick="ansArith(${o})">${o}</div>`).join('')}</div>
+  <div class="score-bar" style="margin-top:12px;"><div class="sc">Score: <strong>${arith.score}</strong>/10</div><div class="sc">Time: <strong id="arith-tm">${arith.timer}s</strong></div></div>`;
+}
+window.ansArith=function(v){
+  if(arith.answered)return;arith.answered=true;clearInterval(arith.interval);arith.total++;
+  if(v===arith.q.ans)arith.score++;
+  document.querySelectorAll('.arith-opt').forEach(b=>{
+    if(parseInt(b.textContent)===arith.q.ans)b.classList.add('correct');
+    else if(parseInt(b.textContent)===v)b.classList.add('wrong');
+    b.disabled=true;
+  });
+  setTimeout(nextArith,700);
+};
+
+// ============================
+// 10. TRUTH TABLES
+// ============================
+const TT_QS=[
+  {q:'TRUE AND FALSE = ?',a:'FALSE',opts:['TRUE','FALSE']},
+  {q:'TRUE OR FALSE = ?',a:'TRUE',opts:['TRUE','FALSE']},
+  {q:'NOT TRUE = ?',a:'FALSE',opts:['TRUE','FALSE']},
+  {q:'FALSE AND FALSE = ?',a:'FALSE',opts:['TRUE','FALSE']},
+  {q:'NOT FALSE = ?',a:'TRUE',opts:['TRUE','FALSE']},
+  {q:'TRUE AND TRUE = ?',a:'TRUE',opts:['TRUE','FALSE']},
+  {q:'TRUE OR TRUE = ?',a:'TRUE',opts:['TRUE','FALSE']},
+  {q:'FALSE OR FALSE = ?',a:'FALSE',opts:['TRUE','FALSE']},
+  {q:'NOT (TRUE AND FALSE) = ?',a:'TRUE',opts:['TRUE','FALSE']},
+  {q:'NOT (TRUE OR FALSE) = ?',a:'FALSE',opts:['TRUE','FALSE']},
+  {q:'(TRUE AND TRUE) OR FALSE = ?',a:'TRUE',opts:['TRUE','FALSE']},
+  {q:'NOT (FALSE OR FALSE) = ?',a:'TRUE',opts:['TRUE','FALSE']},
+];
+let tt={idx:0,score:0,answered:false};
+function init_truthtable(){tt={idx:0,score:0,answered:false};}
+function render_truthtable(){
+  const g=GAMES.find(x=>x.id==='truthtable');
+  document.getElementById('content').innerHTML=gameWrap(g,
+    '<li>Evaluate Boolean logic expressions.</li><li>AND: both must be true. OR: at least one true. NOT: flips the value.</li><li>Answer TRUE or FALSE for each question.</li><li>Get 8+ out of 12 to earn points!</li>','');
+  drawTT();
+}
+function drawTT(){
+  const gb=document.getElementById('gb-truthtable');if(!gb)return;
+  if(tt.idx>=TT_QS.length){
+    const ok=tt.score>=8;
+    gb.innerHTML=`<div class="msg${ok?' ok':' err'}">${ok?'✅':'❌'} Score: ${tt.score}/${TT_QS.length} ${ok?'— Points Earned!':'— Need 8+ to earn.'}</div>
+    <button class="btn primary" onclick="init_truthtable();render_truthtable()">Play Again</button>`;
+    if(ok&&!earnedGames.has('truthtable')){earnedGames.add('truthtable');addPoints(GAMES.find(x=>x.id==='truthtable').pts);}
+    return;
+  }
+  const q=TT_QS[tt.idx];
+  gb.innerHTML=`<div class="score-bar"><div class="sc">Question: <strong>${tt.idx+1}/${TT_QS.length}</strong></div><div class="sc">Score: <strong>${tt.score}</strong></div></div>
+  <div class="tt-q">${q.q}</div>
+  <div class="tt-opts">${q.opts.map(o=>`<button class="tt-opt" id="tt-${o}" onclick="ansTT('${o}')">${o}</button>`).join('')}</div>
+  ${tt.answered?`<div style="text-align:center;margin-top:10px;"><button class="btn primary" onclick="nextTT()">Next →</button></div>`:''}`;
+}
+window.ansTT=function(v){
+  if(tt.answered)return;tt.answered=true;
+  const q=TT_QS[tt.idx];
+  if(v===q.a)tt.score++;
+  document.querySelectorAll('.tt-opt').forEach(b=>{
+    if(b.textContent===q.a)b.style.cssText='background:#D1FAE5;border-color:#10B981;color:#065F46;';
+    else if(b.textContent===v)b.style.cssText='background:#FEE2E2;border-color:#EF4444;color:#991B1B;';
+  });
+  drawTT();
+};
+window.nextTT=function(){tt.idx++;tt.answered=false;drawTT();};
+
+// ============================
+// 11. PATTERN MATCH
+// ============================
+const PAT_QS=[
+  {grid:['🔴','🔵','🔴','🔵','🔴','?'],a:'🔵',opts:['🔴','🔵','🟡','🟢'],rule:'Alternating red/blue'},
+  {grid:['🟡','🟡','🔴','🟡','🟡','🔴','🟡','🟡','?'],a:'🔴',opts:['🔵','🔴','🟡','🟢'],rule:'Pattern: 2 yellow, 1 red'},
+  {grid:['⬆️','➡️','⬇️','⬅️','⬆️','?'],a:'➡️',opts:['⬆️','➡️','⬇️','⬅️'],rule:'Clockwise rotation'},
+  {grid:['1','2','4','8','16','?'],a:'32',opts:['24','28','32','64'],rule:'×2 each step'},
+  {grid:['🟢','🟢','🟢','🔴','🟢','🟢','🟢','🔴','?'],a:'🟢',opts:['🔴','🟢','🔵','🟡'],rule:'Pattern repeats every 4'},
+];
+let pat={idx:0,score:0,answered:false};
+function init_pattern(){pat={idx:0,score:0,answered:false};}
+function render_pattern(){
+  const g=GAMES.find(x=>x.id==='pattern');
+  document.getElementById('content').innerHTML=gameWrap(g,
+    '<li>Find the pattern in the grid and choose what comes next.</li><li>Look for repeating sequences, rotations, or math rules.</li><li>Get 4+ out of 5 to earn points!</li>','');
+  drawPat();
+}
+function drawPat(){
+  const gb=document.getElementById('gb-pattern');if(!gb)return;
+  if(pat.idx>=PAT_QS.length){
+    const ok=pat.score>=4;
+    gb.innerHTML=`<div class="msg${ok?' ok':' err'}">${ok?'✅':'❌'} Score: ${pat.score}/${PAT_QS.length} ${ok?'— Points Earned!':''}</div>
+    <button class="btn primary" onclick="init_pattern();render_pattern()">Play Again</button>`;
+    if(ok&&!earnedGames.has('pattern')){earnedGames.add('pattern');addPoints(GAMES.find(x=>x.id==='pattern').pts);}
+    return;
+  }
+  const q=PAT_QS[pat.idx];
+  const cols=Math.min(q.grid.length,6);
+  gb.innerHTML=`<div class="score-bar"><div class="sc">Question: <strong>${pat.idx+1}/${PAT_QS.length}</strong></div><div class="sc">Score: <strong>${pat.score}</strong></div></div>
+  <div class="pat-grid" style="grid-template-columns:repeat(${cols},40px);">
+    ${q.grid.map(c=>`<div class="pat-cell" style="background:#F9F7EF;font-size:${c.length>2?'13':'18'}px;">${c}</div>`).join('')}
+  </div>
+  <div style="text-align:center;font-size:13px;color:var(--muted);margin-bottom:10px;">What comes next?</div>
+  <div class="pat-choice">${q.opts.map(o=>`<button class="pat-btn" id="pat-${o}" onclick="ansPat('${o}')">${o}</button>`).join('')}</div>
+  ${pat.answered?`<div class="msg info">💡 Rule: ${q.rule}</div><button class="btn primary" onclick="nextPat()">Next →</button>`:''}`;
+}
+window.ansPat=function(v){
+  if(pat.answered)return;pat.answered=true;const q=PAT_QS[pat.idx];
+  if(v===q.a)pat.score++;
+  document.querySelectorAll('.pat-btn').forEach(b=>{
+    if(b.textContent===q.a)b.style.cssText='background:#D1FAE5;border-color:#10B981;color:#065F46;';
+    else if(b.textContent===v&&v!==q.a)b.style.cssText='background:#FEE2E2;border-color:#EF4444;';
+  });
+  drawPat();
+};
+window.nextPat=function(){pat.idx++;pat.answered=false;drawPat();};
+
+// ============================
+// 12. SIMON SAYS
+// ============================
+const SIM_C=['#EF4444','#10B981','#F59E0B','#3B82F6'];
+let sim={seq:[],step:0,playerSeq:[],playing:false,won:false,lost:false,round:0};
+function init_simon(){sim={seq:[],step:0,playerSeq:[],playing:false,won:false,lost:false,round:0};}
+function render_simon(){
+  const g=GAMES.find(x=>x.id==='simon');
+  document.getElementById('content').innerHTML=gameWrap(g,
+    '<li>Watch the colored sequence light up, then repeat it.</li><li>Press "Start" to see the pattern.</li><li>Click the same colors in the same order.</li><li>Reach round 5 to win points!</li>',
+    '',`<div class="score-bar"><div class="sc">Round: <strong id="sim-rnd">0</strong></div><div class="sc">Status: <strong id="sim-st">Press Start!</strong></div></div>`);
+  drawSimon();
+}
+function drawSimon(){
+  const gb=document.getElementById('gb-simon');if(!gb)return;
+  let msg='';
+  if(sim.won)msg=`<div class="msg ok">✅ You made it to round 5! Simon mastered!</div>`;
+  if(sim.lost)msg=`<div class="msg err">❌ Wrong! You reached round ${sim.round}.</div>`;
+  gb.innerHTML=`${msg}<div class="simon-grid">
+    ${SIM_C.map((c,i)=>`<div class="simon-btn" id="sim-${i}" style="background:${c}" onclick="simClick(${i})"></div>`).join('')}
+  </div>
+  <div class="score-bar"><div class="sc">Round: <strong>${sim.round}</strong>/5</div><div class="sc" id="sim-st">${sim.playing?'Watch!':'Your turn'}</div></div>
+  <div class="btn-row" style="justify-content:center;">
+    <button class="btn primary" onclick="simStart()">▶ Start / Next Round</button>
+    <button class="btn" onclick="init_simon();render_simon()">↺ Reset</button>
+  </div>`;
+}
+window.simStart=function(){
+  if(sim.playing)return;
+  sim.round++;sim.seq.push(Math.floor(Math.random()*4));sim.playerSeq=[];sim.playing=true;sim.step=0;
+  drawSimon();
+  let i=0;
+  const interval=setInterval(()=>{
+    if(i<sim.seq.length){
+      const btn=document.getElementById('sim-'+sim.seq[i]);
+      if(btn){btn.classList.add('active');setTimeout(()=>btn.classList.remove('active'),400);}
+      i++;
+    }else{clearInterval(interval);sim.playing=false;drawSimon();}
+  },700);
+};
+window.simClick=function(i){
+  if(sim.playing||sim.won||sim.lost)return;
+  const btn=document.getElementById('sim-'+i);
+  if(btn){btn.classList.add('active');setTimeout(()=>btn.classList.remove('active'),200);}
+  sim.playerSeq.push(i);
+  const ci=sim.playerSeq.length-1;
+  if(sim.playerSeq[ci]!==sim.seq[ci]){sim.lost=true;drawSimon();return;}
+  if(sim.playerSeq.length===sim.seq.length){
+    if(sim.round>=5){sim.won=true;if(!earnedGames.has('simon')){earnedGames.add('simon');addPoints(GAMES.find(x=>x.id==='simon').pts);}drawSimon();}
+    else{sim.playing=false;drawSimon();}
+  }
+};
+
+// ============================
+// 13. NUMBER HUNT (guess the number)
+// ============================
+let ng={secret:0,guesses:[],won:false,attempts:0};
+function init_numguess(){ng={secret:Math.floor(Math.random()*100)+1,guesses:[],won:false,attempts:0};}
+function render_numguess(){
+  const g=GAMES.find(x=>x.id==='numguess');
+  document.getElementById('content').innerHTML=gameWrap(g,
+    '<li>A secret number between 1–100 is hidden.</li><li>Type your guess and press Enter or click Guess.</li><li>Feedback tells you if the secret is Higher or Lower.</li><li>Find it in 7 guesses or fewer to earn points!</li>',
+    '',`<div class="score-bar"><div class="sc">Attempts: <strong id="ng-att">0</strong>/7</div></div>`);
+  drawNG();
+}
+function drawNG(){
+  const gb=document.getElementById('gb-numguess');if(!gb)return;
+  let msg='';
+  if(ng.won)msg=`<div class="msg ok">✅ Found in ${ng.attempts} guesses!</div>`;
+  else if(ng.attempts>=7&&!ng.won)msg=`<div class="msg err">❌ The number was ${ng.secret}. Try again!</div>`;
+  gb.innerHTML=`${msg}
+  ${!ng.won&&ng.attempts<7?`<div class="guess-input-wrap"><input type="number" id="ng-inp" min="1" max="100" placeholder="1-100" onkeydown="if(event.key==='Enter')ngGuess()"><button class="btn primary" onclick="ngGuess()">Guess</button></div>`:''}
+  <div class="history-list" id="ng-hist">${ng.guesses.map(g=>`<div class="h-item ${g.res==='win'?'h-win':g.res==='high'?'h-high':'h-low'}"><span>Guess: ${g.v}</span><span>${g.res==='win'?'🎉 Correct!':g.res==='high'?'⬇️ Too High':'⬆️ Too Low'}</span></div>`).join('')}</div>
+  <div class="score-bar" style="margin-top:8px;"><div class="sc">Attempts: <strong>${ng.attempts}</strong>/7</div></div>
+  ${(ng.won||ng.attempts>=7)?`<button class="btn primary" onclick="init_numguess();render_numguess()">↺ New Game</button>`:''}`;
+}
+window.ngGuess=function(){
+  const inp=document.getElementById('ng-inp');if(!inp)return;
+  const v=parseInt(inp.value);if(!v||v<1||v>100)return;
+  ng.attempts++;
+  let res=v===ng.secret?'win':v>ng.secret?'high':'low';
+  ng.guesses.unshift({v,res});
+  if(res==='win'){ng.won=true;if(ng.attempts<=7&&!earnedGames.has('numguess')){earnedGames.add('numguess');addPoints(GAMES.find(x=>x.id==='numguess').pts);}}
+  drawNG();
+};
+
+// ============================
+// 14. NONOGRAM (5×5)
+// ============================
+const NONO={
+  rowClues:[[2],[1,1],[3],[1,1],[2]],
+  colClues:[[2],[1,1],[3],[1,1],[2]],
+  sol:[[0,1,1,0,0],[1,0,0,1,0],[0,1,1,1,0],[1,0,0,1,0],[0,1,1,0,0]]
+};
+let nono={grid:Array(5).fill(null).map(()=>Array(5).fill(0)),solved:false};
+function init_nonogram(){nono={grid:Array(5).fill(null).map(()=>Array(5).fill(0)),solved:false};}
+function render_nonogram(){
+  const g=GAMES.find(x=>x.id==='nonogram');
+  document.getElementById('content').innerHTML=gameWrap(g,
+    '<li>Fill cells to match the number clues in each row and column.</li><li>Numbers show consecutive groups of filled cells (with gaps between).</li><li>Left-click to fill, right-click to mark ✗ (excluded).</li><li>Fill the correct pattern to win!</li>','');
+  drawNono();
+}
+function drawNono(){
+  const gb=document.getElementById('gb-nonogram');if(!gb)return;
+  const done=NONO.sol.every((r,ri)=>r.every((v,ci)=>nono.grid[ri][ci]===v));
+  if(done&&!nono.solved){nono.solved=true;if(!earnedGames.has('nonogram')){earnedGames.add('nonogram');addPoints(GAMES.find(x=>x.id==='nonogram').pts);}}
+  let html=done?`<div class="msg ok">✅ Nonogram solved! Brilliant!</div>`:'';
+  html+=`<table class="nono-table" oncontextmenu="return false">`;
+  html+=`<tr><td></td>${NONO.colClues.map(c=>`<td class="nono-hint" style="text-align:center;vertical-align:bottom;">${c.join('<br>')}</td>`).join('')}</tr>`;
+  NONO.sol.forEach((row,ri)=>{
+    html+=`<tr><td class="nono-hint" style="text-align:right;padding-right:6px;">${NONO.rowClues[ri].join(' ')}</td>`;
+    row.forEach((_,ci)=>{
+      const v=nono.grid[ri][ci];
+      const bb=ri===1||ri===3?'border-bottom:3px solid #374151;':'',br=ci===1||ci===3?'border-right:3px solid #374151;':'';
+      html+=`<td class="nono-cell${v===1?' filled':v===2?' marked':''}" style="${bb}${br}" onclick="nonoClick(${ri},${ci})" oncontextmenu="nonoRight(${ri},${ci});return false;"></td>`;
+    });
+    html+=`</tr>`;
+  });
+  html+=`</table>`;
+  html+=`<div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Left-click: fill ■ | Right-click: mark ✗</div>`;
+  html+=`<button class="btn primary" onclick="init_nonogram();render_nonogram()">↺ Reset</button>`;
+  gb.innerHTML=html;
+}
+window.nonoClick=function(r,c){nono.grid[r][c]=nono.grid[r][c]===1?0:1;drawNono();};
+window.nonoRight=function(r,c){nono.grid[r][c]=nono.grid[r][c]===2?0:2;drawNono();};
+
+// ============================
+// 15. WORD SCRAMBLE
+// ============================
+const SCRAMBLE_WORDS=[
+  {w:'LOGIC',hint:'Systematic reasoning'},
+  {w:'REASON',hint:'Thinking clearly'},
+  {w:'PUZZLE',hint:'A problem to solve'},
+  {w:'DEDUCE',hint:'To figure out from clues'},
+  {w:'CIPHER',hint:'Encoded message'},
+  {w:'PATTERN',hint:'Repeating structure'},
+  {w:'BINARY',hint:'Base-2 number system'},
+  {w:'INFER',hint:'Draw a conclusion'},
+];
+let scr={idx:0,score:0,inp:'',revealed:false,correct:false};
+function scramble(w){return w.split('').sort(()=>Math.random()-.5).join('');}
+function init_wordscramble(){scr={idx:0,score:0,inp:'',revealed:false,correct:false};}
+function render_wordscramble(){
+  const g=GAMES.find(x=>x.id==='wordscramble');
+  document.getElementById('content').innerHTML=gameWrap(g,
+    '<li>Unscramble the jumbled word.</li><li>A hint is shown to guide you.</li><li>Type your answer and press Enter or Check.</li><li>Get 5+ out of 8 to earn points!</li>',
+    '',`<div class="score-bar"><div class="sc">Score: <strong id="scr-sc">0</strong>/8</div></div>`);
+  drawScr();
+}
+function drawScr(){
+  const gb=document.getElementById('gb-wordscramble');if(!gb)return;
+  if(scr.idx>=SCRAMBLE_WORDS.length){
+    const ok=scr.score>=5;
+    gb.innerHTML=`<div class="msg${ok?' ok':' err'}">${ok?'✅':'❌'} Score: ${scr.score}/${SCRAMBLE_WORDS.length} ${ok?'— Points Earned!':''}</div>
+    <button class="btn primary" onclick="init_wordscramble();render_wordscramble()">Play Again</button>`;
+    if(ok&&!earnedGames.has('wordscramble')){earnedGames.add('wordscramble');addPoints(GAMES.find(x=>x.id==='wordscramble').pts);}
+    return;
+  }
+  const wd=SCRAMBLE_WORDS[scr.idx];
+  const sc=scramble(wd.w);
+  gb.innerHTML=`<div class="score-bar"><div class="sc">Word: <strong>${scr.idx+1}/${SCRAMBLE_WORDS.length}</strong></div><div class="sc">Score: <strong>${scr.score}</strong></div></div>
+  <div class="scramble-word">${sc}</div>
+  <div style="text-align:center;font-size:13px;color:var(--muted);margin-bottom:10px;">Hint: ${wd.hint}</div>
+  ${!scr.revealed?`<input class="scramble-input" id="scr-inp" placeholder="TYPE YOUR ANSWER" value="${scr.inp}" oninput="scr.inp=this.value" onkeydown="if(event.key==='Enter')checkScr()" maxlength="${wd.w.length}">
+  <div class="btn-row" style="justify-content:center;"><button class="btn primary" onclick="checkScr()">Check</button><button class="btn" onclick="scrSkip()">Skip</button></div>`
+  :`<div class="msg${scr.correct?' ok':' err'}">${scr.correct?'✅ Correct!':'❌ Answer: '+wd.w}</div><button class="btn primary" onclick="nextScr()">Next →</button>`}`;
+}
+window.checkScr=function(){
+  const inp=document.getElementById('scr-inp');if(!inp)return;
+  const ans=inp.value.trim().toUpperCase();
+  scr.revealed=true;scr.correct=ans===SCRAMBLE_WORDS[scr.idx].w;
+  if(scr.correct)scr.score++;drawScr();
+};
+window.scrSkip=function(){scr.revealed=true;scr.correct=false;drawScr();};
+window.nextScr=function(){scr.idx++;scr.inp='';scr.revealed=false;scr.correct=false;drawScr();};
+
+// ============================
+// 16. LIGHTS OUT
+// ============================
+let lo={grid:[],solved:false,moves:0};
+function initLO(){
+  lo.grid=Array(25).fill(0).map(()=>Math.random()>.5?1:0);
+  lo.solved=false;lo.moves=0;
+  if(lo.grid.every(x=>x===0))lo.grid[0]=1;
+}
+function init_lightout(){initLO();}
+function render_lightout(){
+  const g=GAMES.find(x=>x.id==='lightout');
+  document.getElementById('content').innerHTML=gameWrap(g,
+    '<li>Turn all lights OFF (gray).</li><li>Clicking a light toggles it and its neighbors (up, down, left, right).</li><li>Plan ahead — each click affects multiple cells!</li><li>Solve in under 20 moves to earn points!</li>',
+    '',`<div class="score-bar"><div class="sc">Moves: <strong id="lo-mv">0</strong></div></div>`);
+  drawLO();
+}
+function drawLO(){
+  const gb=document.getElementById('gb-lightout');if(!gb)return;
+  const done=lo.grid.every(x=>x===0);
+  if(done&&!lo.solved){lo.solved=true;const ok=lo.moves<=20;if(ok&&!earnedGames.has('lightout')){earnedGames.add('lightout');addPoints(GAMES.find(x=>x.id==='lightout').pts);}}
+  let html=done?`<div class="msg ok">✅ All lights out in ${lo.moves} moves! ${lo.moves<=20?'Points earned!':''}</div>`:'';
+  html+=`<div class="lo-grid" style="grid-template-columns:repeat(5,52px);">`;
+  lo.grid.forEach((v,i)=>html+=`<div class="lo-cell ${v?'on':'off'}" onclick="loClick(${i})"></div>`);
+  html+=`</div><div class="score-bar" style="margin-top:8px;"><div class="sc">Moves: <strong>${lo.moves}</strong></div><div class="sc" style="color:${lo.moves>20?'#EF4444':'#10B981'}">${lo.moves<=20?'👍 On track':'⚠️ Over 20 moves'}</div></div>`;
+  html+=`<button class="btn primary" onclick="init_lightout();render_lightout()">↺ New Puzzle</button>`;
+  gb.innerHTML=html;
+}
+window.loClick=function(i){
+  const neighbors=[i,i-5,i+5,i%5>0?i-1:-1,(i+1)%5!==0?i+1:-1];
+  neighbors.forEach(n=>{if(n>=0&&n<25&&n!==-1)lo.grid[n]=1-lo.grid[n];});
+  lo.moves++;drawLO();
+};
+
+// ============================
+// 17. RIVER CROSSING
+// ============================
+const RIVER_CHARS=[
+  {id:'farmer',name:'Farmer',icon:'👨‍🌾',note:'Controls the boat'},
+  {id:'fox',name:'Fox',icon:'🦊',note:'Eats chicken if alone'},
+  {id:'chicken',name:'Chicken',icon:'🐔',note:'Eats grain if alone'},
+  {id:'grain',name:'Grain',icon:'🌾',note:''},
+];
+let rv={left:['farmer','fox','chicken','grain'],right:[],boat:[],boatSide:'left',moves:0,won:false,msg:''};
+function init_river(){rv={left:['farmer','fox','chicken','grain'],right:[],boat:[],boatSide:'left',moves:0,won:false,msg:''};}
+function render_river(){
+  const g=GAMES.find(x=>x.id==='river');
+  document.getElementById('content').innerHTML=gameWrap(g,
+    '<li>Move the farmer, fox, chicken, and grain across the river.</li><li>The farmer must be in the boat to cross.</li><li>Fox + chicken alone = fox eats chicken. Chicken + grain alone = chicken eats grain.</li><li>Only the farmer and one passenger can ride the boat.</li><li>Click characters to load/unload, click the boat to cross!</li>','');
+  drawRiver();
+}
+function rvCheck(side){
+  const s=side;
+  const hasFox=s.includes('fox'),hasChicken=s.includes('chicken'),hasGrain=s.includes('grain');
+  const hasFarmer=s.includes('farmer');
+  if(!hasFarmer){
+    if(hasFox&&hasChicken)return '🦊 Fox ate the chicken!';
+    if(hasChicken&&hasGrain)return '🐔 Chicken ate the grain!';
+  }
+  return null;
+}
+function drawRiver(){
+  const gb=document.getElementById('gb-river');if(!gb)return;
+  const getLbl=id=>RIVER_CHARS.find(c=>c.id===id);
+  if(rv.right.length===4&&!rv.won){rv.won=true;if(!earnedGames.has('river')){earnedGames.add('river');addPoints(GAMES.find(x=>x.id==='river').pts);}}
+  let html=rv.won?`<div class="msg ok">✅ Everyone crossed safely!</div>`:'';
+  if(rv.msg)html+=`<div class="msg err">⚠️ ${rv.msg}</div>`;
+  const drawBank=(ids,side)=>{
+    let h=`<div class="bank"><div style="font-size:11px;font-weight:800;color:var(--muted);text-align:center;margin-bottom:6px;">${side==='left'?'START':'FINISH'}</div>`;
+    ids.forEach(id=>{const c=getLbl(id);h+=`<div class="character${rv.boat.includes(id)?' in-boat':''}" onclick="rvLoad('${id}')">${c.icon} ${c.name}</div>`;});
+    h+=`</div>`;return h;
+  };
+  html+=`<div class="river-scene">
+    ${drawBank(rv.left,'left')}
+    <div class="river-mid">
+      <div class="river-label">River</div>
+      <div class="boat" onclick="rvCross()" title="Click to cross!">
+        ⛵
+        <div style="position:absolute;top:2px;right:2px;font-size:10px;">${rv.boat.map(id=>getLbl(id).icon).join('')}</div>
+      </div>
+      <div class="river-status">🚣 ${rv.boatSide==='left'?'Left bank':'Right bank'}</div>
+    </div>
+    ${drawBank(rv.right,'right')}
+  </div>
+  <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Moves: ${rv.moves} | Click characters to board/unboard boat. Click ⛵ to cross.</div>
+  <button class="btn primary" onclick="init_river();render_river()">↺ Reset</button>`;
+  gb.innerHTML=html;
+}
+window.rvLoad=function(id){
+  if(rv.won)return;
+  const side=rv.boatSide==='left'?rv.left:rv.right;
+  if(!side.includes(id)&&!rv.boat.includes(id))return;
+  if(rv.boat.includes(id)){rv.boat=rv.boat.filter(x=>x!==id);side.push(id);}
+  else if(rv.boat.length<2&&side.includes(id)){rv.boat.push(id);rv.left=rv.left.filter(x=>x!==id);rv.right=rv.right.filter(x=>x!==id);}
+  drawRiver();
+};
+window.rvCross=function(){
+  if(!rv.boat.includes('farmer')){rv.msg='Farmer must be in the boat!';drawRiver();return;}
+  rv.msg='';
+  const from=rv.boatSide==='left'?rv.left:rv.right;
+  const err=rvCheck(from);
+  if(err){rv.msg=err;init_river();drawRiver();return;}
+  rv.boatSide=rv.boatSide==='left'?'right':'left';
+  const to=rv.boatSide==='left'?rv.left:rv.right;
+  rv.boat.forEach(id=>to.push(id));rv.boat=[];rv.moves++;
+  const errAfter=rvCheck(rv.boatSide==='left'?rv.right:rv.left);
+  if(errAfter){rv.msg=errAfter;init_river();setTimeout(()=>drawRiver(),100);return;}
+  drawRiver();
+};
+
+// ============================
+// 18. TOWERS PUZZLE (see towers: place 1-4 in 4x4)
+// ============================
+const TWR_SOL=[[2,1,4,3],[3,4,1,2],[4,3,2,1],[1,2,3,4]];
+const TWR_TOP=[2,3,1,2],TWR_BOT=[3,1,4,2],TWR_LFT=[2,1,3,4],TWR_RGT=[3,2,1,2];
+let twr={grid:TWR_SOL.map(r=>Array(4).fill(null)),solved:false};
+function init_towers(){twr={grid:Array(4).fill(null).map(()=>Array(4).fill(null)),solved:false};}
+function render_towers(){
+  const g=GAMES.find(x=>x.id==='towers');
+  document.getElementById('content').innerHTML=gameWrap(g,
+    '<li>Place towers of height 1–4 in a 4×4 grid.</li><li>Each row and column must have exactly one of each height.</li><li>Edge numbers show how many towers are VISIBLE from that direction (taller towers block shorter ones behind).</li><li>Click a cell to cycle through values 1–4.</li>','');
+  drawTwr();
+}
+function visCount(arr){let max=0,vis=0;arr.forEach(v=>{if(v>max){vis++;max=v;}});return vis;}
+function drawTwr(){
+  const gb=document.getElementById('gb-towers');if(!gb)return;
+  const done=twr.grid.every((r,ri)=>r.every((v,ci)=>v===TWR_SOL[ri][ci]));
+  if(done&&!twr.solved){twr.solved=true;if(!earnedGames.has('towers')){earnedGames.add('towers');addPoints(GAMES.find(x=>x.id==='towers').pts);}}
+  let html=done?`<div class="msg ok">✅ Towers puzzle solved!</div>`:'';
+  const sz=36;
+  html+=`<div class="tower-wrap" style="display:grid;grid-template-columns:repeat(6,${sz}px);gap:0;">`;
+  html+=`<div style="width:${sz}px;height:${sz}px;"></div>`;
+  TWR_TOP.forEach(n=>html+=`<div class="tower-clue">${n}</div>`);
+  html+=`<div></div>`;
+  TWR_SOL.forEach((row,ri)=>{
+    html+=`<div class="tower-clue" style="justify-content:flex-end;padding-right:4px;">${TWR_LFT[ri]}</div>`;
+    row.forEach((_,ci)=>{
+      const v=twr.grid[ri][ci];
+      const isErr=v&&v!==TWR_SOL[ri][ci];
+      html+=`<div class="tower-cell${v?' tc-filled':''}${isErr?' tc-err':''}" onclick="twrClick(${ri},${ci})">${v||''}</div>`;
+    });
+    html+=`<div class="tower-clue" style="justify-content:flex-start;padding-left:4px;">${TWR_RGT[ri]}</div>`;
+  });
+  html+=`<div></div>`;
+  TWR_BOT.forEach(n=>html+=`<div class="tower-clue">${n}</div>`);
+  html+=`</div>`;
+  html+=`<div style="font-size:12px;color:var(--muted);margin:10px 0;">Click cells to cycle 1→2→3→4→empty</div>`;
+  html+=`<button class="btn primary" onclick="init_towers();render_towers()">↺ Reset</button>`;
+  gb.innerHTML=html;
+}
+window.twrClick=function(r,c){
+  twr.grid[r][c]=(twr.grid[r][c]||0)%4+1;
+  if(twr.grid[r][c]===0)twr.grid[r][c]=null;
+  drawTwr();
+};
+
+// ============================
+// 19. CRYPTOGRAM
+// ============================
+const CRYPTO_MSG='LOGIC IS THE KEY TO CLEAR THINKING';
+const CRYPTO_SHIFT=3;
+function caesarEnc(s,n){return s.split('').map(c=>/[A-Z]/.test(c)?String.fromCharCode((c.charCodeAt(0)-65+n)%26+65):c).join('');}
+const CRYPTO_ENCODED=caesarEnc(CRYPTO_MSG,CRYPTO_SHIFT);
+const CRYPTO_LETTERS=[...new Set(CRYPTO_ENCODED.split('').filter(c=>/[A-Z]/.test(c)))].sort();
+let cry={map:{},solved:false};
+function init_crypto(){cry={map:{},solved:false};CRYPTO_LETTERS.forEach(l=>cry.map[l]='');}
+function render_cryptogram(){
+  const g=GAMES.find(x=>x.id==='crypto');
+  document.getElementById('content').innerHTML=gameWrap(g,
+    '<li>This message is encrypted using a Caesar cipher (letters shifted by a fixed amount).</li><li>Map each encoded letter to its original letter using the input boxes below.</li><li>Hint: The shift is between 1–5. Look for short words like A, I, or THE.</li><li>Decode the full message to earn points!</li>','');
+  drawCrypto();
+}
+function drawCrypto(){
+  const gb=document.getElementById('gb-cryptogram');if(!gb)return;
+  const decoded=CRYPTO_ENCODED.split('').map(c=>/[A-Z]/.test(c)?(cry.map[c]||'_'):c).join('');
+  const done=decoded===CRYPTO_MSG;
+  if(done&&!cry.solved){cry.solved=true;if(!earnedGames.has('crypto')){earnedGames.add('crypto');addPoints(GAMES.find(x=>x.id==='crypto').pts);}}
+  let html=done?`<div class="msg ok">✅ Decrypted! The message: "${CRYPTO_MSG}"</div>`:'';
+  html+=`<div class="crypto-box">${CRYPTO_ENCODED}</div>`;
+  html+=`<div style="font-size:13px;color:var(--muted);margin-bottom:8px;">Decoded so far: <b style="font-family:var(--mono);color:var(--text);">${decoded}</b></div>`;
+  html+=`<div class="crypto-inputs">`;
+  CRYPTO_LETTERS.forEach(l=>{
+    html+=`<div class="crypto-pair"><span>${l} →</span><input maxlength="1" value="${cry.map[l]}" oninput="cryInput('${l}',this.value)" style="border-color:${cry.map[l]?'#10B981':'var(--border)'}"></div>`;
+  });
+  html+=`</div>`;
+  html+=`<div class="btn-row"><button class="btn primary" onclick="init_crypto();render_cryptogram()">↺ Reset</button><button class="btn info" onclick="cryHint()">💡 Hint</button></div>`;
+  gb.innerHTML=html;
+}
+window.cryInput=function(l,v){cry.map[l]=v.toUpperCase().slice(0,1);drawCrypto();};
+window.cryHint=function(){
+  const l=CRYPTO_LETTERS[Math.floor(Math.random()*CRYPTO_LETTERS.length)];
+  const dec=String.fromCharCode((l.charCodeAt(0)-65-CRYPTO_SHIFT+26)%26+65);
+  cry.map[l]=dec;drawCrypto();
+};
+
+// ============================
+// 20. COIN BALANCE
+// ============================
+const COIN_QS=[
+  {q:'You have 3 coins: one is heavier. You can weigh once. Which side of scale has the heavy coin?',setup:[['A','B'],['C','_']],answer:'Left — A&B side if A or B is heavy. Try all combos!',hint:'Place 2 on left, 1 on right. If left is heavier, compare the 2 on left.'},
+  {q:'Balance: Left has 3 coins. Right has 5 coins. Which side is heavier (each coin = 1g)?',answer:'Right side is heavier (5g vs 3g).',setup:[[3,5]],type:'weight'},
+  {q:'Left: 4 coins of 1g each. Right: 2 coins of 2g each. Are they balanced?',answer:'Yes! Both sides weigh 4g.',setup:[[4,4]],type:'equal'},
+];
+let coin={idx:0,answered:false,score:0};
+function init_coins(){coin={idx:0,answered:false,score:0};}
+function render_coins(){
+  const g=GAMES.find(x=>x.id==='coins');
+  document.getElementById('content').innerHTML=gameWrap(g,
+    '<li>Solve coin weighing puzzles using logic.</li><li>Each puzzle presents a balance scenario.</li><li>Deduce which side is heavier or if they balance.</li><li>Get 2+ out of 3 to earn points!</li>','');
+  drawCoins();
+}
+function drawCoins(){
+  const gb=document.getElementById('gb-coins');if(!gb)return;
+  if(coin.idx>=COIN_QS.length){
+    const ok=coin.score>=2;
+    gb.innerHTML=`<div class="msg${ok?' ok':' err'}">${ok?'✅':'❌'} Score: ${coin.score}/${COIN_QS.length} ${ok?'— Points Earned!':''}</div>
+    <button class="btn primary" onclick="init_coins();render_coins()">Play Again</button>`;
+    if(ok&&!earnedGames.has('coins')){earnedGames.add('coins');addPoints(GAMES.find(x=>x.id==='coins').pts);}
+    return;
+  }
+  const q=COIN_QS[coin.idx];
+  let scaleHtml='';
+  if(q.type==='weight'){
+    const[l,r]=q.setup[0];
+    scaleHtml=`<div class="coins-area">
+      <div class="scale-side"><div class="scale-label">Left</div><div class="coin-slot">${Array(l).fill(0).map(()=>`<div class="coin">1g</div>`).join('')}</div></div>
+      <div style="display:flex;align-items:center;font-size:30px;">⚖️</div>
+      <div class="scale-side"><div class="scale-label">Right</div><div class="coin-slot">${Array(r).fill(0).map(()=>`<div class="coin">1g</div>`).join('')}</div></div>
+    </div>`;
+  }else if(q.type==='equal'){
+    scaleHtml=`<div class="coins-area">
+      <div class="scale-side"><div class="scale-label">Left (4×1g)</div><div class="coin-slot">${Array(4).fill(0).map(()=>`<div class="coin">1g</div>`).join('')}</div></div>
+      <div style="display:flex;align-items:center;font-size:30px;">⚖️</div>
+      <div class="scale-side"><div class="scale-label">Right (2×2g)</div><div class="coin-slot">${Array(2).fill(0).map(()=>`<div class="coin heavy">2g</div>`).join('')}</div></div>
+    </div>`;
+  }else{
+    scaleHtml=`<div class="coins-area">
+      <div class="scale-side"><div class="scale-label">Left Pan</div><div class="coin-slot"><div class="coin">A</div><div class="coin">B</div></div></div>
+      <div style="display:flex;align-items:center;font-size:30px;">⚖️</div>
+      <div class="scale-side"><div class="scale-label">Right Pan</div><div class="coin-slot"><div class="coin">C</div></div></div>
+    </div>`;
+  }
+  gb.innerHTML=`<div class="score-bar"><div class="sc">Question: <strong>${coin.idx+1}/3</strong></div><div class="sc">Score: <strong>${coin.score}</strong></div></div>
+  <div class="clue-box" style="background:#FFFBEB;border-color:#FDE68A;color:#92400E;"><b>❓ Puzzle:</b><br>${q.q}</div>
+  ${scaleHtml}
+  ${!coin.answered?`<div class="tt-opts">
+    <button class="tt-opt" onclick="ansCoins('left')">⬅️ Left is heavier</button>
+    <button class="tt-opt" onclick="ansCoins('equal')">⚖️ Balanced</button>
+    <button class="tt-opt" onclick="ansCoins('right')">➡️ Right is heavier</button>
+  </div>`:`<div class="msg info">💡 ${q.answer}</div><button class="btn primary" onclick="nextCoins()">Next →</button>`}`;
+}
+const COIN_ANS=['left','right','equal'];
+window.ansCoins=function(v){
+  coin.answered=true;
+  if(v===COIN_ANS[coin.idx])coin.score++;
+  drawCoins();
+};
+window.nextCoins=function(){coin.idx++;coin.answered=false;drawCoins();};
+
+// ============================
+// INIT
+// ============================
+init_hanoi();init_binary();init_sudoku();init_mastermind();init_memory();
+init_wordle();init_deduction();init_simon();init_numguess();init_nonogram();
+init_wordscramble();init_lightout();init_river();init_towers();init_crypto();
+init_coins();init_arithmetic();init_truthtable();init_pattern();init_sequence();
+
+updateNav();
+renderHome();
+</script>
+</body>
+</html>
